@@ -10,20 +10,19 @@ import Signup from "~/routes/auth/signup";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Root/>,
-        errorElement: <ErrorPage/>,
+        element: <Root />,
+        errorElement: <ErrorPage />,
         children: [
             {
-                path: "login",
-                element: <Login/>,
+                index: true,
+                element: <Login />,
+            },
+            {
+                path: "signup",
+                element: <Signup />,
             },
         ],
     },
-    {
-        path: "/signup",
-        element: <Signup/>,
-        errorElement: <ErrorPage/>
-    }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
