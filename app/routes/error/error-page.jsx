@@ -1,6 +1,6 @@
 import React from "react";
 import {useRouteError} from "react-router-dom";
-import styles from '~/styles/auth.module.css';
+import styles from '~/styles/error.module.css';
 
 export default function ErrorPage() {
     const error = useRouteError();

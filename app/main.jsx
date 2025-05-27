@@ -14,16 +14,15 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage/>,
         children: [
             {
-                path: "login",
+                index: true,
                 element: <Login/>,
             },
+            {
+                path: "/signup",
+                element: <Signup/>,
+            }
         ],
     },
-    {
-        path: "/signup",
-        element: <Signup/>,
-        errorElement: <ErrorPage/>
-    }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

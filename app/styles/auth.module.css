@@ -1,6 +1,6 @@
 .loginPage {
     min-height: 100vh;
-    background-color: var(--coffee-100);
+    background-color: var(--coffee-200);
     padding: 2rem 1rem;
     box-sizing: border-box;
 }
