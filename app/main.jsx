@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom/client';
 import {RouterProvider, createBrowserRouter} from 'react-router-dom';
 import Root from './routes/root';
 import Login from './routes/auth/login';
-import Home from './routes/home';
 import ErrorPage from './routes/error/error-page.jsx';
 import './styles/app.css';
 import Signup from "~/routes/auth/signup";
+import Home from "~/routes/home.jsx";
 
 const router = createBrowserRouter([
     {
