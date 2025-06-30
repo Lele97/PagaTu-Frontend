@@ -17,7 +17,7 @@ const LoginForm = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('https://3d43-95-229-24-242.ngrok-free.app/api/auth/login', {
+            const response = await fetch('https://889f-37-118-129-240.ngrok-free.app/api/auth/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(credentials),
