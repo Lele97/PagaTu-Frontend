@@ -30,7 +30,7 @@ const SignupForm = () => {
         }
 
         try {
-            const response = await fetch('https://3d43-95-229-24-242.ngrok-free.app/api/auth/register', {
+            const response = await fetch('https://14f7-83-225-20-70.ngrok-free.app/api/auth/register', {
                 method: 'POST',
                 body: JSON.stringify(registration),
                 headers: {'Content-Type': 'application/json'},

@@ -93,19 +93,29 @@ const Home = () => {
         */
 
     return (
-        <div className={styles.container}>
-            {/* Header */}
-            <header className={styles.header}>
-                <div className={styles.headerContent}>
-                    <h1 className={styles.headerTitle}>Dashboard</h1>
-                    <div className={styles.userInfo}>
-                        <span className={styles.welcomeText}>Ciao, {user}!</span>
-                        <button onClick={handleLogout} className={styles.logoutButton}>
-                            Esci
-                        </button>
+        <div className={styles.homePage}>
+            <div className={styles.container}>
+                {/* Header */}
+                <header className={styles.header}>
+                    <div className={styles.headerContent}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                            <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image}/>
+                            <h1 className={styles.headerTitle}>PagaTu Dashboard</h1>
+                        </div>
+                        <div className={styles.userInfo}>
+                            <div className={styles.avatar}>
+                                <div className={styles.head}></div>
+                                <div className={styles.body}></div>
+                            </div>
+                            <span className={styles.welcomeText}>Ciao, {user}!</span>
+                            <button onClick={handleLogout} className={styles.logoutButton}>
+                                Esci
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </header>
+                </header>
+
+            </div>
         </div>
     );
 };
