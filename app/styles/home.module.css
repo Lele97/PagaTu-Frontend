@@ -1,0 +1,316 @@
+/* Container */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--coffee-100);
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.125rem;
+    color: var(--coffee-600);
+}
+
+/* Header */
+.header {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.5rem;
+}
+
+.headerContent {
+    max-width: 64rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--coffee-800);
+    margin: 0;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.welcomeText {
+    color: var(--coffee-600);
+    font-weight: 500;
+}
+
+.logoutButton {
+    background-color: var(--coffee-600);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+    background-color: var(--coffee-700);
+}
+
+/* Main Content */
+.main {
+    flex: 1;
+    padding: 1.5rem;
+    max-width: 64rem;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Payment Section */
+.paymentSection {
+    margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--coffee-700);
+    margin-bottom: 1rem;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+}
+
+.coffeeButton {
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 500;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.coffeeButton:active {
+    transform: scale(0.98);
+}
+
+.coffeeButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.payButton {
+    background-color: var(--coffee-600);
+    color: white;
+}
+
+.payButton:hover:not(:disabled) {
+    background-color: var(--coffee-700);
+}
+
+.skipButton {
+    background-color: var(--coffee-100);
+    color: var(--coffee-800);
+}
+
+.skipButton:hover:not(:disabled) {
+    background-color: var(--coffee-200);
+}
+
+.buttonIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+.statusMessage {
+    margin-top: 1rem;
+    text-align: center;
+    color: var(--coffee-600);
+    font-weight: 500;
+    padding: 0.75rem;
+    background-color: var(--coffee-50);
+    border-radius: 0.375rem;
+    border: 1px solid var(--coffee-200);
+}
+
+/* Recent Payments Section */
+.recentSection {
+    margin-bottom: 2rem;
+}
+
+.tableContainer {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeader {
+    background-color: var(--coffee-50);
+}
+
+.tableHeaderCell {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--coffee-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--coffee-100);
+}
+
+.tableBody {
+    background-color: white;
+}
+
+.tableRow {
+    border-bottom: 1px solid var(--coffee-100);
+    transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+    background-color: var(--coffee-50);
+}
+
+.tableCell {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--coffee-900);
+    white-space: nowrap;
+}
+
+.tableCellSecondary {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--coffee-500);
+    white-space: nowrap;
+}
+
+/* Footer */
+.footer {
+    background-color: white;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: auto;
+}
+
+.footerContent {
+    max-width: 64rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.footerLink {
+    color: var(--coffee-600);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.footerLink:hover {
+    color: var(--coffee-700);
+}
+
+.footerText {
+    color: var(--coffee-500);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .buttonGroup {
+        flex-direction: row;
+    }
+
+    .coffeeButton {
+        flex: 1;
+    }
+
+    .footerContent {
+        flex-direction: row;
+        gap: 0;
+    }
+
+    .footerText {
+        margin: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .headerContent {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+
+    .userInfo {
+        align-self: flex-end;
+    }
+
+    .main {
+        padding: 1rem;
+    }
+
+    .tableHeaderCell,
+    .tableCell,
+    .tableCellSecondary {
+        padding: 0.5rem;
+    }
+
+    .footer {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .headerTitle {
+        font-size: 1.25rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.125rem;
+    }
+
+    .coffeeButton {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .buttonIcon {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}
