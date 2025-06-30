@@ -1,6 +1,6 @@
 import styles from "~/styles/signup.module.css";
 import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, Link} from "react-router-dom";
 
 const SignupForm = () => {
 
@@ -122,11 +122,13 @@ const SignupForm = () => {
                             onChange={handleChange}
                             required
                         />
-                    </div>
-
-                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                    </div>                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
                         {isLoading ? 'Caricamento...' : 'Registrati'}
                     </button>
+                    <div className={styles.loginLink}>
+                        Hai già un account?
+                        <Link to="/login">Accedi</Link>
+                    </div>
                 </form>
             </div>
         </div>

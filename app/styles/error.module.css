@@ -1,0 +1,276 @@
+.errorPage {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--coffee-200) 0%, var(--coffee-300) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+}
+
+.errorContainer {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 3rem 2rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    animation: fadeInUp 0.6s ease;
+    box-sizing: border-box;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.errorContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+    max-height: 120px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.errorIcon {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.errorTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--coffee-700);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.errorMessage {
+    font-size: 1.125rem;
+    color: var(--coffee-600);
+    margin: 0;
+    line-height: 1.5;
+    max-width: 500px;
+}
+
+.errorDetails {
+    width: 100%;
+    margin: 1rem 0;
+    text-align: left;
+    background-color: var(--coffee-50);
+    border-radius: 0.5rem;
+    border: 1px solid var(--coffee-200);
+}
+
+.errorSummary {
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--coffee-700);
+    background-color: var(--coffee-100);
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.errorSummary:hover {
+    background-color: var(--coffee-200);
+}
+
+.errorStack {
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: var(--coffee-800);
+    background-color: var(--coffee-50);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    font-family: 'Courier New', monospace;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.primaryButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background-color: var(--coffee-600);
+    color: white;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(111, 78, 55, 0.3);
+    font-size: 1rem;
+    line-height: 1.5;
+    border: none;
+}
+
+.primaryButton:hover {
+    background-color: var(--coffee-700);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(111, 78, 55, 0.4);
+}
+
+.primaryButton:active {
+    transform: translateY(0);
+}
+
+.secondaryButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background-color: transparent;
+    color: var(--coffee-600);
+    font-weight: 600;
+    border: 2px solid var(--coffee-600);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.secondaryButton:hover {
+    background-color: var(--coffee-600);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.secondaryButton:active {
+    transform: translateY(0);
+}
+
+.helpMessage {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--coffee-200);
+}
+
+.helpMessage p {
+    margin: 0.5rem 0;
+    color: var(--coffee-600);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.coffeeMessage {
+    font-weight: 600;
+    color: var(--coffee-700) !important;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .errorPage {
+        padding: 1rem;
+    }
+    
+    .errorContainer {
+        padding: 2rem 1.5rem;
+    }
+    
+    .errorTitle {
+        font-size: 1.75rem;
+    }
+    
+    .errorMessage {
+        font-size: 1rem;
+    }
+    
+    .actionButtons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .primaryButton,
+    .secondaryButton {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .errorContainer {
+        padding: 1.5rem 1rem;
+    }
+    
+    .logo {
+        width: 100px;
+    }
+    
+    .errorIcon {
+        font-size: 3rem;
+    }
+    
+    .errorTitle {
+        font-size: 1.5rem;
+    }
+    
+    .errorContent {
+        gap: 1rem;
+    }
+}
+
+/* Animation for better UX */
+.errorPage * {
+    animation-fill-mode: both;
+}
+
+.errorIcon {
+    animation-delay: 0.2s;
+}
+
+.errorTitle {
+    animation: fadeInUp 0.6s ease 0.3s both;
+}
+
+.errorMessage {
+    animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.actionButtons {
+    animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+.helpMessage {
+    animation: fadeInUp 0.6s ease 0.6s both;
+}
