@@ -3,29 +3,30 @@ import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 
 const Home = () => {
-
-
     const [user, setUser] = useState(null);
+    const [selectedGroup, setSelectedGroup] = useState(null);
     const navigate = useNavigate();
 
-    /*
-    const [statusMessage, setStatusMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [recentPayments, setRecentPayments] = useState([
-        { name: 'Marco', date: '15/05/2023', time: '09:15' },
-        { name: 'Laura', date: '14/05/2023', time: '10:30' },
-        { name: 'Giovanni', date: '13/05/2023', time: '08:45' },
-        { name: 'Sofia', date: '12/05/2023', time: '11:20' },
-        { name: 'Luca', date: '11/05/2023', time: '09:05' }
-    ]);
-
-    */
+    const groups = ["gruppo 1", "gruppo 2", "gruppo 3", "gruppo 4", "gruppo 5", "gruppo 6", "gruppo 1"];
+    const historyPayment = [
+        {name: 'Marco', date: '15/05/2023', time: '09:15'},
+        {name: 'Laura', date: '14/05/2023', time: '10:30'},
+        {name: 'Giovanni', date: '13/05/2023', time: '08:45'},
+        {name: 'Sofia', date: '12/05/2023', time: '11:20'},
+        {name: 'Luca', date: '11/05/2023', time: '09:05'}
+    ];
 
     const handleLogout = () => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
         localStorage.removeItem('email');
         navigate('/login');
+    };
+
+    const handleGroupSelect = (group) => {
+        setSelectedGroup(group);
+        // Here you can add navigation or other logic when a group is selected
+        console.log('Selected group:', group);
     };
 
     useEffect(() => {
@@ -45,52 +46,6 @@ const Home = () => {
             navigate('/login');
         }
     }, [navigate]);
-    /*
-            const handlePayment = async () => {
-                setIsLoading(true);
-                try {
-                    // Simulate API call for payment
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-
-                    setStatusMessage("Grazie! Hai registrato che oggi offrirai il caffè.");
-
-                    // Add current user payment to the top of the list
-                    const now = new Date();
-                    const newPayment = {
-                        name: user || 'Tu',
-                        date: now.toLocaleDateString('it-IT'),
-                        time: now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
-                    };
-
-                    setRecentPayments(prev => [newPayment, ...prev.slice(0, 4)]);
-
-                    // Clear status message after 5 seconds
-                    setTimeout(() => setStatusMessage(''), 5000);
-
-                } catch (error) {
-                    console.error('Payment error:', error);
-                    setStatusMessage("Errore durante la registrazione. Riprova.");
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            const handleSkip = () => {
-                setStatusMessage("Nessun problema! Ci vediamo la prossima volta.");
-                setTimeout(() => setStatusMessage(''), 5000);
-            };
-
-
-
-            if (!user) {
-                return (
-                    <div class
-                    Name={styles.container}>
-                        <div className={styles.loading}>Caricamento...</div>
-                    </div>
-                );
-            }
-        */
 
     return (
         <div className={styles.container}>
@@ -106,6 +61,56 @@ const Home = () => {
                     </div>
                 </div>
             </header>
+
+            {/* Main Content */}
+            <main className={styles.main}>
+                <div className={styles.heroSection}>
+                    <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
+                </div>
+
+                {/* Group Selection Section */}
+                <section className={styles.groupSection}>
+                    <h2 className={styles.sectionTitle}>I tuoi gruppi</h2>
+                    <div className={styles.groupGrid}>
+                        {groups.map((group, index) => (
+                            <button
+                                key={index}
+                                className={`${styles.groupButton} ${selectedGroup === group ? styles.groupButtonSelected : ''}`}
+                                onClick={() => handleGroupSelect(group)}>
+                                {group}
+                            </button>
+                        ))}
+                    </div>
+                </section>
+
+                <div className={styles.separator}></div>
+
+                {/* Payment History Section */}
+                <section className={styles.recentSection}>
+                    <h2 className={styles.sectionTitle}>I tuoi ultimi pagamenti</h2>
+
+                    <div className={styles.tableContainer}>
+                        <table className={styles.table}>
+                            <thead className={styles.tableHeader}>
+                            <tr>
+                                <th className={styles.tableHeaderCell}>Nome</th>
+                                <th className={styles.tableHeaderCell}>Data</th>
+                                <th className={styles.tableHeaderCell}>Ora</th>
+                            </tr>
+                            </thead>
+                            <tbody className={styles.tableBody}>
+                            {historyPayment.map((payment, index) => (
+                                <tr key={index} className={styles.tableRow}>
+                                    <td className={styles.tableCell}>{payment.name}</td>
+                                    <td className={styles.tableCellSecondary}>{payment.date}</td>
+                                    <td className={styles.tableCellSecondary}>{payment.time}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
         </div>
     );
 };

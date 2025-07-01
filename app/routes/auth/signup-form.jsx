@@ -122,7 +122,8 @@ const SignupForm = () => {
                             onChange={handleChange}
                             required
                         />
-                    </div>                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                    </div>
+                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
                         {isLoading ? 'Caricamento...' : 'Registrati'}
                     </button>
                     <div className={styles.loginLink}>
