@@ -64,7 +64,7 @@ const LoginForm = () => {
                     <div className={styles.inputGroup}>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                             <label htmlFor="password" className={styles.label}>Password</label>
-                            <Link to="#" className={styles.forgotPassword}>Password dimenticata?</Link>
+                            <Link to="/forgotPassword" className={styles.forgotPassword}>Password dimenticata?</Link>
                         </div>
                         <input
                             type="password"
