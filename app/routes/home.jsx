@@ -3,33 +3,66 @@ import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 
 const Home = () => {
-
-
     const [user, setUser] = useState(null);
+    const [groups, setGroups] = useState([]);
+    const [pagamentis, setPagamentis] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState(null);
     const navigate = useNavigate();
-
-    /*
-    const [statusMessage, setStatusMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [recentPayments, setRecentPayments] = useState([
-        { name: 'Marco', date: '15/05/2023', time: '09:15' },
-        { name: 'Laura', date: '14/05/2023', time: '10:30' },
-        { name: 'Giovanni', date: '13/05/2023', time: '08:45' },
-        { name: 'Sofia', date: '12/05/2023', time: '11:20' },
-        { name: 'Luca', date: '11/05/2023', time: '09:05' }
-    ]);
-
-    */
 
     const handleLogout = () => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        localStorage.removeItem('email');
         navigate('/login');
     };
 
+    const handleGroupSelect = (group) => {
+        setSelectedGroup(group);
+        console.log('Selected group:', group);
+    };
+
+    const getGroupsByUser = async (username) => {
+        try {
+            const response = await fetch(`https://889f-37-118-129-240.ngrok-free.app/api/coffee/group/get/${username}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setGroups(data);
+            } else {
+                console.error('Errore nel recupero dei gruppi');
+            }
+        } catch (error) {
+            console.error('Errore nella chiamata fetch:', error);
+        }
+    };
+
+    const getHistoryPayments = async (username) => {
+        try {
+            const response = await fetch(`https://889f-37-118-129-240.ngrok-free.app/api/coffee/ultimi/pagamenti/${username}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setPagamentis(data);
+            } else {
+                console.error('Errore nel recupero dei pagamenti');
+            }
+        } catch (error) {
+            console.error('Errore nella chiamata fetch:', error);
+        }
+    };
+
     useEffect(() => {
-        // Check if user is logged in
         const authToken = localStorage.getItem('authToken');
         const userData = localStorage.getItem('user');
 
@@ -39,58 +72,15 @@ const Home = () => {
         }
 
         try {
-            setUser(JSON.parse(userData));
+            const parsedUser = JSON.parse(userData);
+            setUser(parsedUser);
+            getGroupsByUser(parsedUser.username);
+            getHistoryPayments(parsedUser.username);
         } catch (error) {
             console.error('Error parsing user data:', error);
             navigate('/login');
         }
     }, [navigate]);
-    /*
-            const handlePayment = async () => {
-                setIsLoading(true);
-                try {
-                    // Simulate API call for payment
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-
-                    setStatusMessage("Grazie! Hai registrato che oggi offrirai il caffè.");
-
-                    // Add current user payment to the top of the list
-                    const now = new Date();
-                    const newPayment = {
-                        name: user || 'Tu',
-                        date: now.toLocaleDateString('it-IT'),
-                        time: now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
-                    };
-
-                    setRecentPayments(prev => [newPayment, ...prev.slice(0, 4)]);
-
-                    // Clear status message after 5 seconds
-                    setTimeout(() => setStatusMessage(''), 5000);
-
-                } catch (error) {
-                    console.error('Payment error:', error);
-                    setStatusMessage("Errore durante la registrazione. Riprova.");
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            const handleSkip = () => {
-                setStatusMessage("Nessun problema! Ci vediamo la prossima volta.");
-                setTimeout(() => setStatusMessage(''), 5000);
-            };
-
-
-
-            if (!user) {
-                return (
-                    <div class
-                    Name={styles.container}>
-                        <div className={styles.loading}>Caricamento...</div>
-                    </div>
-                );
-            }
-        */
 
     return (
         <div className={styles.homePage}>
@@ -115,6 +105,71 @@ const Home = () => {
                     </div>
                 </header>
 
+                {/* Main Content */}
+                <main className={styles.main}>
+                    <div className={styles.heroSection}>
+                        <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
+                    </div>
+
+                    {/* Group Selection Section */}
+                    <section className={styles.groupSection}>
+                        {groups.length > 0 ? (
+                            <>
+                                <h2 className={styles.sectionTitle}>I tuoi gruppi</h2>
+                                <div className={styles.groupGrid}>
+                                    {groups.map((group, index) => (
+                                        <button
+                                            key={index}
+                                            className={`${styles.groupButton} ${selectedGroup === group.name ? styles.groupButtonSelected : ''}`}
+                                            onClick={() => handleGroupSelect(group.name)}
+                                        >
+                                            {group.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className={styles.textEmpty}>
+                                Non fai parte di nessun gruppo
+                            </div>
+                        )}
+                    </section>
+
+                    <div className={styles.separator}></div>
+
+                    {/* Payment History Section */}
+                    <section className={styles.recentSection}>
+                        {pagamentis.length > 0 ? (
+                            <>
+                                <h2 className={styles.sectionTitle}>I tuoi ultimi pagamenti</h2>
+                                <div className={styles.tableContainer}>
+                                    <table className={styles.table}>
+                                        <thead className={styles.tableHeader}>
+                                        <tr>
+                                            <th className={styles.tableHeaderCell}>Nome</th>
+                                            <th className={styles.tableHeaderCell}>Data</th>
+                                            <th className={styles.tableHeaderCell}>Ora</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody className={styles.tableBody}>
+                                        {pagamentis.map((payment, index) => (
+                                            <tr key={index} className={styles.tableRow}>
+                                                <td className={styles.tableCell}>{payment.name}</td>
+                                                <td className={styles.tableCellSecondary}>{payment.date}</td>
+                                                <td className={styles.tableCellSecondary}>{payment.time}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
+                        ) : (
+                            <div className={styles.textEmpty}>
+                                Nessun pagamento trovato
+                            </div>
+                        )}
+                    </section>
+                </main>
             </div>
         </div>
     );

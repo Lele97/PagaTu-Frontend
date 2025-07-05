@@ -7,6 +7,7 @@ import ErrorPage from './routes/error/error-page.jsx';
 import './styles/app.css';
 import Signup from "~/routes/auth/signup";
 import Home from "~/routes/home.jsx";
+import ForgotPswForm from "~/routes/auth/forgotPsw-form.jsx";
 
 const router = createBrowserRouter([
     {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <Signup/>,
+            },
+            {
+                path: "/forgotPassword",
+                element: <ForgotPswForm/>,
             }
         ],
     },

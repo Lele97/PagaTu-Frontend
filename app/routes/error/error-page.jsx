@@ -12,19 +12,19 @@ export default function ErrorPage() {
             return {
                 title: "404 - Pagina Non Trovata",
                 message: "La pagina che stai cercando non esiste.",
-                icon: "🔍"
+                
             };
         } else if (error?.status === 500) {
             return {
                 title: "500 - Errore del Server",
                 message: "Si è verificato un errore interno del server.",
-                icon: "⚠️"
+                
             };
         } else {
             return {
                 title: "Oops! Qualcosa è andato storto",
                 message: error?.statusText || error?.message || "Si è verificato un errore imprevisto.",
-                icon: "☕"
+                
             };
         }
     };
@@ -35,7 +35,7 @@ export default function ErrorPage() {
         <div className={styles.errorPage}>
             <div className={styles.errorContainer}>
                 <div className={styles.errorContent}>
-                    {/* Logo */}
+                    {/* Logo - 4x larger */}
                     <img src="/pagaTu.png" alt="PagaTu Logo" className={styles.logo} />
                     
                     {/* Error Icon */}
@@ -65,7 +65,7 @@ export default function ErrorPage() {
                             🏠 Torna alla Home
                         </Link>
                         <button 
-                            onClick={() => window.history.back()} 
+                            onClick={() => window.history.back()}
                             className={styles.secondaryButton}
                         >
                             ← Torna Indietro
