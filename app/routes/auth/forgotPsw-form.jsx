@@ -1,13 +1,14 @@
 import {useState} from 'react';
 import styles from '~/styles/forgotPsw.module.css';
 import {Link, useNavigate} from "react-router-dom";
+const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-        const response = await fetch('https://889f-37-118-129-240.ngrok-free.app/api/auth/login', {
+        const response = await fetch(`${NGROK_SERVER_URL}/api/auth/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(credentials),

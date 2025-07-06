@@ -1,6 +1,7 @@
 import styles from "~/styles/signup.module.css";
 import {useState} from "react";
 import {useNavigate, Link} from "react-router-dom";
+const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const SignupForm = () => {
 
@@ -30,7 +31,7 @@ const SignupForm = () => {
         }
 
         try {
-            const response = await fetch('https://14f7-83-225-20-70.ngrok-free.app/api/auth/register', {
+            const response = await fetch(`${NGROK_SERVER_URL}/api/auth/register`, {
                 method: 'POST',
                 body: JSON.stringify(registration),
                 headers: {'Content-Type': 'application/json'},

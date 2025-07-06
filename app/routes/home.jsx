@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
+const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const Home = () => {
     const [user, setUser] = useState(null);
@@ -21,13 +22,15 @@ const Home = () => {
     };
 
     const getGroupsByUser = async (username) => {
+        const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`https://889f-37-118-129-240.ngrok-free.app/api/coffee/group/get/${username}`, {
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${username}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                }
+                    'Authorization': `Bearer ${token}`,
+                },
             });
 
             if (response.ok) {
@@ -42,13 +45,15 @@ const Home = () => {
     };
 
     const getHistoryPayments = async (username) => {
+        const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`https://889f-37-118-129-240.ngrok-free.app/api/coffee/ultimi/pagamenti/${username}`, {
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                }
+                    'Authorization': `Bearer ${token}`,
+                },
             });
 
             if (response.ok) {
@@ -69,13 +74,12 @@ const Home = () => {
         if (!authToken || !userData) {
             navigate('/login');
             return;
-        }
+        }try {
 
-        try {
             const parsedUser = JSON.parse(userData);
             setUser(parsedUser);
-            getGroupsByUser(parsedUser.username);
-            getHistoryPayments(parsedUser.username);
+            getGroupsByUser(parsedUser);
+            getHistoryPayments(parsedUser);
         } catch (error) {
             console.error('Error parsing user data:', error);
             navigate('/login');
