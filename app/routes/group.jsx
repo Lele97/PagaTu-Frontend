@@ -7,8 +7,9 @@ const Group = () => {
     const [group, setGroup] = useState({ groupName: '' });
     const [loading, setLoading] = useState(true);
     const [showInviteForm, setShowInviteForm] = useState(false);
-    const [email, setEmail] = useState('');
-    const [message, setMessage] = useState('');
+    //const [email, setEmail] = useState('');
+    //const [message, setMessage] = useState('');
+    const [userInvitation, setUserInvitation] = useState('')
     const [successMessage, setSuccessMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
@@ -101,7 +102,10 @@ const Group = () => {
         setSuccessMessage('');
 
         try {
-            console.log('Inviting:', email, 'to group:', group.groupName);
+            console.log('Inviting:', userInvitation, 'to group:', group.groupName);
+
+            const response = await fetch("")
+
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             setSuccessMessage(`Invito inviato a ${email}!`);
@@ -210,24 +214,14 @@ const Group = () => {
                                 <h2>Invita un Membro</h2>
                                 <form onSubmit={submitInvite}>
                                     <div className={styles.formGroup}>
-                                        <label htmlFor="email">Email:</label>
+                                        <label htmlFor="email">Utente da invitare:</label>
                                         <input
-                                            type="email"
-                                            id="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            type="text"
+                                            id="user"
+                                            value={userInvitation}
+                                            onChange={(e) => setUserInvitation(e.target.value)}
                                             required
                                             className={styles.formInput}
-                                        />
-                                    </div>
-                                    <div className={styles.formGroup}>
-                                        <label htmlFor="message">Messaggio (opzionale):</label>
-                                        <textarea
-                                            id="message"
-                                            value={message}
-                                            onChange={(e) => setMessage(e.target.value)}
-                                            className={styles.formTextarea}
-                                            rows="3"
                                         />
                                     </div>
                                     {error && <div className={styles.errorMessage}>{error}</div>}
