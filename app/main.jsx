@@ -8,6 +8,7 @@ import './styles/app.css';
 import Signup from "~/routes/auth/signup";
 import Home from "~/routes/home.jsx";
 import ForgotPswForm from "~/routes/auth/forgotPsw-form.jsx";
+import Group from "~/routes/group.jsx";
 
 const router = createBrowserRouter([
     {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
             {
                 path: "/forgotPassword",
                 element: <ForgotPswForm/>,
+            },
+            {
+                path: "/group",
+                element: <Group/>,
             }
         ],
     },
