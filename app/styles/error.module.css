@@ -1,17 +1,3 @@
-/* Use same CSS variables as your main app */
-:root {
-    --coffee-50: #FAF7F2;
-    --coffee-100: #F5F5F0;
-    --coffee-200: #E8E0D9;
-    --coffee-300: #D7CEC4;
-    --coffee-400: #B8A99C;
-    --coffee-500: #9C8B7D;
-    --coffee-600: #6F4E37;
-    --coffee-700: #5A3E2D;
-    --coffee-800: #3E2C20;
-    --coffee-900: #2A1E16;
-}
-
 .errorPage {
     min-height: 100vh;
     background: linear-gradient(135deg, var(--coffee-200) 0%, var(--coffee-300) 100%);
@@ -226,29 +212,29 @@
     .errorPage {
         padding: 1rem;
     }
-    
+
     .errorContainer {
         padding: 2rem 1.5rem;
     }
-    
+
     .logo {
         width: 320px; /* 4x smaller for mobile */
         max-height: 320px;
     }
-    
+
     .errorTitle {
         font-size: 1.75rem;
     }
-    
+
     .errorMessage {
         font-size: 1rem;
     }
-    
+
     .actionButtons {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .primaryButton,
     .secondaryButton {
         width: 100%;
@@ -261,20 +247,20 @@
     .errorContainer {
         padding: 1.5rem 1rem;
     }
-    
+
     .logo {
         width: 240px; /* 4x smaller for very small screens */
         max-height: 240px;
     }
-    
+
     .errorIcon {
         font-size: 3rem;
     }
-    
+
     .errorTitle {
         font-size: 1.5rem;
     }
-    
+
     .errorContent {
         gap: 1rem;
     }

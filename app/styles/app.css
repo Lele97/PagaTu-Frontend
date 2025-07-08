@@ -1,6 +1,7 @@
 /* Remove all @tailwind and @layer directives */
 /* Keep only your custom CSS variables if needed */
 :root {
+    --coffee-0: #ffffff;
     --coffee-50: #FAF7F2;
     --coffee-100: #F5F5F0;
     --coffee-200: #E8E0D9;

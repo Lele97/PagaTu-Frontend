@@ -5,6 +5,101 @@
     flex-direction: column;
 }
 
+.groupPage {
+    min-height: 100vh;
+    background-color: var(--coffee-200);
+    box-sizing: border-box;
+}
+
+/* Group Header */
+.groupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.groupAdminButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Action Buttons */
+.actionButtons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.actionButton {
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+.actionButton:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Special buttons */
+.deleteButton {
+    background-color: #e53e3e;
+}
+
+.deleteButton:hover {
+    background-color: #c53030;
+}
+
+.inviteButton {
+    background-color: var(--coffee-500);
+}
+
+.inviteButton:hover {
+    background-color: var(--coffee-600);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .groupHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actionButtons {
+        grid-template-columns: 1fr;
+    }
+
+    .actionButton {
+        min-height: 80px;
+        font-size: 1.1rem;
+    }
+
+    .groupAdminButtons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .groupAdminButtons button {
+        width: 100%;
+    }
+}
+
+
+/* Container */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 .homePage {
     min-height: 100vh;
     background-color: var(--coffee-200);
@@ -327,6 +422,75 @@
     text-align: center;
     color: var(--coffee-600);
     padding: 2rem;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.formInput, .formTextarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.formTextarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.formButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.submitButton {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.errorMessage {
+    color: #d32f2f;
+    margin-bottom: 1rem;
 }
 
 /* Responsive */
