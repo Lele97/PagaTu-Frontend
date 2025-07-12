@@ -9,6 +9,7 @@ import Signup from "~/routes/auth/signup";
 import Home from "~/routes/home.jsx";
 import ForgotPswForm from "~/routes/auth/forgotPsw-form.jsx";
 import Group from "~/routes/group.jsx";
+import Invitation from "~/routes/invitation.jsx";
 
 const router = createBrowserRouter([
     {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
             {
                 path: "/group",
                 element: <Group/>,
+            },
+            {
+                path:"/invitation",
+                element: <Invitation/>,
             }
         ],
     },
