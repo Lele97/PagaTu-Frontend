@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import styles from '~/styles/auth.module.css';
+import styles from '~/styles/invitation.module.css';
+import Header from '../view/header.jsx';
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
@@ -127,6 +128,12 @@ const InvitationHandler = () => {
         navigate('/home');
     };
 
+    const logout = () => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        navigate('/login');
+    };
+
     if (loading) {
         return (
             <div className={styles.loginPage}>
@@ -176,6 +183,10 @@ const InvitationHandler = () => {
     return (
         <div className={styles.loginPage}>
             <div className={styles.container}>
+
+                <Header user={user} logout={logout} />
+
+
                 <div className={styles.invitationCard}>
                     <h2>Invito al Gruppo</h2>
                     <div className={styles.invitationDetails}>

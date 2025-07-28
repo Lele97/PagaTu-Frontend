@@ -1,0 +1,563 @@
+/* Container */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.groupPage {
+    min-height: 100vh;
+    background-color: var(--coffee-200);
+    box-sizing: border-box;
+}
+
+/* Group Header */
+.groupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.groupAdminButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Action Buttons */
+.actionButtons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.actionButton {
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+.actionButton:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Special buttons */
+.deleteButton {
+    background-color: #e53e3e;
+}
+
+.deleteButton:hover {
+    background-color: #c53030;
+}
+
+.inviteButton {
+    background-color: var(--coffee-500);
+}
+
+.inviteButton:hover {
+    background-color: var(--coffee-600);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .groupHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actionButtons {
+        grid-template-columns: 1fr;
+    }
+
+    .actionButton {
+        min-height: 80px;
+        font-size: 1.1rem;
+    }
+
+    .groupAdminButtons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .groupAdminButtons button {
+        width: 100%;
+    }
+}
+
+
+/* Container */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.homePage {
+    min-height: 100vh;
+    background-color: var(--coffee-200);
+    box-sizing: border-box;
+}
+
+/* Loading */
+.loadingSpinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Header */
+.header {
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 2rem;
+    height: 72px;
+    display: flex;
+    align-items: center;
+}
+
+.headerContent {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logoTitleContainer {
+    display: flex;
+    align-items: center;
+}
+
+.pagatu_image {
+    width: 5rem;
+    object-fit: contain;
+}
+
+.headerTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--coffee-800);
+    margin: 0;
+    line-height: 1;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Increased gap */
+    background-color: white;
+    padding: 0.5rem 0.75rem 0.5rem 0.5rem; /* Increased padding */
+    border-radius: 9999px;
+    color: var(--coffee-700);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+    height: 2.75rem; /* Fixed height for consistency */
+}
+
+.avatar {
+    position: relative;
+    width: 2rem; /* Larger avatar */
+    height: 2rem;
+}
+
+.avatar .head {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 50%;
+    background: var(--coffee-600);
+    border-radius: 50%;
+}
+
+.avatar .body {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 50%;
+    background: var(--coffee-600);
+    border-radius: 40% / 60%;
+}
+
+.welcomeText {
+    font-size: 1rem; /* Larger text */
+    color: var(--coffee-600);
+    font-weight: 500;
+    margin-right: 0.25rem;
+}
+
+.logoutButton {
+    background-color: var(--coffee-600);
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem; /* Larger button */
+    border-radius: 9999px;
+    font-size: 0.875rem; /* Slightly larger font */
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 4rem; /* Ensures consistent width */
+}
+
+.logoutButton:hover {
+    background-color: var(--coffee-700);
+}
+
+/* Main Content */
+.main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.heroSection {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.heroTitle {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--coffee-800);
+    margin: 0;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--coffee-800);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Group Section */
+.groupSection {
+    margin-bottom: 3rem;
+}
+
+.groupGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.groupButton {
+    background-color: var(--coffee-600);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.groupButton:hover {
+    background-color: var(--coffee-700);
+    transform: translateY(-2px);
+}
+
+.groupButtonSelected {
+    background-color: var(--coffee-700);
+    box-shadow: 0 0 0 2px var(--coffee-400);
+}
+
+/* Separator */
+.separator {
+    height: 2px;
+    background-color: var(--coffee-400);
+    margin: 2rem;
+    border-radius: 1rem;
+    position: relative;
+}
+
+.separator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: var(--coffee-600);
+    border-radius: 50%;
+}
+
+/* Payment Section */
+.recentSection {
+    margin-bottom: 2rem;
+}
+
+.tableContainer {
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeader {
+    background-color: var(--coffee-600);
+}
+
+.tableHeaderCell {
+    padding: 1rem;
+    text-align: left;
+    color: white;
+    font-weight: 500;
+}
+
+.tableRow {
+    border-bottom: 1px solid var(--coffee-100);
+}
+
+.tableRow:last-child {
+    border-bottom: none;
+}
+
+.tableRow:hover {
+    background-color: var(--coffee-50);
+}
+
+.tableCell {
+    padding: 1rem;
+    color: var(--coffee-800);
+}
+
+/* Pagination */
+.paginationControls {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.paginationButton {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--coffee-200);
+    background-color: white;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: large;
+}
+
+.paginationButton:hover:not(:disabled) {
+    background-color: var(--coffee-100);
+}
+
+.paginationButtonActive {
+    background-color: var(--coffee-600);
+    color: white;
+    border-color: var(--coffee-600);
+}
+
+/* Error Message */
+.errorMessage {
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.errorText {
+    color: #e53e3e;
+    margin-bottom: 0.5rem;
+}
+
+.retryButton {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.retryButton:hover {
+    background-color: #c53030;
+}
+
+.textEmpty {
+    text-align: center;
+    color: var(--coffee-600);
+    padding: 2rem;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.formInput, .formTextarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.formTextarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.formButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.submitButton {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.errorMessage {
+    color: #d32f2f;
+    margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .userInfo {
+        height: 2.5rem;
+        padding: 0.375rem 0.5rem 0.375rem 0.375rem;
+        gap: 0.5rem;
+    }
+
+    .logoutButton {
+        padding: 0.25rem 0.5rem;
+        min-width: 3.5rem;
+    }
+
+    .header {
+        padding: 0.5rem 1rem;
+        height: 64px;
+    }
+
+    .pagatu_image {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .headerTitle {
+        font-size: 1.5rem;
+    }
+
+    .main {
+        padding: 1rem;
+    }
+
+    .heroTitle {
+        font-size: 1.75rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.25rem;
+    }
+
+    .groupGrid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+
+    .userInfo {
+        height: 2.25rem;
+    }
+
+    .welcomeText {
+        font-size: 0.875rem;
+    }
+
+    .logoTitleContainer {
+        gap: 0.25rem;
+    }
+
+    .pagatu_image {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .headerTitle {
+        font-size: 1.25rem;
+    }
+}

@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-import styles from '~/styles/group.module.css';
+import styles from '~/styles/home.module.css';
+import Header from '../view/header.jsx';
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
@@ -19,6 +20,52 @@ const Home = () => {
     const [currentGroupPage, setCurrentGroupPage] = useState(1);
     const [currentPaymentPage, setCurrentPaymentPage] = useState(1);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const initializeData = async () => {
+            const authToken = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('user');
+
+            console.log('Auth token exists:', !!authToken);
+            console.log('User data:', userData);
+
+            if (!authToken || !userData) {
+                console.log('Missing auth token or user data, redirecting to login');
+                navigate('/login');
+                return;
+            }
+
+            try {
+
+                const parsedUser = userData ? JSON.parse(userData) : null;
+                const username =
+                    typeof parsedUser === 'object'
+                        ? parsedUser?.username || parsedUser?.name || parsedUser?.email
+                        : parsedUser;
+
+
+                if (!username) {
+                    console.error('No username found in user data');
+                    navigate('/login');
+                    return;
+                }
+
+                setUser(username);
+
+                // Fetch data
+                await Promise.all([
+                    getGroupsByUser(username),
+                    getHistoryPayments(username)
+                ]);
+
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                navigate('/login');
+            }
+        };
+
+        initializeData();
+    }, [navigate]);
 
     // Format date function
     const formatDate = (dateString) => {
@@ -68,7 +115,7 @@ const Home = () => {
 
     const getTotalPaymentPages = () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE);
 
-    const handleLogout = () => {
+    const logout = () => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
         navigate('/login');
@@ -199,62 +246,6 @@ const Home = () => {
         }
     };
 
-    useEffect(() => {
-        const initializeData = async () => {
-            const authToken = localStorage.getItem('authToken');
-            const userData = localStorage.getItem('user');
-
-            console.log('Auth token exists:', !!authToken);
-            console.log('User data:', userData);
-
-            if (!authToken || !userData) {
-                console.log('Missing auth token or user data, redirecting to login');
-                navigate('/login');
-                return;
-            }
-
-            try {
-                // Parse user data - it might be a JSON string or just a username
-                let parsedUser;
-                try {
-                    parsedUser = JSON.parse(userData);
-                    console.log('Parsed user object:', parsedUser);
-                } catch (parseError) {
-                    // If parsing fails, assume it's just a username string
-                    parsedUser = userData;
-                    console.log('Using user data as string:', parsedUser);
-                }
-
-                // Extract username from user object or use the string directly
-                const username = typeof parsedUser === 'object' ?
-                    (parsedUser.username || parsedUser.name || parsedUser.email) :
-                    parsedUser;
-
-                console.log('Final username for API calls:', username);
-
-                if (!username) {
-                    console.error('No username found in user data');
-                    navigate('/login');
-                    return;
-                }
-
-                setUser(username);
-
-                // Fetch data
-                await Promise.all([
-                    getGroupsByUser(username),
-                    getHistoryPayments(username)
-                ]);
-
-            } catch (error) {
-                console.error('Error parsing user data:', error);
-                navigate('/login');
-            }
-        };
-
-        initializeData();
-    }, [navigate]);
-
     // Pagination component
     const PaginationControls = ({currentPage, totalPages, onPageChange, className}) => {
         if (totalPages <= 1) return null;
@@ -311,29 +302,12 @@ const Home = () => {
         </div>
     );
 
+
     return (
         <div className={styles.homePage}>
             <div className={styles.container}>
-                {/* Header */}
-                <header className={styles.header}>
-                    <div className={styles.headerContent}>
-                        <div className={styles.logoTitleContainer}>
-                            <h1 className={styles.headerTitle}>Paga</h1>
-                            <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image}/>
-                            <h1 className={styles.headerTitle}>Tu</h1>
-                        </div>
-                        <div className={styles.userInfo}>
-                            <div className={styles.avatar}>
-                                <div className={styles.head}></div>
-                                <div className={styles.body}></div>
-                            </div>
-                            <span className={styles.welcomeText}>Ciao, {user}!</span>
-                            <button onClick={handleLogout} className={styles.logoutButton}>
-                                Esci
-                            </button>
-                        </div>
-                    </div>
-                </header>
+
+                <Header user={user} logout={logout} />
 
                 {/* Main Content */}
                 <main className={styles.main}>
@@ -356,8 +330,8 @@ const Home = () => {
                                         <button
                                             key={index}
                                             className={`${styles.groupButton} ${selectedGroup === group.name ? styles.groupButtonSelected : ''}`}
-                                            onClick={() => handleGroupSelect(group.name)}
-                                        >
+                                            onClick={() => handleGroupSelect(group.name)}>
+                                            <i className="fa-solid fa-user-group"></i>
                                             {group.name}
                                         </button>
                                     ))}
