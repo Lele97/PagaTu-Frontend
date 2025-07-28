@@ -88,7 +88,7 @@ const Group = () => {
     // Add blur effect when modals are open
     useEffect(() => {
         const container = document.querySelector('.container');
-        if (showInviteForm || showDeleteModal) {
+        if (showInviteForm || showDeleteModal || showRegisterPaymentModal) {
             container?.classList.add('modal-active');
             // Prevent body scroll when modal is open
             document.body.style.overflow = 'hidden';
@@ -103,7 +103,7 @@ const Group = () => {
             document.body.style.overflow = 'unset';
             container?.classList.remove('modal-active');
         };
-    }, [showInviteForm, showDeleteModal]);
+    }, [showInviteForm, showDeleteModal, showRegisterPaymentModal]);
 
     // Separate useEffect to check admin status when user and groups are both available
     useEffect(() => {
@@ -465,7 +465,8 @@ const Group = () => {
         </div>)
 
     // Enhanced modal click outside to close functionality
-    const handleModalOverlayClick = (e, closeFunction) => {};
+    const handleModalOverlayClick = () => {
+    };
 
     // Fixed function to accept group parameter
     const getClassificaPaymentsForGroup = async (groupToUse = group) => {
@@ -627,7 +628,7 @@ const Group = () => {
 
             {showInviteForm && <InviteUserModal/>}
             {showDeleteModal && <DeleteGroupModal/>}
-            {setShowRegisterPaymentModal && <RegisterPaymentModal/>}
+            {showRegisterPaymentModal && <RegisterPaymentModal/>}
         </div>
     </div>);
 };
