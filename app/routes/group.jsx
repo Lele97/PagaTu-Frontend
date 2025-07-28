@@ -7,16 +7,23 @@ const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const Group = () => {
 
+    const [payment, setPayment] = useState({
+        importo: '',
+        descrizione: ''
+    });
     const [user, setUser] = useState(null);
     const [group, setGroup] = useState({groupName: ''});
     const [loading, setLoading] = useState(true);
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showRegisterPaymentModal, setShowRegisterPaymentModal] = useState(false);
     const [groups, setGroups] = useState({});
     const [classificaPaymentsForGroup, setClassificaPaymentsForGroup] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [userInvitation, setUserInvitation] = useState('')
     const [successMessage, setSuccessMessage] = useState('');
+    const [importo, setImporto] = useState('');
+    const [descrizione, setDescrizione] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -136,7 +143,9 @@ const Group = () => {
 
     const registerPayment = () => {
         console.log('Register payment clicked');
-        // Implement your logic here
+        setShowRegisterPaymentModal(true);
+        setSuccessMessage('');
+        setError(null);
     };
 
     const skipPayment = () => {
@@ -265,6 +274,11 @@ const Group = () => {
         }
     };
 
+    const submitPayment = async (e) => {
+        e.preventDefault();
+
+    }
+
     const confirmDeleteGroup = async (e) => {
         e.preventDefault();
         setIsDeleting(true);
@@ -356,7 +370,7 @@ const Group = () => {
             onClick={(e) => e.stopPropagation()}  // Prevent clicks inside modal from closing it
         >
             <h2>Invita un Membro</h2>
-            <form onSubmit={submitInvite}>
+            <form onSubmit={submitPayment}>
                 <div className={styles.formGroup}>
                     <label htmlFor="user">Utente da invitare:</label>
                     <input
@@ -386,16 +400,72 @@ const Group = () => {
                         className={`${styles.groupButton} ${styles.submitButton}`}
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? 'Invio in corso...' : 'Invia Invito'}
+                        {isSubmitting ? 'Registrando il pagamento..' : 'Registra pagamento'}
                     </button>
                 </div>
             </form>
         </div>
     </div>);
 
+    const RegisterPaymentModal = () => (
+        <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeRegisterPaymentModal)}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+                <h2>Registra il pagamento</h2>
+
+                <form onSubmit={submitInvite}>
+                    <div className={styles.formGroup}>
+
+                        <label htmlFor="importo">Importo:</label>
+                        <input
+                            type="number"
+                            id="importo"
+                            value={importo}
+                            onChange={(e) => setImporto(e.target.value)}
+                            required
+                            className={styles.formInput}
+                            placeholder="Inserisci importo..."
+                            autoFocus
+                        />
+
+                        <label htmlFor="descrizione">Descrizione:</label>
+                        <input
+                            type="text"
+                            id="descrizione"
+                            value={descrizione}
+                            onChange={(e) => setDescrizione(e.target.value)}
+                            required
+                            className={styles.formInput}
+                            placeholder="Inserisci una descrizione del pagamento..."
+                            autoFocus
+                        />
+
+                    </div>
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+                    <div className={styles.formButtons}>
+                        <button
+                            type="button"
+                            onClick={closeRegisterPaymentModal}
+                            className={`${styles.groupButton} ${styles.cancelButton}`}
+                            disabled={isSubmitting}
+                        >
+                            Annulla
+                        </button>
+                        <button
+                            type="submit"
+                            className={`${styles.groupButton} ${styles.submitButton}`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Invio in corso...' : 'Invia Invito'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>)
+
     // Enhanced modal click outside to close functionality
-    const handleModalOverlayClick = (e, closeFunction) => {
-    };
+    const handleModalOverlayClick = (e, closeFunction) => {};
 
     // Fixed function to accept group parameter
     const getClassificaPaymentsForGroup = async (groupToUse = group) => {
@@ -445,6 +515,12 @@ const Group = () => {
         setUserInvitation('');
         // The useEffect will handle the blur cleanup automatically
     };
+
+    const closeRegisterPaymentModal = () => {
+        setShowRegisterPaymentModal(false);
+        setError(null);
+        setSuccessMessage('');
+    }
 
     const closeDeleteModal = () => {
         setShowDeleteModal(false);
@@ -551,6 +627,7 @@ const Group = () => {
 
             {showInviteForm && <InviteUserModal/>}
             {showDeleteModal && <DeleteGroupModal/>}
+            {setShowRegisterPaymentModal && <RegisterPaymentModal/>}
         </div>
     </div>);
 };
