@@ -10,6 +10,9 @@ import Home from "~/routes/home.jsx";
 import ForgotPswForm from "~/routes/auth/forgotPsw-form.jsx";
 import Group from "~/routes/group.jsx";
 import Invitation from "~/routes/invitation.jsx";
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
+
 
 const router = createBrowserRouter([
     {
@@ -42,7 +45,7 @@ const router = createBrowserRouter([
                 element: <Group/>,
             },
             {
-                path:"/invitation",
+                path: "/invitation",
                 element: <Invitation/>,
             }
         ],

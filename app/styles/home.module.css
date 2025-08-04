@@ -1,45 +1,30 @@
-/* Container */
-.container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
+/* =============== BASE LAYOUT STYLES =============== */
 .homePage {
     min-height: 100vh;
     background-color: var(--coffee-200);
     box-sizing: border-box;
 }
 
-/* Loading */
-.loadingSpinner {
+.container {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    transition: filter 0.3s ease;
+}
+
+.container.modal-active {
+    filter: blur(4px);
+}
+
+.main {
+    flex: 1;
     padding: 2rem;
-    gap: 1rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
 }
 
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* Header */
+/* =============== HEADER STYLES =============== */
 .header {
     top: 0;
     z-index: 1000;
@@ -81,18 +66,18 @@
 .userInfo {
     display: flex;
     align-items: center;
-    gap: 0.75rem; /* Increased gap */
+    gap: 0.75rem;
     background-color: white;
-    padding: 0.5rem 0.75rem 0.5rem 0.5rem; /* Increased padding */
+    padding: 0.5rem 0.75rem 0.5rem 0.5rem;
     border-radius: 9999px;
     color: var(--coffee-700);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
-    height: 2.75rem; /* Fixed height for consistency */
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+    height: 2.75rem;
 }
 
 .avatar {
     position: relative;
-    width: 2rem; /* Larger avatar */
+    width: 2rem;
     height: 2rem;
 }
 
@@ -119,7 +104,7 @@
 }
 
 .welcomeText {
-    font-size: 1rem; /* Larger text */
+    font-size: 1rem;
     color: var(--coffee-600);
     font-weight: 500;
     margin-right: 0.25rem;
@@ -129,28 +114,20 @@
     background-color: var(--coffee-600);
     color: white;
     border: none;
-    padding: 0.375rem 0.75rem; /* Larger button */
+    padding: 0.375rem 0.75rem;
     border-radius: 9999px;
-    font-size: 0.875rem; /* Slightly larger font */
+    font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-width: 4rem; /* Ensures consistent width */
+    min-width: 4rem;
 }
 
 .logoutButton:hover {
     background-color: var(--coffee-700);
 }
 
-/* Main Content */
-.main {
-    flex: 1;
-    padding: 2rem;
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-}
-
+/* =============== HERO SECTION STYLES =============== */
 .heroSection {
     text-align: center;
     margin-bottom: 3rem;
@@ -171,7 +148,7 @@
     text-align: center;
 }
 
-/* Group Section */
+/* =============== GROUP SECTION STYLES =============== */
 .groupSection {
     margin-bottom: 3rem;
 }
@@ -203,7 +180,7 @@
     box-shadow: 0 0 0 2px var(--coffee-400);
 }
 
-/* Separator */
+/* =============== SEPARATOR STYLES =============== */
 .separator {
     height: 2px;
     background-color: var(--coffee-400);
@@ -224,7 +201,7 @@
     border-radius: 50%;
 }
 
-/* Payment Section */
+/* =============== PAYMENT SECTION STYLES =============== */
 .recentSection {
     margin-bottom: 2rem;
 }
@@ -234,6 +211,7 @@
     border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
 }
 
 .table {
@@ -269,7 +247,7 @@
     color: var(--coffee-800);
 }
 
-/* Pagination */
+/* =============== PAGINATION STYLES =============== */
 .paginationControls {
     display: flex;
     justify-content: center;
@@ -296,18 +274,114 @@
     border-color: var(--coffee-600);
 }
 
-/* Error Message */
-.errorMessage {
-    background-color: #fff5f5;
-    border: 1px solid #fed7d7;
-    border-radius: 0.5rem;
+/* =============== MODAL STYLES =============== */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
     padding: 1rem;
-    text-align: center;
+}
+
+.modalContent {
+    background: linear-gradient(135deg, var(--coffee-0) 0%, var(--coffee-50) 100%);
+    padding: 3rem;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--coffee-600);
+    border: 3px solid var(--coffee-600);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.modalContent h2 {
+    margin-top: 0;
+    color: var(--coffee-800);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* =============== FORM STYLES =============== */
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--coffee-700);
+}
+
+.formInput {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--coffee-300);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: var(--coffee-500);
+    box-shadow: 0 0 0 2px rgba(139, 92, 60, 0.2);
+}
+
+.cancelButton {
+    background-color: var(--coffee-600);
+    color: var(--coffee-0);
+    margin-right: 1rem;
+}
+
+.cancelButton:hover {
+    background-color: var(--coffee-700);
+}
+
+.submitButton {
+    background-color: var(--coffee-600);
+    color: var(--coffee-0);
+}
+
+.submitButton:hover {
+    background-color: var(--coffee-700);
+}
+
+/* =============== MESSAGE STYLES =============== */
+.errorMessage {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border-left: 3px solid #dc3545;
 }
 
 .errorText {
     color: #e53e3e;
     margin-bottom: 0.5rem;
+}
+
+.successMessage {
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border-left: 3px solid #28a745;
 }
 
 .retryButton {
@@ -329,9 +403,49 @@
     padding: 2rem;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* =============== LOADING STYLES =============== */
+.loadingSpinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1rem;
+}
 
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* =============== ANIMATIONS =============== */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* =============== RESPONSIVE STYLES =============== */
+@media (max-width: 768px) {
     .userInfo {
         height: 2.5rem;
         padding: 0.375rem 0.5rem 0.375rem 0.375rem;
@@ -372,9 +486,27 @@
     .groupGrid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+
+    .modalContent {
+        padding: 2rem;
+        margin: 1rem;
+        border-radius: 12px;
+    }
 }
 
 @media (max-width: 480px) {
+    .modalOverlay {
+        padding: 0.5rem;
+    }
+
+    .modalContent {
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .modalContent h2 {
+        font-size: 1.25rem;
+    }
 
     .userInfo {
         height: 2.25rem;

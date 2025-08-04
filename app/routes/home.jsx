@@ -19,6 +19,12 @@ const Home = () => {
     const [paymentsError, setPaymentsError] = useState(null);
     const [currentGroupPage, setCurrentGroupPage] = useState(1);
     const [currentPaymentPage, setCurrentPaymentPage] = useState(1);
+    const [showAddGroupModal, setShowAddGroupModal] = useState(false);
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -66,6 +72,26 @@ const Home = () => {
 
         initializeData();
     }, [navigate]);
+
+    // Add blur effect when modals are open
+    useEffect(() => {
+        const container = document.querySelector('.container');
+        if (showAddGroupModal) {
+            container?.classList.add('modal-active');
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        } else {
+            container?.classList.remove('modal-active');
+            // Restore body scroll when modal is closed
+            document.body.style.overflow = 'unset';
+        }
+
+        // Cleanup function to ensure scroll is restored when component unmounts
+        return () => {
+            document.body.style.overflow = 'unset';
+            container?.classList.remove('modal-active');
+        };
+    }, [showAddGroupModal]);
 
     // Format date function
     const formatDate = (dateString) => {
@@ -165,7 +191,7 @@ const Home = () => {
                 setGroups(Array.isArray(data) ? data : []);
                 setCurrentGroupPage(1);
             } else if (response.status === 401) {
-                handleLogout();
+                logout();
             } else if (response.status === 403) {
                 setGroupsError("Not authorized to view these groups");
             } else {
@@ -193,6 +219,7 @@ const Home = () => {
             setPaymentsError(null);
 
             console.log('Fetching payments for username:', username);
+
             const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
                 method: 'POST',
                 headers: {
@@ -206,25 +233,35 @@ const Home = () => {
 
             console.log('Payments response status:', response.status);
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Payments data received:', data);
-                setPagamentis(Array.isArray(data) ? data : []);
-            } else if (response.status === 204) {
+            if (!response.ok) {
+                switch (response.status) {
+                    case 401:
+                        console.error('Unauthorized - invalid token');
+                        logout();
+                        break;
+                    case 403:
+                        console.error('Forbidden - not authorized to access these payments');
+                        setPaymentsError("Non autorizzato ad accedere a questi pagamenti");
+                        break;
+                    default:
+                        const errorText = await response.text();
+                        console.error('Error fetching payments:', response.status, errorText);
+                        setPaymentsError("Errore nel recupero dei pagamenti");
+                        break;
+                }
+            }
+
+            if (response.status === 204) {
                 // Handle no content response
                 console.log('No payments found for user');
                 setPagamentis([]);
-            } else if (response.status === 401) {
-                console.error('Unauthorized - invalid token');
-                handleLogout();
-            } else if (response.status === 403) {
-                console.error('Forbidden - not authorized to access these payments');
-                setPaymentsError("Non autorizzato ad accedere a questi pagamenti");
-            } else {
-                const errorText = await response.text();
-                console.error('Error fetching payments:', response.status, errorText);
-                setPaymentsError("Errore nel recupero dei pagamenti");
+                return;
             }
+
+            const data = await response.json();
+            console.log('Payments data received:', data);
+            setPagamentis(Array.isArray(data) ? data : []);
+
         } catch (error) {
             console.error('Error in fetch call:', error);
             setPaymentsError("Errore di connessione nel recupero dei pagamenti");
@@ -292,6 +329,90 @@ const Home = () => {
         </div>
     );
 
+    const confirmCreateGroup = async (e) => {
+        e.preventDefault()
+        setIsSubmitting(true);
+        setError(null);
+        setSuccess('')
+
+        try {
+
+            console.log('Creating new group.....');
+
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                setError("No token provided");
+                return;
+            }
+
+            // Validate input fields
+            if (!name.trim()) {
+                setError("Group name is required");
+                return;
+            }
+
+            if (name.trim().length < 2) {
+                setError("Group name must be at least 2 characters long");
+                return;
+            }
+
+            try {
+
+                const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        name: name.trim(),
+                        description: description.trim(),
+                    })
+                })
+
+                if (!response.ok) {
+                    if (response.status === 400) {
+                        setError("Gruppo già esistente");
+                        return;
+                    } else {
+                        setError("Problema durante la creazione del gruppo  ");
+                        return;
+                    }
+                }
+
+                setSuccess("Gruppo creato con successo")
+
+                setTimeout(() => {
+                    setShowAddGroupModal(false);
+                }, 2000);
+
+            } catch (err) {
+                setError(err);
+                console.log(err);
+            }
+
+        } catch (networkError) {
+            console.error('Network error creating group:', networkError);
+
+            // Handle different types of network errors
+            if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
+                setError('Network error. Please check your internet connection and try again.');
+            } else if (networkError.name === 'AbortError') {
+                setError('Request was cancelled. Please try again.');
+            } else {
+                setError('Connection error. Please try again later.');
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    const handleModalOverlayClick = () => {
+    };
+
     // Error component
     const ErrorMessage = ({message, onRetry}) => (
         <div className={styles.errorMessage}>
@@ -302,12 +423,84 @@ const Home = () => {
         </div>
     );
 
+    const addGroup = () => {
+        setShowAddGroupModal(true);
+        setError(false);
+        setSuccess('')
+    }
+
+    const AddGroupModal = () => (
+
+        <div
+            className={styles.modalOverlay}
+            onClick={(e) => handleModalOverlayClick(e, closeAddGroupModal)}>
+
+            <div
+                className={styles.modalContent}
+                onClick={(e) => e.stopPropagation()}>
+
+                <h2>Crea un nuovo gruppo</h2>
+                <form onSubmit={confirmCreateGroup}>
+
+                    <div className={styles.formGroup}>
+                        <label htmlFor="nome">Nome del gruppo</label>
+                        <input
+                            type="text"
+                            id="nome"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            className={styles.formInput}
+                            placeholder="Inserisci un nome per il gruppo..."
+                            autoFocus
+                        />
+
+                        <label htmlFor="descrizione">Descrizione</label>
+                        <input
+                            type="text"
+                            id="descrizione"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            className={styles.formInput}
+                            placeholder="Inserisci una breve descrizione..."
+                            autoFocus
+                        />
+                    </div>
+
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {success && <div className={styles.successMessage}>{success}</div>}
+
+                    <div>
+                        <button
+                            type="button"
+                            onClick={closeAddGroupModal}
+                            className={`${styles.groupButton} ${styles.cancelButton}`}
+                            disabled={isSubmitting}>
+                            Annulla
+                        </button>
+                        <button
+                            type="submit"
+                            className={`${styles.groupButton} ${styles.submitButton}`}
+                            disabled={isSubmitting}>
+                            {isSubmitting ? 'Registrando il pagamento..' : 'Registra pagamento'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
+
+    const closeAddGroupModal = () => {
+        setShowAddGroupModal(false);
+        setSuccess('')
+        setError(false);
+    }
 
     return (
         <div className={styles.homePage}>
             <div className={styles.container}>
 
-                <Header user={user} logout={logout} />
+                <Header user={user} logout={logout}/>
 
                 {/* Main Content */}
                 <main className={styles.main}>
@@ -315,9 +508,15 @@ const Home = () => {
                         <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
                     </div>
 
+
+                    <button onClick={addGroup} className={styles.groupButton}><i className="bi bi-plus"></i><i
+                        className="bi bi-people-fill"></i> Crea un nuovo gruppo
+                    </button>
+
+
                     {/* Group Selection Section */}
                     <section className={styles.groupSection}>
-                        <h2 className={styles.sectionTitle}>I tuoi gruppi</h2>
+                        <h2 className={styles.sectionTitle}><i className="bi bi-people-fill"></i> I tuoi gruppi</h2>
 
                         {groupsLoading ? (
                             <LoadingSpinner message="Caricamento gruppi..."/>
@@ -354,7 +553,8 @@ const Home = () => {
 
                     {/* Payment History Section */}
                     <section className={styles.recentSection}>
-                        <h2 className={styles.sectionTitle}>I tuoi ultimi pagamenti</h2>
+                        <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi
+                            pagamenti</h2>
 
                         {paymentsLoading ? (
                             <LoadingSpinner message="Caricamento pagamenti..."/>
@@ -406,6 +606,8 @@ const Home = () => {
                         )}
                     </section>
                 </main>
+
+                {showAddGroupModal && <AddGroupModal/>}
             </div>
         </div>
     );

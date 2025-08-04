@@ -7,16 +7,14 @@ const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const Group = () => {
 
-    const [payment, setPayment] = useState({
-        importo: '',
-        descrizione: ''
-    });
     const [user, setUser] = useState(null);
     const [group, setGroup] = useState({groupName: ''});
     const [loading, setLoading] = useState(true);
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showRegisterPaymentModal, setShowRegisterPaymentModal] = useState(false);
+    const [showSaltaPaymentModal, setShowSaltaPaymentModal] = useState(false);
+    const [showPayForFriendModal, setShowPayForFriendModal] = useState(false);
     const [groups, setGroups] = useState({});
     const [classificaPaymentsForGroup, setClassificaPaymentsForGroup] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -24,10 +22,12 @@ const Group = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [importo, setImporto] = useState('');
     const [descrizione, setDescrizione] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isSkipping, setIsSkipping] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isPayForFriend, setIsPayForFriend] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -88,7 +88,7 @@ const Group = () => {
     // Add blur effect when modals are open
     useEffect(() => {
         const container = document.querySelector('.container');
-        if (showInviteForm || showDeleteModal || showRegisterPaymentModal) {
+        if (showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal) {
             container?.classList.add('modal-active');
             // Prevent body scroll when modal is open
             document.body.style.overflow = 'hidden';
@@ -103,7 +103,7 @@ const Group = () => {
             document.body.style.overflow = 'unset';
             container?.classList.remove('modal-active');
         };
-    }, [showInviteForm, showDeleteModal, showRegisterPaymentModal]);
+    }, [showInviteForm, showDeleteModal, showRegisterPaymentModal, showSaltaPaymentModal, showPayForFriendModal]);
 
     // Separate useEffect to check admin status when user and groups are both available
     useEffect(() => {
@@ -150,8 +150,17 @@ const Group = () => {
 
     const skipPayment = () => {
         console.log('Skip payment clicked');
-        // Implement your logic here
+        setShowSaltaPaymentModal(true);
+        setSuccessMessage('');
+        setError(null);
     };
+
+    const payForFriend = () => {
+        console.log('Pay for friend clicked');
+        setShowPayForFriendModal(true);
+        setSuccessMessage('');
+        setError(null);
+    }
 
     const deleteGroup = () => {
         console.log('Delete group clicked');
@@ -276,8 +285,109 @@ const Group = () => {
 
     const submitPayment = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
+        setError(null);
+        setSuccessMessage('');
 
+        try {
+
+            console.log('register payment...');
+
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                setError("No token provided");
+                return;
+            }
+
+            try {
+
+                const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        importo: importo,
+                        descrizione: descrizione,
+                    })
+                });
+
+                if (!response.ok) {
+                    setError('Problema durante la registrazione del pagamento');
+                    return;
+                }
+
+                setSuccessMessage('Pagamento registrato con successo');
+
+            } catch (err) {
+                console.error('Payment register error:', err);
+                setError(`Problema durante la registrazione del pagamento`);
+                return;
+            }
+
+        } catch (err) {
+            console.error('Register payment error:', err);
+        } finally {
+            setIsSubmitting(false);
+        }
     }
+
+    const confirmSkipPayment = async (e) => {
+        e.preventDefault();
+        setIsSkipping(true); // Use the correct state variable
+        setError(null);
+        setSuccessMessage('');
+
+        try {
+            console.log('skip payment...');
+
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                setError("No token provided");
+                return;
+            }
+
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/salta/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                credentials: 'include',
+                body: JSON.stringify({})
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                setError(`Si è verificato un problema: ${errorText || 'Errore sconosciuto'}`);
+                return;
+            }
+
+            // Set success message and close modal after delay
+            setSuccessMessage('Pagamento saltato con successo!');
+
+            // Refresh the payment classification data
+            await getClassificaPaymentsForGroup(group);
+
+            // Close modal after showing success message
+            setTimeout(() => {
+                setShowSaltaPaymentModal(false);
+                setSuccessMessage('');
+            }, 2000);
+
+        } catch (err) {
+            console.error('Skip payment error:', err);
+            setError('Errore di rete. Riprova più tardi.');
+        } finally {
+            setIsSkipping(false); // Use the correct state variable
+        }
+    };
 
     const confirmDeleteGroup = async (e) => {
         e.preventDefault();
@@ -327,12 +437,21 @@ const Group = () => {
         }
     };
 
+    const confirmPayForFriend = async (e) => {
+        e.preventDefault();
+        setIsPayForFriend(true);
+        setError(null);
+        setSuccessMessage('');
+        console.log("Hello confirmPayForFriend")
+    }
+
     const DeleteGroupModal = () => (
         <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeDeleteModal)}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
 
                 <h2>Elimina Gruppo</h2>
-                <p>Sei sicuro di voler eliminare il gruppo <strong>"{group.groupName}"</strong>?</p>
+                <p>Sei sicuro di voler eliminare il gruppo <strong
+                    className={styles.groupName}>{group.groupName}</strong>?</p>
                 <p style={{color: '#dc3545', fontSize: '0.9em', marginTop: '1rem'}}>
                     Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
                 </p>
@@ -361,6 +480,91 @@ const Group = () => {
             </div>
         </div>);
 
+    const SkipPaymentModal = () => (
+        <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeSaltaPaymentForm)}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+                <h2>Salta Pagamento</h2>
+                <p>Vuoi saltare il tuo turno di pagamento per questo gruppo?</p>
+                <div style={{
+                    backgroundColor: 'var(--coffee-50)',
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    margin: '1rem 0',
+                    borderLeft: '3px solid var(--coffee-600)'
+                }}>
+                    <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando salti:</p>
+                    <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
+                        <li>Il tuo stato verrà marcato come "saltato" per questo turno</li>
+                        <li>Verrai automaticamente reinserito nella prossima rotazione</li>
+                        <li>Un altro membro del gruppo verrà selezionato casualmente per il prossimo pagamento</li>
+                    </ul>
+                </div>
+                <p style={{color: 'var(--coffee-700)', fontSize: '0.9em', fontStyle: 'italic'}}>
+                    Nota: Puoi saltare solo quando è il tuo turno di pagare.
+                </p>
+
+                {error && <div className={styles.errorMessage}>{error}</div>}
+                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+
+                <div className={styles.formButtons} style={{marginTop: '2rem'}}>
+                    <button
+                        type="button"
+                        onClick={closeSaltaPaymentForm}
+                        className={`${styles.groupButton} ${styles.cancelButton}`}
+                        disabled={isSkipping}
+                    >
+                        Annulla
+                    </button>
+                    <button
+                        type="button"
+                        onClick={confirmSkipPayment}
+                        className={`${styles.groupButton} ${styles.deleteButton}`}
+                        disabled={isSkipping}
+                    >
+                        {isSkipping ? 'Salto del pagamento in corso...' : 'Salta pagamento'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const PayForFriendModal = () => (
+        <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closePayForFriendModal)}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+                <h2>Paga per un amico</h2>
+                <p>Text........</p>
+                {/*<p>Sei sicuro di voler eliminare il gruppo <strong>"{group.groupName}"</strong>?</p>
+                <p style={{color: '#dc3545', fontSize: '0.9em', marginTop: '1rem'}}>
+                    Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
+                </p>*/}
+
+                <form onSubmit={confirmPayForFriend}>
+
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+
+                    <div className={styles.formButtons} style={{marginTop: '2rem'}}>
+                        <button
+                            type="button"
+                            onClick={closePayForFriendModal}
+                            className={`${styles.groupButton} ${styles.cancelButton}`}
+                            disabled={isPayForFriend}>
+                            Annulla
+                        </button>
+                        <button
+                            type="button"
+                            className={`${styles.groupButton} ${styles.deleteButton}`}
+                            disabled={isPayForFriend}>
+                            {isPayForFriend ? 'Salto del pagamento in corso...' : 'Salta pagamento'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
+
     const InviteUserModal = () => (<div
         className={styles.modalOverlay}
         onClick={(e) => handleModalOverlayClick(e, closeInviteForm)}  // Close when clicking outside
@@ -370,9 +574,9 @@ const Group = () => {
             onClick={(e) => e.stopPropagation()}  // Prevent clicks inside modal from closing it
         >
             <h2>Invita un Membro</h2>
-            <form onSubmit={submitPayment}>
+            <form onSubmit={submitInvite}>
                 <div className={styles.formGroup}>
-                    <label htmlFor="user">Utente da invitare:</label>
+                    <label htmlFor="user">Utente da invitare nel gruppo:</label>
                     <input
                         type="text"
                         id="user"
@@ -386,7 +590,7 @@ const Group = () => {
                 </div>
                 {error && <div className={styles.errorMessage}>{error}</div>}
                 {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-                <div className={styles.formButtons}>
+                <div>
                     <button
                         type="button"
                         onClick={closeInviteForm}
@@ -413,7 +617,24 @@ const Group = () => {
 
                 <h2>Registra il pagamento</h2>
 
-                <form onSubmit={submitInvite}>
+                <div style={{
+                    backgroundColor: 'var(--coffee-50)',
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    margin: '1rem 0',
+                    borderLeft: '3px solid var(--coffee-600)'
+                }}>
+                    <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
+                        pagamento:</p>
+                    <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
+                        <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
+                        <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
+                        <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
+                        <li>Il pagamento apparirà nella classifica del gruppo</li>
+                    </ul>
+                </div>
+
+                <form onSubmit={submitPayment}>
                     <div className={styles.formGroup}>
 
                         <label htmlFor="importo">Importo:</label>
@@ -425,6 +646,8 @@ const Group = () => {
                             required
                             className={styles.formInput}
                             placeholder="Inserisci importo..."
+                            step="0.01"
+                            min="0"
                             autoFocus
                         />
 
@@ -437,7 +660,6 @@ const Group = () => {
                             required
                             className={styles.formInput}
                             placeholder="Inserisci una descrizione del pagamento..."
-                            autoFocus
                         />
 
                     </div>
@@ -457,18 +679,16 @@ const Group = () => {
                             className={`${styles.groupButton} ${styles.submitButton}`}
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? 'Invio in corso...' : 'Invia Invito'}
+                            {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
                         </button>
                     </div>
                 </form>
             </div>
-        </div>)
+        </div>);
 
-    // Enhanced modal click outside to close functionality
     const handleModalOverlayClick = () => {
     };
 
-    // Fixed function to accept group parameter
     const getClassificaPaymentsForGroup = async (groupToUse = group) => {
         const token = localStorage.getItem('authToken');
 
@@ -517,8 +737,20 @@ const Group = () => {
         // The useEffect will handle the blur cleanup automatically
     };
 
+    const closeSaltaPaymentForm = () => {
+        setShowSaltaPaymentModal(false);
+        setError(null);
+        setSuccessMessage('');
+    }
+
     const closeRegisterPaymentModal = () => {
         setShowRegisterPaymentModal(false);
+        setError(null);
+        setSuccessMessage('');
+    }
+
+    const closePayForFriendModal = () => {
+        setShowPayForFriendModal(false);
         setError(null);
         setSuccessMessage('');
     }
@@ -531,12 +763,14 @@ const Group = () => {
     };
 
     if (loading) {
-        return (<div className={styles.container}>
-            <div className={styles.loadingSpinner}>
-                <div className={styles.spinner}></div>
-                <span>Caricamento...</span>
+        return (
+            <div className={styles.container}>
+                <div className={styles.loadingSpinner}>
+                    <div className={styles.spinner}></div>
+                    <span>Caricamento...</span>
+                </div>
             </div>
-        </div>);
+        );
     }
 
     return (<div className={styles.groupPage}>
@@ -583,7 +817,7 @@ const Group = () => {
                         <button onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
                             Salta Pagamento
                         </button>
-                        <button onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
+                        <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
                             Paga per un amico
                         </button>
                     </div>
@@ -629,6 +863,8 @@ const Group = () => {
             {showInviteForm && <InviteUserModal/>}
             {showDeleteModal && <DeleteGroupModal/>}
             {showRegisterPaymentModal && <RegisterPaymentModal/>}
+            {showSaltaPaymentModal && <SkipPaymentModal/>}
+            {showPayForFriendModal && <PayForFriendModal/>}
         </div>
     </div>);
 };
