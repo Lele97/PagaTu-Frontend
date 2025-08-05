@@ -9,7 +9,6 @@ const Group = () => {
 
     const [user, setUser] = useState(null);
     const [group, setGroup] = useState({groupName: ''});
-    const [loading, setLoading] = useState(true);
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showRegisterPaymentModal, setShowRegisterPaymentModal] = useState(false);
@@ -28,15 +27,13 @@ const Group = () => {
     const [isSkipping, setIsSkipping] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isPayForFriend, setIsPayForFriend] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             const authToken = localStorage.getItem('authToken');
             const userData = localStorage.getItem('user');
             const groupData = localStorage.getItem('group');
-            const parsedGroupData = groupData ? JSON.parse(groupData) : null;
-
-            setGroups(parsedGroupData);
 
             if (!authToken) {
                 navigate('/login');
@@ -44,8 +41,14 @@ const Group = () => {
             }
 
             try {
-                const parsedUser = userData ? JSON.parse(userData) : null;
-                const username = typeof parsedUser === 'object' ? parsedUser?.username || parsedUser?.name || parsedUser?.email : parsedUser;
+                // Parse user data
+                let username = null;
+                if (userData) {
+                    const parsedUser = JSON.parse(userData);
+                    username = typeof parsedUser === 'object'
+                        ? (parsedUser?.username || parsedUser?.name || parsedUser?.email)
+                        : parsedUser;
+                }
 
                 if (!username) {
                     throw new Error('No user data available');
@@ -53,39 +56,41 @@ const Group = () => {
 
                 setUser(username);
 
+                // Parse group data with better error handling
+                let groupObject = {groupName: 'Unnamed Group'};
+
                 if (groupData) {
                     try {
                         const parsedGroup = JSON.parse(groupData);
-                        const groupObject = {
-                            groupName: parsedGroup.name || 'Unnamed Group', ...parsedGroup
+                        groupObject = {
+                            id: parsedGroup.id,
+                            groupName: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
+                            name: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
+                            ...parsedGroup
                         };
-                        setGroup(groupObject);
-                        // Call getClassificaPaymentsForGroup with the parsed group
-                        await getClassificaPaymentsForGroup(groupObject);
-                    } catch (e) {
-                        console.error('Error parsing group data:', e);
-                        const fallbackGroup = {groupName: 'Unnamed Group'};
-                        setGroup(fallbackGroup);
-                        await getClassificaPaymentsForGroup(fallbackGroup);
+                    } catch (parseError) {
+                        console.error('Error parsing group data:', parseError);
+                        // Keep default groupObject
                     }
-                } else {
-                    const fallbackGroup = {groupName: 'Unnamed Group'};
-                    setGroup(fallbackGroup);
-                    await getClassificaPaymentsForGroup(fallbackGroup);
+                }
+
+                setGroup(groupObject);
+                setGroups(groupObject);
+
+                // Only call API if we have valid group data
+                if (groupObject.id || groupObject.groupName !== 'Unnamed Group') {
+                    await getClassificaPaymentsForGroup(groupObject);
                 }
 
             } catch (err) {
-                console.error('Error parsing data:', err);
+                console.error('Error initializing data:', err);
                 navigate('/login');
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchData();
     }, [navigate]);
 
-    // Add blur effect when modals are open
     useEffect(() => {
         const container = document.querySelector('.container');
         if (showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal) {
@@ -105,7 +110,6 @@ const Group = () => {
         };
     }, [showInviteForm, showDeleteModal, showRegisterPaymentModal, showSaltaPaymentModal, showPayForFriendModal]);
 
-    // Separate useEffect to check admin status when user and groups are both available
     useEffect(() => {
         if (user && groups && groups.userMembershipsdto) {
             const adminStatus = isUserAdmin(user);
@@ -115,12 +119,16 @@ const Group = () => {
     }, [user, groups]);
 
     useEffect(() => {
-        if (!user && !loading) {
-            navigate('/login');
-        }
-    }, [user, loading, navigate]);
+        if (error) {
+            const timer = setTimeout(() => {
+                setError(null);
+            }, 1000);
 
-    // Format currency function
+            // Cleanup function to clear timeout if component unmounts or error changes
+            return () => clearTimeout(timer);
+        }
+    }, [error])
+
     const formatCurrency = (amount) => {
         if (!amount && amount !== 0) return '€ 0,00';
         try {
@@ -323,6 +331,12 @@ const Group = () => {
 
                 setSuccessMessage('Pagamento registrato con successo');
 
+                setTimeout(() => {
+                    setShowRegisterPaymentModal(false);
+                }, 2000);
+
+                await getClassificaPaymentsForGroup(group)
+
             } catch (err) {
                 console.error('Payment register error:', err);
                 setError(`Problema durante la registrazione del pagamento`);
@@ -372,13 +386,8 @@ const Group = () => {
             // Set success message and close modal after delay
             setSuccessMessage('Pagamento saltato con successo!');
 
-            // Refresh the payment classification data
-            await getClassificaPaymentsForGroup(group);
-
-            // Close modal after showing success message
             setTimeout(() => {
                 setShowSaltaPaymentModal(false);
-                setSuccessMessage('');
             }, 2000);
 
         } catch (err) {
@@ -426,7 +435,6 @@ const Group = () => {
             // Navigate back to home after a short delay
             setTimeout(() => {
                 navigate('/home');
-                // Navigation will unmount the component, triggering useEffect cleanup
             }, 2000);
 
         } catch (err) {
@@ -698,7 +706,7 @@ const Group = () => {
         }
 
         try {
-            setLoading(true);
+            setPaymentLoading(true);
             setError(null);
 
             const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamenti/classifica`, {
@@ -724,11 +732,10 @@ const Group = () => {
             console.error('Error in fetch call:', err);
             setError("Errore nel recupero dei pagamenti per il gruppo");
         } finally {
-            setLoading(false);
+            setPaymentLoading(false);
         }
     }
 
-    // Enhanced modal close functions with blur cleanup
     const closeInviteForm = () => {
         setShowInviteForm(false);
         setError(null);
@@ -742,6 +749,13 @@ const Group = () => {
         setError(null);
         setSuccessMessage('');
     }
+
+    const LoadingSpinner = ({message}) => (
+        <div className={styles.loadingSpinner}>
+            <div className={styles.spinner}></div>
+            <span>{message}</span>
+        </div>
+    );
 
     const closeRegisterPaymentModal = () => {
         setShowRegisterPaymentModal(false);
@@ -761,17 +775,6 @@ const Group = () => {
         setSuccessMessage('');
         // The useEffect will handle the blur cleanup automatically
     };
-
-    if (loading) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.loadingSpinner}>
-                    <div className={styles.spinner}></div>
-                    <span>Caricamento...</span>
-                </div>
-            </div>
-        );
-    }
 
     return (<div className={styles.groupPage}>
         <div className={styles.container}>
@@ -828,35 +831,36 @@ const Group = () => {
                 <h2 className={styles.sectionTitle}><i className="fa-solid fa-ranking-star"></i> Classifica
                     pagamenti</h2>
 
-                {classificaPaymentsForGroup.length > 0 ? (<>
-                    <div className={styles.tableContainer}>
-                        <table className={styles.table}>
-                            <thead className={styles.tableHeader}>
-                            <tr>
-                                <th className={styles.tableHeaderCell}>Utente</th>
-                                <th className={styles.tableHeaderCell}>Totale Speso</th>
-                                <th className={styles.tableHeaderCell}>Pagamenti effetuati</th>
-                            </tr>
-                            </thead>
-                            <tbody className={styles.tableBody}>
-                            {classificaPaymentsForGroup.map((payment, index) => (
-                                <tr key={index} className={styles.tableRow}>
-                                    <td className={styles.tableCell}>
-                                        {payment.username}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {formatCurrency(payment.totaleImporto)}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {payment.totalePagamenti}
-                                    </td>
-                                </tr>))}
-                            </tbody>
-                        </table>
-                    </div>
-                </>) : (<div className={styles.textEmpty}>
-                    Nessun pagamento trovato
-                </div>)}
+                {paymentLoading ? (<LoadingSpinner message={"Caricamento pagamenti..."}/>) :
+                    classificaPaymentsForGroup.length > 0 ? (<>
+                        <div className={styles.tableContainer}>
+                            <table className={styles.table}>
+                                <thead className={styles.tableHeader}>
+                                <tr>
+                                    <th className={styles.tableHeaderCell}>Utente</th>
+                                    <th className={styles.tableHeaderCell}>Totale Speso</th>
+                                    <th className={styles.tableHeaderCell}>Pagamenti effetuati</th>
+                                </tr>
+                                </thead>
+                                <tbody className={styles.tableBody}>
+                                {classificaPaymentsForGroup.map((payment, index) => (
+                                    <tr key={index} className={styles.tableRow}>
+                                        <td className={styles.tableCell}>
+                                            {payment.username}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {formatCurrency(payment.totaleImporto)}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {payment.totalePagamenti}
+                                        </td>
+                                    </tr>))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>) : (<div className={styles.textEmpty}>
+                        Nessun pagamento trovato
+                    </div>)}
 
             </main>
 

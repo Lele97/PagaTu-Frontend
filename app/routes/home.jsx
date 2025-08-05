@@ -73,7 +73,6 @@ const Home = () => {
         initializeData();
     }, [navigate]);
 
-    // Add blur effect when modals are open
     useEffect(() => {
         const container = document.querySelector('.container');
         if (showAddGroupModal) {
@@ -93,7 +92,17 @@ const Home = () => {
         };
     }, [showAddGroupModal]);
 
-    // Format date function
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                setError(null);
+            }, 1000);
+
+            // Cleanup function to clear timeout if component unmounts or error changes
+            return () => clearTimeout(timer);
+        }
+    }, [error])
+
     const formatDate = (dateString) => {
         if (!dateString) return '';
         try {
@@ -110,7 +119,6 @@ const Home = () => {
         }
     };
 
-    // Format currency function
     const formatCurrency = (amount) => {
         if (!amount && amount !== 0) return '€ 0,00';
         try {
@@ -124,7 +132,6 @@ const Home = () => {
         }
     };
 
-    // Pagination helper functions
     const getPaginatedGroups = () => {
         const startIndex = (currentGroupPage - 1) * GROUPS_PER_PAGE;
         const endIndex = startIndex + GROUPS_PER_PAGE;
@@ -149,20 +156,42 @@ const Home = () => {
 
     const handleGroupSelect = (groupName) => {
         console.log('Selected group name:', groupName);
-        // Find the complete group object from the groups array
-        const gruppo = groups.find(g => g.name === groupName);
-        console.log('Found group object:', gruppo);
+
+        // More robust group finding
+        const gruppo = groups.find(g =>
+            g.name === groupName ||
+            g.groupName === groupName ||
+            g.id?.toString() === groupName?.toString()
+        );
 
         if (gruppo) {
-            setSelectedGroup(groupName);
-            localStorage.setItem('group', JSON.stringify(gruppo));
-            navigate(`/group`);
+            // Ensure consistent data structure
+            const normalizedGroup = {
+                id: gruppo.id,
+                name: gruppo.name || gruppo.groupName,
+                groupName: gruppo.name || gruppo.groupName,
+                ...gruppo
+            };
+
+            try {
+                localStorage.setItem('group', JSON.stringify(normalizedGroup));
+                setSelectedGroup(groupName);
+                navigate('/group');
+            } catch (error) {
+                console.error('Failed to save group data:', error);
+                // Handle localStorage failure
+            }
         } else {
             console.error('Group not found:', groupName);
+            // Show user-friendly error message
         }
     };
 
     const getGroupsByUser = async (username) => {
+
+        setTimeout(() => {
+            console.log("wait.....");
+        }, 30000);
         const token = localStorage.getItem('authToken');
 
         if (!token) {
@@ -175,7 +204,11 @@ const Home = () => {
             setGroupsLoading(true);
             setGroupsError(null);
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${username}`, {
+            setTimeout(() => {
+                console.log("wait.....");
+            }, 30000);
+
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/groupiii/get/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -196,12 +229,12 @@ const Home = () => {
                 setGroupsError("Not authorized to view these groups");
             } else {
                 const errorText = await response.text();
-                setGroupsError("Error fetching groups");
+                setGroupsError("Errore nel recupero dei gruppi");
             }
         } catch (error) {
             setGroupsError('Connection error');
         } finally {
-            setGroupsLoading(false);
+            setGroupsLoading(true);
         }
     };
 
@@ -220,7 +253,7 @@ const Home = () => {
 
             console.log('Fetching payments for username:', username);
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/ultimiii/pagamenti/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -264,13 +297,12 @@ const Home = () => {
 
         } catch (error) {
             console.error('Error in fetch call:', error);
-            setPaymentsError("Errore di connessione nel recupero dei pagamenti");
+            setPaymentsError("Errore nel recupero dei pagamenti");
         } finally {
             setPaymentsLoading(false);
         }
     };
 
-    // Retry functions
     const retryGroups = async () => {
         if (user) {
             await getGroupsByUser(user);
@@ -283,7 +315,6 @@ const Home = () => {
         }
     };
 
-    // Pagination component
     const PaginationControls = ({currentPage, totalPages, onPageChange, className}) => {
         if (totalPages <= 1) return null;
 
@@ -321,7 +352,6 @@ const Home = () => {
         );
     };
 
-    // Loading component
     const LoadingSpinner = ({message}) => (
         <div className={styles.loadingSpinner}>
             <div className={styles.spinner}></div>
@@ -389,6 +419,8 @@ const Home = () => {
                     setShowAddGroupModal(false);
                 }, 2000);
 
+                await getGroupsByUser(user)
+
             } catch (err) {
                 setError(err);
                 console.log(err);
@@ -413,12 +445,11 @@ const Home = () => {
     const handleModalOverlayClick = () => {
     };
 
-    // Error component
     const ErrorMessage = ({message, onRetry}) => (
-        <div className={styles.errorMessage}>
+        <div className={styles.errorMessage} >
             <div className={styles.errorText}>{message}</div>
             <button onClick={onRetry} className={styles.retryButton}>
-                Riprova
+                Riprova <i className="fa-solid fa-repeat"></i>
             </button>
         </div>
     );
@@ -467,7 +498,7 @@ const Home = () => {
                         />
                     </div>
 
-                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {error && <div className={styles.errorMessageModal}>{error}</div>}
                     {success && <div className={styles.successMessage}>{success}</div>}
 
                     <div>
