@@ -22,6 +22,7 @@ const Group = () => {
     const [importo, setImporto] = useState('');
     const [descrizione, setDescrizione] = useState('');
     const [error, setError] = useState(null);
+    const [paymentByGroupError, setPaymentByGroupError] = useState(null)
     const navigate = useNavigate();
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSkipping, setIsSkipping] = useState(false);
@@ -709,32 +710,68 @@ const Group = () => {
             setPaymentLoading(true);
             setError(null);
 
+            // Ensure we have valid group data
+            const groupId = groupToUse?.id;
+            const groupName = groupToUse?.groupName || groupToUse?.name;
+
+            if (!groupId && !groupName) {
+                setPaymentByGroupError("Dati del gruppo mancanti");
+                return;
+            }
+
+            // Build request body with only defined values
+            const requestBody = {};
+            if (groupId) requestBody.groupId = groupId;
+            if (groupName) requestBody.groupName = groupName;
+
+            console.log('Sending request:', requestBody);
+
             const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamenti/classifica`, {
-                method: 'POST', body: JSON.stringify({
-                    groupId: groupToUse.id, groupName: groupToUse.groupName || groupToUse.name
-                }), headers: {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                }, credentials: 'include'
-            })
+                    // Add ngrok headers if needed
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                credentials: 'include'
+            });
+
+            console.log('Response status:', response.status);
 
             if (response.ok) {
                 const data = await response.json();
                 console.log("Classifica pagamenti", data);
                 setClassificaPaymentsForGroup(data);
-            } else if (response.status === 204) {
-                console.log('No payments found for group');
+            } else {
+                // Get error details
+                const errorText = await response.text();
+                console.error(`HTTP ${response.status}:`, errorText);
+
+                if (response.status === 403) {
+                    // More specific error message for 403
+                    setPaymentByGroupError(`Accesso negato. Verifica di appartenere al gruppo "${groupName || 'sconosciuto'}"`);
+                } else if (response.status === 401) {
+                    setPaymentByGroupError("Sessione scaduta. Effettua nuovamente il login.");
+                    // Consider redirecting to login
+                    setTimeout(() => navigate('/login'), 2000);
+                } else {
+                    setPaymentByGroupError(`Errore del server (${response.status})`);
+                }
+
                 setClassificaPaymentsForGroup([]);
             }
 
         } catch (err) {
-            console.error('Error in fetch call:', err);
-            setError("Errore nel recupero dei pagamenti per il gruppo");
+            console.error('Request failed:', err);
+            setPaymentByGroupError("Errore nel recupero dei pagamenti");
+            setClassificaPaymentsForGroup([]);
         } finally {
             setPaymentLoading(false);
         }
-    }
+    };
 
     const closeInviteForm = () => {
         setShowInviteForm(false);
@@ -744,16 +781,31 @@ const Group = () => {
         // The useEffect will handle the blur cleanup automatically
     };
 
+    const retryPayment = async () => {
+         if (group) {
+            await getClassificaPaymentsForGroup(group);
+        }
+    };
+
     const closeSaltaPaymentForm = () => {
         setShowSaltaPaymentModal(false);
         setError(null);
         setSuccessMessage('');
     }
 
+    const ErrorMessage = ({message, onRetry}) => (
+        <div className={styles.errorMessage}>
+            <div className={styles.errorText}>{message}</div>
+            <button onClick={onRetry} className={styles.retryButton}>
+                Riprova <i className="fa-solid fa-repeat"></i>
+            </button>
+        </div>
+    );
+
     const LoadingSpinner = ({message}) => (
         <div className={styles.loadingSpinner}>
             <div className={styles.spinner}></div>
-            <span>{message}</span>
+            <span className={styles.spinnerText}>{message}</span>
         </div>
     );
 
@@ -832,6 +884,7 @@ const Group = () => {
                     pagamenti</h2>
 
                 {paymentLoading ? (<LoadingSpinner message={"Caricamento pagamenti..."}/>) :
+                    paymentByGroupError ? (<ErrorMessage message={paymentByGroupError} onRetry={retryPayment}/>) :
                     classificaPaymentsForGroup.length > 0 ? (<>
                         <div className={styles.tableContainer}>
                             <table className={styles.table}>

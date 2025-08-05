@@ -362,12 +362,26 @@
 
 /* =============== MESSAGE STYLES =============== */
 @keyframes shakeFadeIn {
-    0% { transform: translateX(0); opacity: 0; }
-    20% { transform: translateX(-4px); }
-    40% { transform: translateX(4px); }
-    60% { transform: translateX(-2px); }
-    80% { transform: translateX(2px); }
-    100% { transform: translateX(0); opacity: 1; }
+    0% {
+        transform: translateX(0);
+        opacity: 0;
+    }
+    20% {
+        transform: translateX(-4px);
+    }
+    40% {
+        transform: translateX(4px);
+    }
+    60% {
+        transform: translateX(-2px);
+    }
+    80% {
+        transform: translateX(2px);
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .errorMessage {
@@ -386,7 +400,7 @@
     justify-content: space-between;
 }
 
-.errorMessageModal{
+.errorMessageModal {
     background: linear-gradient(to right, #fff5f5, #ffe6e6);
     color: #dc3545;
     padding: 0.75rem;
@@ -430,23 +444,6 @@
     transform: scale(1.05);
 }
 
-/*.retryButton {*/
-/*    background: linear-gradient(to right, #e53e3e, #b91c1c);*/
-/*    padding: 0.5rem 1.25rem;*/
-/*    border-radius: 12px;*/
-/*    font-weight: 600;*/
-/*    transition: transform 0.2s ease;*/
-/*}*/
-
-/*.retryButton:hover {*/
-/*    background: #9b1c1c;*/
-/*    transform: scale(1.05);*/
-/*}*/
-
-
-
-
-
 .textEmpty {
     text-align: center;
     color: var(--coffee-600);
@@ -466,21 +463,35 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
+    border: 4px solid var(--coffee-400);
+    border-top: 4px solid var(--coffee-600);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
+.spinnerText {
+    color: var(--coffee-600);
+    font-weight: 500;
+    font-size: 1rem;
+}
+
 /* =============== ANIMATIONS =============== */
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideIn {

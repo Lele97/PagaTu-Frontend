@@ -188,10 +188,6 @@ const Home = () => {
     };
 
     const getGroupsByUser = async (username) => {
-
-        setTimeout(() => {
-            console.log("wait.....");
-        }, 30000);
         const token = localStorage.getItem('authToken');
 
         if (!token) {
@@ -204,11 +200,10 @@ const Home = () => {
             setGroupsLoading(true);
             setGroupsError(null);
 
-            setTimeout(() => {
-                console.log("wait.....");
-            }, 30000);
+            console.log('Fetching groups for username:', username);
+            console.log('Using token:', token.substring(0, 20) + '...');
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/groupiii/get/${username}`, {
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -216,25 +211,59 @@ const Home = () => {
                     'Authorization': `Bearer ${token}`,
                 },
                 credentials: 'include',
-                body: JSON.stringify({})
+                body: JSON.stringify({
+                    username: username // Try including username in body as well
+                })
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+            // Log the raw response text for debugging
+            const responseText = await response.text();
+            console.log('Raw response:', responseText);
+
             if (response.ok) {
-                const data = await response.json();
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Failed to parse JSON response:', parseError);
+                    setGroupsError("Invalid response format from server");
+                    setGroups([]);
+                    return;
+                }
+
+                console.log('Groups data received:', data);
                 setGroups(Array.isArray(data) ? data : []);
                 setCurrentGroupPage(1);
             } else if (response.status === 401) {
+                console.log('Unauthorized - redirecting to login');
                 logout();
             } else if (response.status === 403) {
                 setGroupsError("Not authorized to view these groups");
+                setGroups([]);
+            } else if (response.status === 404) {
+                console.log('No groups found for user - treating as empty array');
+                setGroups([]);
             } else {
-                const errorText = await response.text();
-                setGroupsError("Errore nel recupero dei gruppi");
+                // Handle other error status codes
+                console.error('Error fetching groups:', response.status, responseText);
+
+                if (responseText === "Unable to retrieve groups for username: ".concat(username)) {
+                    setGroups([]);
+                    return;
+                }
+
+                setGroupsError(`Errore nel recupero dei gruppi'}`);
+                setGroups([]);
             }
         } catch (error) {
-            setGroupsError('Connection error');
+            console.error('Network error fetching groups:', error);
+            setGroupsError('Errore nel recupero dei gruppi');
+            setGroups([]);
         } finally {
-            setGroupsLoading(true);
+            setGroupsLoading(false);
         }
     };
 
@@ -253,7 +282,7 @@ const Home = () => {
 
             console.log('Fetching payments for username:', username);
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/ultimiii/pagamenti/${username}`, {
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -355,7 +384,7 @@ const Home = () => {
     const LoadingSpinner = ({message}) => (
         <div className={styles.loadingSpinner}>
             <div className={styles.spinner}></div>
-            <span>{message}</span>
+            <span className={styles.spinnerText}>{message}</span>
         </div>
     );
 
@@ -446,7 +475,7 @@ const Home = () => {
     };
 
     const ErrorMessage = ({message, onRetry}) => (
-        <div className={styles.errorMessage} >
+        <div className={styles.errorMessage}>
             <div className={styles.errorText}>{message}</div>
             <button onClick={onRetry} className={styles.retryButton}>
                 Riprova <i className="fa-solid fa-repeat"></i>
@@ -474,7 +503,7 @@ const Home = () => {
                 <form onSubmit={confirmCreateGroup}>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="nome">Nome del gruppo</label>
+                        <label htmlFor="nome">Nome</label>
                         <input
                             type="text"
                             id="nome"
