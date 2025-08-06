@@ -1,11 +1,62 @@
-.signupPage{
+/*modal datepiker*/
+.modalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backgroundColor: rgba(0, 0, 0, 0.5);
+    display: flex;
+    alignItems: center;
+    justifyContent: center;
+    zIndex: 1000;
+    padding: 1rem;
+}
+
+.modalContent {
+    backgroundColor: white;
+    borderRadius: 1rem;
+    padding: 1.5rem;
+    width: 100%;
+    maxWidth: 400px;
+    boxShadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modalText {
+    margin: 0 0 1.5rem 0;
+    textAlign: center;
+    color: #8B5A3C;
+    fontSize: 1.25rem;
+    fontWeight: 600;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.signupPage {
     min-height: 100vh;
     background-color: var(--coffee-200);
     padding: 2rem 1rem;
     box-sizing: border-box;
 }
 
-.signupForm{
+.signupForm {
     background-color: white;
     border-radius: 0.75rem;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);

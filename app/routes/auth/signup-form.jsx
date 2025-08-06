@@ -1,6 +1,7 @@
 import styles from "~/styles/signup.module.css";
 import {useState} from "react";
 import {useNavigate, Link} from "react-router-dom";
+
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const SignupForm = () => {
@@ -9,16 +10,147 @@ const SignupForm = () => {
         username: '',
         password: '',
         email: '',
+        dateOfBirth: '',
         firstName: '',
         lastName: ''
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const {id, value} = e.target;
         setRegistration(prev => ({...prev, [id]: value}));
+    };
+
+    const handleDateSelect = (date) => {
+        setRegistration(prev => ({...prev, dateOfBirth: date}));
+        setShowDatePicker(false);
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'Seleziona data di nascita';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('it-IT', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+    };
+
+    const generateCalendar = () => {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const years = [];
+
+        // Generate years from 1940 to current year
+        for (let year = currentYear; year >= 1940; year--) {
+            years.push(year);
+        }
+
+        const months = [
+            'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+            'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+        ];
+
+        return {years, months};
+    };
+
+    const getDaysInMonth = (year, month) => {
+        return new Date(year, month + 1, 0).getDate();
+    };
+
+    const DatePickerModal = () => {
+        const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 25);
+        const [selectedMonth, setSelectedMonth] = useState(0);
+        const [selectedDay, setSelectedDay] = useState(1);
+
+        const {years, months} = generateCalendar();
+        const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
+        const days = Array.from({length: daysInMonth}, (_, i) => i + 1);
+
+        const handleConfirm = () => {
+            const date = new Date(selectedYear, selectedMonth, selectedDay);
+            const formattedDate = date.toISOString().split('T')[0];
+            handleDateSelect(formattedDate);
+        };
+
+        return (
+            <div className={styles.modalContainer} onClick={(e) => {
+                if (e.target === e.currentTarget) setShowDatePicker(false);
+            }}>
+                <div className={styles.modalContent}>
+                    <h3 className={styles.modalText}>
+                        Seleziona Data di Nascita
+                    </h3>
+
+                    <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                        <div style={{ flex: 1 }}>
+                            <label className={labelStyle}>Giorno</label>
+                            <select
+                                value={selectedDay}
+                                onChange={(e) => setSelectedDay(parseInt(e.target.value))}
+                                className={selectStyle}>
+                                {days.map(day => (
+                                    <option key={day} value={day}>{day}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div style={{ flex: 2 }}>
+                            <label className={labelStyle}>Mese</label>
+                            <select
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                                className={selectStyle}
+                            >
+                                {months.map((month, index) => (
+                                    <option key={index} value={index}>{month}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div style={{ flex: 1.5 }}>
+                            <label style={labelStyle}>Anno</label>
+                            <select
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                style={selectStyle}
+                            >
+                                {years.map(year => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <button
+                            onClick={() => setShowDatePicker(false)}
+                            style={{
+                                ...buttonStyle,
+                                backgroundColor: '#F3F4F6',
+                                color: '#6B7280'
+                            }}
+                        >
+                            Annulla
+                        </button>
+                        <button
+                            onClick={handleConfirm}
+                            style={{
+                                ...buttonStyle,
+                                backgroundColor: '#8B5A3C',
+                                color: 'white',
+                                boxShadow: '0 4px 12px rgba(139, 90, 60, 0.2)'
+                            }}
+                        >
+                            Conferma
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     async function hanldeSubmit(e) {
@@ -103,6 +235,18 @@ const SignupForm = () => {
                     </div>
 
                     <div className={styles.inputGroup}>
+                        <label htmlFor="dateOfBirth" className={styles.label}>Data di nascita</label>
+                        <input
+                            type="date"
+                            id="dateOfBirth"
+                            className={styles.inputField}
+                            value={registration.email}
+                            onClick={DatePickerModal}
+                            required
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
                         <label htmlFor="firstName" className={styles.label}>Nome</label>
                         <input
                             type="text"
@@ -134,6 +278,8 @@ const SignupForm = () => {
                     </div>
                 </form>
             </div>
+
+            {showDatePicker && <DatePickerModal/>}
         </div>
     );
 }

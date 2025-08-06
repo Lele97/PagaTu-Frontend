@@ -1,18 +1,18 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import styles from '~/styles/auth.module.css';
-import { Link, useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const LoginForm = () => {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const [credentials, setCredentials] = useState({username: '', password: ''});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        const { id, value } = e.target;
-        setCredentials(prev => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setCredentials(prev => ({...prev, [id]: value}));
         // Clear error when user starts typing
         if (error) setError('');
     };
@@ -28,7 +28,7 @@ const LoginForm = () => {
 
             if (pendingInvitation) {
                 try {
-                    const { username, groupName } = JSON.parse(pendingInvitation);
+                    const {username, groupName} = JSON.parse(pendingInvitation);
                     navigate(`/invitation?username=${encodeURIComponent(username)}&groupName=${encodeURIComponent(groupName)}`);
                 } catch (error) {
                     console.error('Error parsing pending invitation:', error);
@@ -52,17 +52,23 @@ const LoginForm = () => {
         try {
             const response = await fetch(`${NGROK_SERVER_URL}/api/auth/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(credentials),
                 credentials: 'include',
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Accesso fallito. Controlla le credenziali.');
+                switch (response.status) {
+                    case 401:
+                        throw new Error('Login non riuscito. Controlla le credenziali.');
+                    case 404:
+                        throw new Error('Login non riuscito. Controlla le credenziali.');
+                    default:
+                        throw new Error('Errore sconosciuto. Riprova più tardi.');
+                }
             }
 
-            const { token, username, email } = await response.json();
+            const {token, username, email} = await response.json();
 
             // Create consistent user data object
             const userData = {
@@ -78,7 +84,7 @@ const LoginForm = () => {
 
         } catch (error) {
             console.error('Errore login:', error);
-            setError(error.message || 'Si è verificato un errore durante il login. Riprova.');
+            setError(error.message || 'Errore di rete. Riprova.');
         } finally {
             setIsLoading(false);
         }
@@ -86,7 +92,7 @@ const LoginForm = () => {
 
     return (
         <div className={styles.container}>
-            <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image} />
+            <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image}/>
             <div className={styles.loginForm}>
                 <h2 className={styles.title}>Accedi al tuo account</h2>
                 <form onSubmit={handleSubmit}>
@@ -104,7 +110,7 @@ const LoginForm = () => {
                         />
                     </div>
                     <div className={styles.inputGroup}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                             <label htmlFor="password" className={styles.label}>Password</label>
                             <Link to="/forgotPassword" className={styles.forgotPassword}>Password dimenticata?</Link>
                         </div>
@@ -121,7 +127,7 @@ const LoginForm = () => {
                     </div>
 
                     {error && (
-                        <div className={styles.errorMessage}>
+                        <div className={styles.errorMessageModal}>
                             {error}
                         </div>
                     )}

@@ -13,7 +13,6 @@ import Invitation from "~/routes/invitation.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
-
 const router = createBrowserRouter([
     {
         path: "/",

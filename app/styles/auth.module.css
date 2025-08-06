@@ -62,6 +62,17 @@
     line-height: 1.5; /* Improves text vertical alignment */
 }
 
+.errorMessageModal {
+    background: linear-gradient(to right, #fff5f5, #ffe6e6);
+    color: #dc3545;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border-left: 4px solid #dc3545;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
 .inputField:focus {
     outline: none;
     border-color: var(--coffee-600);

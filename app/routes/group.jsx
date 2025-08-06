@@ -465,7 +465,7 @@ const Group = () => {
                     Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
                 </p>
 
-                {error && <div className={styles.errorMessage}>{error}</div>}
+                {error && <div className={styles.errorMessageModal}>{error}</div>}
                 {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
                 <div className={styles.formButtons} style={{marginTop: '2rem'}}>
@@ -513,7 +513,7 @@ const Group = () => {
                     Nota: Puoi saltare solo quando è il tuo turno di pagare.
                 </p>
 
-                {error && <div className={styles.errorMessage}>{error}</div>}
+                {error && <div className={styles.errorMessageModal}>{error}</div>}
                 {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
                 <div className={styles.formButtons} style={{marginTop: '2rem'}}>
@@ -551,7 +551,7 @@ const Group = () => {
 
                 <form onSubmit={confirmPayForFriend}>
 
-                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {error && <div className={styles.errorMessageModal}>{error}</div>}
                     {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
                     <div className={styles.formButtons} style={{marginTop: '2rem'}}>
@@ -597,7 +597,7 @@ const Group = () => {
                         autoFocus
                     />
                 </div>
-                {error && <div className={styles.errorMessage}>{error}</div>}
+                {error && <div className={styles.errorMessageModal}>{error}</div>}
                 {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
                 <div>
                     <button
@@ -672,7 +672,7 @@ const Group = () => {
                         />
 
                     </div>
-                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {error && <div className={styles.errorMessageModal}>{error}</div>}
                     {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
                     <div className={styles.formButtons}>
                         <button
@@ -695,8 +695,7 @@ const Group = () => {
             </div>
         </div>);
 
-    const handleModalOverlayClick = () => {
-    };
+    const handleModalOverlayClick = () => {};
 
     const getClassificaPaymentsForGroup = async (groupToUse = group) => {
         const token = localStorage.getItem('authToken');
@@ -709,6 +708,7 @@ const Group = () => {
         try {
             setPaymentLoading(true);
             setError(null);
+            setPaymentByGroupError(null); // Clear previous errors
 
             // Ensure we have valid group data
             const groupId = groupToUse?.id;
@@ -733,32 +733,61 @@ const Group = () => {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    // Add ngrok headers if needed
-                    'ngrok-skip-browser-warning': 'true'
                 },
                 credentials: 'include'
             });
 
             console.log('Response status:', response.status);
 
-            if (response.ok) {
+            if (response.status === 204) {
+                // Handle No Content response - this is expected when there are no payments
+                console.log('No payments found for group');
+                setClassificaPaymentsForGroup([]);
+                // Don't set an error message - this is a normal state
+            } else if (response.ok) {
                 const data = await response.json();
                 console.log("Classifica pagamenti", data);
                 setClassificaPaymentsForGroup(data);
             } else {
-                // Get error details
-                const errorText = await response.text();
-                console.error(`HTTP ${response.status}:`, errorText);
+                // Handle other error statuses
+                let errorMessage;
+                try {
+                    // Try to parse JSON error response first
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorData.error || `Errore del server (${response.status})`;
+                } catch (jsonError) {
+                    // If JSON parsing fails, get text response
+                    try {
+                        errorMessage = await response.text() || `Errore del server (${response.status})`;
+                    } catch (textError) {
+                        errorMessage = `Errore del server (${response.status})`;
+                    }
+                }
 
-                if (response.status === 403) {
-                    // More specific error message for 403
-                    setPaymentByGroupError(`Accesso negato. Verifica di appartenere al gruppo "${groupName || 'sconosciuto'}"`);
-                } else if (response.status === 401) {
-                    setPaymentByGroupError("Sessione scaduta. Effettua nuovamente il login.");
-                    // Consider redirecting to login
-                    setTimeout(() => navigate('/login'), 2000);
-                } else {
-                    setPaymentByGroupError(`Errore del server (${response.status})`);
+                console.error(`HTTP ${response.status}:`, errorMessage);
+
+                // Handle specific status codes
+                switch (response.status) {
+                    case 401:
+                        setPaymentByGroupError("Sessione scaduta. Effettua nuovamente il login.");
+                        // Redirect to login after a delay
+                        setTimeout(() => navigate('/login'), 2000);
+                        break;
+                    case 403:
+                        setPaymentByGroupError(`Accesso negato. Verifica di appartenere al gruppo "${groupName || 'sconosciuto'}"`);
+                        break;
+                    case 404:
+                        if (errorMessage.toLowerCase().includes('group')) {
+                            setPaymentByGroupError(`Gruppo "${groupName || 'sconosciuto'}" non trovato`);
+                        } else {
+                            setPaymentByGroupError("Risorsa non trovata");
+                        }
+                        break;
+                    case 500:
+                        setPaymentByGroupError("Errore interno del server. Riprova più tardi.");
+                        break;
+                    default:
+                        setPaymentByGroupError(errorMessage);
                 }
 
                 setClassificaPaymentsForGroup([]);
@@ -766,7 +795,11 @@ const Group = () => {
 
         } catch (err) {
             console.error('Request failed:', err);
-            setPaymentByGroupError("Errore nel recupero dei pagamenti");
+            if (err.name === 'TypeError' && err.message.includes('fetch')) {
+                setPaymentByGroupError("Errore di connessione. Verifica la tua connessione internet.");
+            } else {
+                setPaymentByGroupError("Errore nel recupero dei pagamenti. Riprova più tardi.");
+            }
             setClassificaPaymentsForGroup([]);
         } finally {
             setPaymentLoading(false);
@@ -782,7 +815,7 @@ const Group = () => {
     };
 
     const retryPayment = async () => {
-         if (group) {
+        if (group) {
             await getClassificaPaymentsForGroup(group);
         }
     };
@@ -885,35 +918,35 @@ const Group = () => {
 
                 {paymentLoading ? (<LoadingSpinner message={"Caricamento pagamenti..."}/>) :
                     paymentByGroupError ? (<ErrorMessage message={paymentByGroupError} onRetry={retryPayment}/>) :
-                    classificaPaymentsForGroup.length > 0 ? (<>
-                        <div className={styles.tableContainer}>
-                            <table className={styles.table}>
-                                <thead className={styles.tableHeader}>
-                                <tr>
-                                    <th className={styles.tableHeaderCell}>Utente</th>
-                                    <th className={styles.tableHeaderCell}>Totale Speso</th>
-                                    <th className={styles.tableHeaderCell}>Pagamenti effetuati</th>
-                                </tr>
-                                </thead>
-                                <tbody className={styles.tableBody}>
-                                {classificaPaymentsForGroup.map((payment, index) => (
-                                    <tr key={index} className={styles.tableRow}>
-                                        <td className={styles.tableCell}>
-                                            {payment.username}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {formatCurrency(payment.totaleImporto)}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {payment.totalePagamenti}
-                                        </td>
-                                    </tr>))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </>) : (<div className={styles.textEmpty}>
-                        Nessun pagamento trovato
-                    </div>)}
+                        classificaPaymentsForGroup.length > 0 ? (<>
+                            <div className={styles.tableContainer}>
+                                <table className={styles.table}>
+                                    <thead className={styles.tableHeader}>
+                                    <tr>
+                                        <th className={styles.tableHeaderCell}>Utente</th>
+                                        <th className={styles.tableHeaderCell}>Totale Speso</th>
+                                        <th className={styles.tableHeaderCell}>Pagamenti effetuati</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody className={styles.tableBody}>
+                                    {classificaPaymentsForGroup.map((payment, index) => (
+                                        <tr key={index} className={styles.tableRow}>
+                                            <td className={styles.tableCell}>
+                                                {payment.username}
+                                            </td>
+                                            <td className={styles.tableCell}>
+                                                {formatCurrency(payment.totaleImporto)}
+                                            </td>
+                                            <td className={styles.tableCell}>
+                                                {payment.totalePagamenti}
+                                            </td>
+                                        </tr>))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>) : (<div className={styles.textEmpty}>
+                            Nessun pagamento trovato
+                        </div>)}
 
             </main>
 
