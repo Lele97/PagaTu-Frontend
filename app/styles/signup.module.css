@@ -1,4 +1,132 @@
 /* ===== Modal Datepicker ===== */
+
+/* ===== Custom Select Styles ===== */
+.customSelectContainer {
+    position: relative;
+    width: 100%;
+    z-index: 1001;
+}
+
+.customSelectHeader {
+    padding: 0.75rem 1.125rem;
+    border: 2px solid var(--coffee-300);
+    border-radius: 0.75rem;
+    background-color: #FFFCFA;
+    color: var(--coffee-800);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.customSelectOptions.open {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.customSelectHeader:hover {
+    border-color: var(--coffee-600);
+    background-color: #FFF9F6;
+}
+
+.customSelectOptions {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    opacity: 0;
+    right: 0;
+    background-color: white;
+    border: 2px solid var(--coffee-300);
+    border-radius: 0.75rem;
+    margin-top: 0.25rem;
+    overflow-y: auto;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Changed from absolute to fixed */
+    top: auto !important; /* Remove default positioning */
+    left: auto !important;
+    transform: none !important;
+    z-index: 1100;
+    max-height: 320px;
+}
+
+.customSelectOption {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-color: #FFFCFA;
+    color: var(--coffee-800);
+    font-weight: 500;
+}
+
+.customSelectOption:hover {
+    background-color: #F3EAE5;
+}
+
+.customSelectOption.selectedOption {
+    background-color: var(--coffee-100);
+    font-weight: 600;
+}
+
+.arrow {
+    margin-left: 0.5rem;
+    font-size: 0.8em;
+    color: var(--coffee-600);
+}
+
+/* Ensure custom selects match the existing style */
+.daySelect .customSelectContainer,
+.monthSelect .customSelectContainer,
+.yearSelect .customSelectContainer {
+    margin-bottom: 0;
+}
+
+/* Modal z-index adjustment */
+.modalContainer {
+    z-index: 1000;
+    overflow: visible !important;
+}
+
+.customSelectContainer {
+    z-index: 1001;
+}
+
+
+.modalContent {
+    background-color: white;
+    border-radius: 1rem;
+    border: 3px solid var(--coffee-600);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    margin: auto;
+    position: relative;
+    max-height: 90vh;
+    overflow: visible !important; /* Allow overflow */
+    contain: none !important; /* Disable containment */
+
+}
+
+.customSelectOptions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 2px solid var(--coffee-300);
+    border-radius: 0.75rem;
+    margin-top: 0.25rem;
+    overflow-y: auto;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1100; /* Higher than modal z-index */
+    max-height: 320px; /* 8 items * 40px */
+    transform: none !important; /* Remove transform that might be hiding it */
+    opacity: 1 !important; /* Force visibility */
+    display: block !important; /* Ensure it's displayed */
+}
+
+/* Ensure modal container doesn't clip content */
 .modalContainer {
     position: fixed;
     top: 0;
@@ -11,47 +139,167 @@
     justify-content: center;
     z-index: 1000;
     padding: 1rem;
+    overflow: visible; /* Allow dropdown to overflow */
 }
 
 .modalContent {
+    overflow: visible;
     background-color: white;
     border-radius: 1rem;
-    padding: 1.5rem;
+    border: 3px solid var(--coffee-600);
+    padding: 2rem;
     width: 100%;
     max-width: 400px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.modalText {
-    margin: 0 0 1.5rem 0;
-    text-align: center;
-    color: #8B5A3C;
-    font-size: 1.25rem;
-    font-weight: 600;
+    /* Add these to ensure modal stays centered */
+    margin: auto;
+    position: relative;
+    max-height: 90vh; /* Prevent modal from being too tall */
+    overflow-y: auto; /* Add scroll if content is too long */
 }
 
 .selectStyle {
+    overflow-y: auto; /* Add scroll when needed */
     width: 100%;
-    padding: 0.75rem;
-    border: 2px solid #E5D3C8;
+    padding: 0.75rem 1.125rem;
+    border: 2px solid var(--coffee-300);
     border-radius: 0.75rem;
     font-size: 1rem;
-    background-color: #FBF8F6;
-    color: #8B5A3C;
-    font-weight: 500;
+    background-color: #FFFCFA;
+    color: var(--coffee-800);
+    font-weight: 600;
     outline: none;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%236B4C3B' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    max-height: 50px;
+    -webkit-appearance: none;
+}
+
+.selectStyle:hover {
+    border-color: var(--coffee-600);
+    background-color: #FFF9F6;
+    border-radius: 0.75rem; /* Maintain border radius on hover */
+}
+
+.selectStyle option {
+    padding: 0.5rem 1rem; /* Slightly reduce option padding */
+}
+
+select.selectStyle option {
+    padding: 0.75rem;
+    background-color: #FFF9F6;
+    color: var(--coffee-800);
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: background 0.2s ease;
+    max-height: 40px;
+    overflow: hidden;
+}
+
+select.selectStyle option:hover {
+    background-color: #F3EAE5;
+}
+
+select.selectStyle {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #CBB2A0 transparent;
+    /* Add border radius to the dropdown itself */
+    border-radius: 0.75rem;
+}
+
+/* Enhanced dropdown styling for WebKit browsers */
+select.selectStyle::-webkit-scrollbar {
+    width: 8px;
+}
+
+select.selectStyle::-webkit-scrollbar-thumb {
+    background-color: #CBB2A0;
+    border-radius: 10px;
+}
+
+select.selectStyle::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Style the dropdown when it opens (WebKit browsers) */
+select.selectStyle:focus {
+    box-shadow: 0 0 0 3px rgba(139, 90, 60, 0.2);
+    border-color: var(--coffee-600);
+    background-color: #FFF6F0;
+    border-radius: 0.75rem; /* Maintain border radius on focus */
+}
+
+.buttonInputField {
+    text-align: justify;
+}
+
+.PlaceholderDiv {
+    color: #757575;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.PlaceholderText {
+    font-size: 0.75rem;
+    margin-bottom: 0 !important;
+    font-weight: 500;
+}
+
+/*.modalContent {*/
+/*    background-color: white;*/
+/*    border-radius: 1rem;*/
+/*    border: 3px solid var(--coffee-600);*/
+/*    width: 100%;*/
+/*    max-width: 400px;*/
+/*    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);*/
+/*    align-items: center; !* Changed from flex-start to center *!*/
+/*    padding: 1rem; !* Reduced padding *!*/
+/*}*/
+
+.selectContainer {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.daySelect {
+    flex: 1;
+}
+
+.monthSelect {
+    flex: 2;
+}
+
+.yearSelect {
+    flex: 1.5;
 }
 
 .labelStyle {
     display: block;
+    text-align: justify;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #8B5A3C;
+    color: var(--coffee-800);
     margin-bottom: 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 0.75rem;
 }
 
 .buttonStyle {
@@ -63,6 +311,26 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.cancelButton {
+    background-color: #DCDCDC;
+    color: #6B7280;
+}
+
+.cancelButton:hover {
+    background-color: #D3D3D3;
+    transform: translateY(-2px);
+}
+
+.confirmButton {
+    background-color: var(--coffee-600);
+    color: white;
+}
+
+.confirmButton:hover {
+    background-color: var(--coffee-800);
+    transform: translateY(-2px);
 }
 
 .datePickerButton {
@@ -110,6 +378,7 @@
         transform: translateY(0);
     }
 }
+
 
 .title {
     font-size: 1.75rem;
@@ -220,4 +489,24 @@
 .loginLink a:hover {
     color: var(--coffee-600);
     text-decoration: underline;
+}
+
+/* For Firefox - limit visible options */
+@-moz-document url-prefix() {
+    .selectStyle {
+        height: 2.5rem; /* Match your input height */
+        padding-right: 1.5rem; /* Space for dropdown arrow */
+    }
+}
+
+/* For WebKit browsers (Chrome, Safari) */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    .selectStyle {
+        height: 2.5rem;
+        padding-right: 1.5rem;
+    }
+
+    .selectStyle option {
+        padding: 0.5rem;
+    }
 }
