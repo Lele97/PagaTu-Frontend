@@ -18,6 +18,8 @@ const SignupForm = () => {
     const [showDatePickerModal, setShowDatePickerModal] = useState(false);
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         const container = document.querySelector('.container');
@@ -35,7 +37,6 @@ const SignupForm = () => {
         };
     }, [showDatePickerModal]);
 
-    // Add keyboard navigation support
     const handleKeyDown = (e) => {
         if (e.key === 'Escape') {
             setIsOpen(false);
@@ -50,7 +51,6 @@ const SignupForm = () => {
         }
     }, [isOpen]);
 
-    // Update the CustomSelect component in your JSX file
     const CustomSelect = ({ value, options, onChange, visibleItems = 8, className = "" }) => {
         const [isOpen, setIsOpen] = useState(false);
         const selectRef = useRef(null);
@@ -189,7 +189,7 @@ const SignupForm = () => {
         setIsLoading(true);
 
         if (!checkValidEmail(registration.email)) {
-            alert('Email non valida');
+            setError("Email non valida")
             setIsLoading(false);
             return;
         }
@@ -202,12 +202,16 @@ const SignupForm = () => {
                 credentials: 'include',
             });
 
-            if (!response.ok) throw new Error('Login fallito');
-            alert('Registrazione Effettuata');
+            if (!response.ok){
+                throw new Error('Registrazione fallita');
+            }
+
+            setSuccessMessage("Registrazione Effettuata")
             navigate('/');
+
         } catch (error) {
             console.error('Errore Registrazione:', error);
-            alert('Registrazione fallita');
+            setError("Errore di registrazione. Riprova più tardi.")
         } finally {
             setIsLoading(false);
         }
@@ -365,8 +369,11 @@ const SignupForm = () => {
                         />
                     </div>
 
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+
                     <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                        {isLoading ? 'Caricamento...' : 'Registrati'}
+                        {isLoading ? 'Registrazione in corso...' : 'Registrati'}
                     </button>
 
                     <div className={styles.loginLink}>

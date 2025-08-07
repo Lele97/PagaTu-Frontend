@@ -133,7 +133,7 @@ const LoginForm = () => {
                     )}
 
                     <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                        {isLoading ? 'Caricamento...' : 'Accedi'}
+                        {isLoading ? 'Accesso...' : 'Accedi'}
                     </button>
                     <div className={styles.signupLink}>
                         Non hai un account?

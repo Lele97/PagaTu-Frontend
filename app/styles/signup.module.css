@@ -499,6 +499,28 @@ select.selectStyle:focus {
     }
 }
 
+.errorMessage {
+    background: linear-gradient(to right, #fff5f5, #ffe6e6);
+    color: #dc3545;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border-left: 4px solid #dc3545;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.successMessage{
+    font-weight: 600;
+    font-size: 1rem;
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border-left: 3px solid #28a745;
+}
+
 /* For WebKit browsers (Chrome, Safari) */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
     .selectStyle {
