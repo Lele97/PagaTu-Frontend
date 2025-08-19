@@ -1,20 +1,21 @@
 /* ===== Modal Datepicker ===== */
 @font-face {
-    font-family: 'Macadamia';
-    src: url('/public/Macadamia.otf') format('opentype');
+    font-family: 'CustomFont';
+    src: url('/public/Oatlander.ttf') format('opentype');
     font-weight: normal;
     font-style: normal;
     font-display: swap; /* Ensures text remains visible during font load */
 }
+
 .container {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 1rem;
     background-color: var(--coffee-200);
 }
+
 /* Logo and text container */
 .header-container {
     display: flex;
@@ -25,12 +26,17 @@
     width: 100%;
 }
 
-/* Logo styling */
+
 .logo {
     max-width: 200px;
     width: 50vmin;
     height: auto;
-    margin-bottom: 1rem; /* Space between logo and text */
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
 }
 
 /* Text container */
@@ -38,53 +44,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
+    margin-top: -4rem;
+    margin-bottom: 3rem;
 }
 
 /* Individual letters */
 .appTitle h1 {
     margin: 0;
     line-height: 1;
-    font-size: 6rem;
-    transition: transform 0.3s ease;
+    font-size: 5rem; /* Reduced from 6rem */
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: default;
 }
 
 .appTitle h1:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px); /* Reduced from -3px */
+    text-shadow: 0 2px 4px rgba(81, 54, 27, 0.2); /* Added subtle shadow instead of just moving */
 }
 
 /* Color classes */
 .appTitlecolor {
-    font-family: 'Macadamia', sans-serif;
+    font-family: 'CustomFont', sans-serif;
     font-weight: 300;
     color: #51361b;
 }
 
 .appTitlecolor2 {
-    font-family: 'Macadamia', sans-serif;
+    font-family: 'CustomFont', sans-serif;
     font-weight: 300;
     color: #c29159;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .appTitle h1 {
-        font-size: 2.5rem;
-    }
-
-    .logo {
-        max-width: 150px;
-    }
-}
-
-@media (max-width: 480px) {
-    .appTitle h1 {
-        font-size: 2rem;
-    }
-
-    .logo {
-        max-width: 120px;
-    }
 }
 
 /* ===== Custom Select Styles ===== */
@@ -340,7 +329,6 @@ select.selectStyle:focus {
     font-weight: 500;
 }
 
-
 .selectContainer {
     display: flex;
     gap: 0.75rem;
@@ -455,19 +443,6 @@ select.selectStyle:focus {
     min-height: 46px; /* Match input field height */
 }
 
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
 .title {
     font-size: 1.75rem;
     font-weight: 700;
@@ -530,49 +505,6 @@ select.selectStyle:focus {
     transform: scale(0.98);
 }
 
-/* ===== Responsive tweaks ===== */
-@media (max-width: 480px) {
-    .appTitle h1 {
-        font-size: 2.5rem;
-    }
-
-    .logo {
-        height: 2.5rem;
-        margin: 0 0.75rem;
-    }
-    .loginPage {
-        padding: 1rem;
-    }
-
-    .loginForm {
-        padding: 1.5rem;
-    }
-
-    .title {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .appTitle h1 {
-        font-size: 3rem;
-    }
-
-    .logo {
-        height: 3rem;
-    }
-    .signupForm > form {
-        grid-template-columns: 1fr;
-    }
-
-    .signupForm > form > *:not(.inputGroup) {
-        grid-column: span 1;
-    }
-}
-
-
-
-
 .loginLink {
     text-align: center;
     margin-top: 1rem;
@@ -592,14 +524,6 @@ select.selectStyle:focus {
 .loginLink a:hover {
     color: var(--coffee-800);
     text-decoration: underline;
-}
-
-/* For Firefox - limit visible options */
-@-moz-document url-prefix() {
-    .selectStyle {
-        height: 2.5rem; /* Match your input height */
-        padding-right: 1.5rem; /* Space for dropdown arrow */
-    }
 }
 
 .errorMessage {
@@ -624,7 +548,13 @@ select.selectStyle:focus {
     border-left: 3px solid #28a745;
 }
 
-/* For WebKit browsers (Chrome, Safari) */
+@-moz-document url-prefix() {
+    .selectStyle {
+        height: 2.5rem; /* Match your input height */
+        padding-right: 1.5rem; /* Space for dropdown arrow */
+    }
+}
+
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
     .selectStyle {
         height: 2.5rem;
@@ -633,5 +563,72 @@ select.selectStyle:focus {
 
     .selectStyle option {
         padding: 0.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .appTitle h1 {
+        font-size: 4rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .appTitle h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .appTitle {
+        gap: 0.15rem; /* Even smaller gap on mobile */
+    }
+
+    .appTitle h1 {
+        font-size: 2.25rem; /* Increased from 2rem */
+    }
+
+    .logo {
+        max-width: 120px;
+    }
+
+    .loginPage {
+        padding: 1rem;
+    }
+
+    .loginForm {
+        padding: 1.5rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .appTitle h1 {
+        font-size: 3rem;
+    }
+
+    .logo {
+        max-width: 150px;
+    }
+
+    .signupForm > form {
+        grid-template-columns: 1fr;
+    }
+
+    .signupForm > form > *:not(.inputGroup) {
+        grid-column: span 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

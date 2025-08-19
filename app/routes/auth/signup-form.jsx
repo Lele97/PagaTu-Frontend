@@ -333,6 +333,7 @@ const SignupForm = () => {
                     <h1 className={styles.appTitlecolor2}>a</h1>
                     <h1 className={styles.appTitlecolor}>g</h1>
                     <h1 className={styles.appTitlecolor2}>a</h1>
+                    <br></br>
                     <h1 className={styles.appTitlecolor}>T</h1>
                     <h1 className={styles.appTitlecolor2}>u</h1>
                 </div>

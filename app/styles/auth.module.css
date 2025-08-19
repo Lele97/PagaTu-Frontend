@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'CustomFont';
+    src: url('/public/Oatlander.ttf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* Ensures text remains visible during font load */
+}
+
 .container {
     min-height: 100vh;
     display: flex;
@@ -7,17 +15,70 @@
     flex-direction: column;
 }
 
+/* Logo and text container */
+.header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+/* Logo styling */
 .logo {
     max-width: 200px;
     width: 50vmin;
     height: auto;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+/* Text container */
+.appTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: -4rem;
+    margin-bottom: 3rem;
+}
+
+/* Individual letters */
+.appTitle h1 {
+    margin: 0;
+    line-height: 1;
+    font-size: 5rem; /* Reduced from 6rem */
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: default;
+}
+
+.appTitle h1:hover {
+    transform: translateY(-2px); /* Reduced from -3px */
+    text-shadow: 0 2px 4px rgba(81, 54, 27, 0.2); /* Added subtle shadow instead of just moving */
+}
+
+/* Color classes */
+.appTitlecolor {
+    font-family: 'CustomFont', sans-serif;
+    font-weight: 300;
+    color: #51361b;
+}
+
+.appTitlecolor2 {
+    font-family: 'CustomFont', sans-serif;
+    font-weight: 300;
+    color: #c29159;
 }
 
 /* Form */
 .formContainer {
     background-color: var(--coffee-0);
-    border-radius: 20px;
+    border-radius: 0.75rem;
     padding: 2rem;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
     width: 100%;
@@ -135,6 +196,43 @@
     border: 1px solid #fed7d7;
     text-align: center;
     animation: fadeIn 0.3s ease-in;
+}
+
+@media (max-width: 1024px) {
+    .appTitle h1 {
+        font-size: 4rem;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .appTitle h1 {
+        font-size: 3rem; /* Increased from 2.5rem for better readability */
+    }
+
+    .logo {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .appTitle {
+        gap: 0.15rem; /* Even smaller gap on mobile */
+    }
+
+    .appTitle h1 {
+        font-size: 2.25rem; /* Increased from 2rem */
+    }
+
+    .logo {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 360px) {
+    .appTitle h1 {
+        font-size: 2rem;
+    }
 }
 
 @keyframes fadeIn {
