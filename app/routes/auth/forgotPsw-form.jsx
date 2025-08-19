@@ -1,85 +1,95 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import styles from '~/styles/forgotPsw.module.css';
 import {Link, useNavigate} from "react-router-dom";
+
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-        const response = await fetch(`${NGROK_SERVER_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(credentials),
-            credentials: 'include',
-        });
-
-        if (!response.ok) {
-            console.error('Login fallito');
-            alert('Accesso fallito. Controlla le credenziali.');
-            return;
-        }
-
-        const {token, username, email} = await response.json();
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('user', JSON.stringify(username));
-        localStorage.setItem('email', JSON.stringify(email));
-
-        navigate('/home');
-    } catch (error) {
-        console.error('Errore login:', error);
-    } finally {
-        setIsLoading(false);
-    }
-};
-
 const ForgotPswForm = () => {
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const navigate = useNavigate();
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                setError(null);
+            }, 1000);
+            // Cleanup function to clear timeout if component unmounts or error changes
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            const response = await fetch(`${NGROK_SERVER_URL}/api/auth/forgotPassword?email=${encodeURIComponent(email)}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({}),
+                credentials: 'include',
+            });
+
+            switch (response.status) {
+                case 200:
+                    setSuccess('Invio della richiesta avvenuto con successo');
+                    navigate('/');
+                    break;
+                case 404:
+                    setError('Email non presente nel sistema')
+                    break;
+                case 429:
+                    setError('Troppe richieste al server. Riprova più tardi.')
+                    break;
+                default:
+                    throw new Error('Problema durante l\'invio. Riprovare più tardi');
+            }
+
+        } catch (error) {
+            setError(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <div>
             <div className={styles.container}>
                 <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image}/>
                 <div className={styles.forgotPswForm}>
-                    <h2 className={styles.title}>Forgot Password</h2>
+                    <h2 className={styles.title}>Hai dimenticato la password?</h2>
+                    <p>Inserisci qui sotto l'indirizzo email che hai utilizzato per registrarti, riceverai una mail con
+                        il link per reimpostare la tua password in modo sicuro.</p>
                     <form onSubmit={handleSubmit}>
                         <div className={styles.inputGroup}>
-                            <label htmlFor="username" className={styles.label}>Username</label>
+                            <label htmlFor="email" className={styles.label}>Email</label>
                             <input
-                                type="text"
-                                id="username"
+                                type="email"
+                                id="email"
                                 className={styles.inputField}
-                                placeholder="Il tuo username"
-                                value={credentials.username}
-                                onChange={handleChange}
+                                placeholder="Inserisci la tua email"
+                                value={email}
+                                onChange={event => setEmail(event.target.value)}
                                 required
                             />
                         </div>
-                        <div className={styles.inputGroup}>
-                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <label htmlFor="password" className={styles.label}>Password</label>
-                                <Link to="/forgotPassword" className={styles.forgotPassword}>Password dimenticata?</Link>
-                            </div>
-                            <input
-                                type="password"
-                                id="password"
-                                className={styles.inputField}
-                                placeholder="••••••••"
-                                value={credentials.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+
+                        {error && <div className={styles.errorMessageModal}>{error}</div>}
+                        {success && <div className={styles.successMessage}>{success}</div>}
+
                         <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                            {isLoading ? 'Caricamento...' : 'Accedi'}
+                            {isLoading ? 'Invio in corso...' : 'Invia'}
                         </button>
                         <div className={styles.signupLink}>
-                            Non hai un account?
-                            <Link to="/signup">Registrati</Link>
+                            Hai già un account?
+                            <Link to="/">Accedi</Link>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
     )
 }
 

@@ -37,12 +37,16 @@ const SignupForm = () => {
         };
     }, [showDatePickerModal]);
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Escape') {
-            setIsOpen(false);
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                setError(null);
+            }, 1000);
+
+            // Cleanup function to clear timeout if component unmounts or error changes
+            return () => clearTimeout(timer);
         }
-        // Add arrow key navigation logic here
-    };
+    }, [error])
 
     useEffect(() => {
         if (isOpen) {
@@ -51,7 +55,14 @@ const SignupForm = () => {
         }
     }, [isOpen]);
 
-    const CustomSelect = ({ value, options, onChange, visibleItems = 8, className = "" }) => {
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            setIsOpen(false);
+        }
+        // Add arrow key navigation logic here
+    };
+
+    const CustomSelect = ({value, options, onChange, visibleItems = 8, className = ""}) => {
         const [isOpen, setIsOpen] = useState(false);
         const selectRef = useRef(null);
         const optionsRef = useRef(null);
@@ -165,7 +176,8 @@ const SignupForm = () => {
         return {years, months};
     };
 
-    const handleModalOverlayClick = () => {};
+    const handleModalOverlayClick = () => {
+    };
 
     const getDaysInMonth = (year, month) => {
         return new Date(year, month + 1, 0).getDate();
@@ -202,16 +214,37 @@ const SignupForm = () => {
                 credentials: 'include',
             });
 
-            if (!response.ok){
-                throw new Error('Registrazione fallita');
+            let data = null;
+            try {
+                // Prova a leggere il body in JSON
+                data = await response.json();
+            } catch {
+                data = {};
+            }
+
+            if (!response.ok) {
+                if (response.status === 409) {
+                    switch (data.message) {
+                        case 'Email already exists':
+                            setError("Un'utenza con questa email è già presente nel sistema.");
+                            break;
+                        case 'Username already exists':
+                            setError("Un'utenza con questo username è già presente nel sistema.");
+                            break;
+                        default:
+                            setError("Registrazione fallita.");
+                    }
+                } else {
+                    setError("Registrazione fallita.");
+                }
+                return; // Evita di proseguire
             }
 
             setSuccessMessage("Registrazione Effettuata")
             navigate('/');
 
         } catch (error) {
-            console.error('Errore Registrazione:', error);
-            setError("Errore di registrazione. Riprova più tardi.")
+            setError("Errore di registrazione. " + error)
         } finally {
             setIsLoading(false);
         }
@@ -222,15 +255,15 @@ const SignupForm = () => {
         const [selectedMonth, setSelectedMonth] = useState(0);
         const [selectedDay, setSelectedDay] = useState(1);
 
-        const { years, months } = generateCalendar();
+        const {years, months} = generateCalendar();
         const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
-        const days = Array.from({ length: daysInMonth }, (_, i) => ({
+        const days = Array.from({length: daysInMonth}, (_, i) => ({
             value: i + 1,
             label: i + 1
         }));
 
         const handleConfirm = () => {
-            const date = new Date(selectedYear, selectedMonth, selectedDay);
+            const date = new Date(selectedYear, selectedMonth, selectedDay + 1);
             const formattedDate = date.toISOString().split("T")[0];
             handleDateSelect(formattedDate);
         };
@@ -291,8 +324,21 @@ const SignupForm = () => {
     };
 
     return (
-        <div className={`${styles.container} container`}>
-            <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image}/>
+        <div className={styles.container}>
+
+            <div className={styles['header-container']}>
+                <img src="/pagaTu.png" alt="Logo" className={styles.logo}/>
+                <div className={styles.appTitle}>
+                    <h1 className={styles.appTitlecolor}>P</h1>
+                    <h1 className={styles.appTitlecolor2}>a</h1>
+                    <h1 className={styles.appTitlecolor}>g</h1>
+                    <h1 className={styles.appTitlecolor2}>a</h1>
+                    <h1 className={styles.appTitlecolor}>T</h1>
+                    <h1 className={styles.appTitlecolor2}>u</h1>
+                </div>
+            </div>
+
+
 
             <div className={styles.signupForm}>
                 <h2 className={styles.title}>Crea un Account</h2>

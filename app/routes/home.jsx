@@ -407,12 +407,12 @@ const Home = () => {
 
             // Validate input fields
             if (!name.trim()) {
-                setError("Group name is required");
+                setError("Il nome del gruppo non può essere vuoto");
                 return;
             }
 
-            if (name.trim().length < 2) {
-                setError("Group name must be at least 2 characters long");
+            if (name.trim().length < 6) {
+                setError("Il nome del gruppo deve avere minimo 6 caratteri");
                 return;
             }
 

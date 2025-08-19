@@ -4,7 +4,6 @@ import styles from '~/styles/error.module.css';
 
 export default function ErrorPage() {
     const error = useRouteError();
-    console.error(error);
 
     // Determine error type and message
     const getErrorInfo = () => {

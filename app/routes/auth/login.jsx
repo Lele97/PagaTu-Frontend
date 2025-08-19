@@ -29,7 +29,7 @@ export default function LoginPage() {
     }, [navigate]);
 
     return (
-        <div className={styles.loginPage}>
+        <div>
             <LoginForm/>
         </div>
     );

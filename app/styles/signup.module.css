@@ -1,4 +1,91 @@
 /* ===== Modal Datepicker ===== */
+@font-face {
+    font-family: 'Macadamia';
+    src: url('/public/Macadamia.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* Ensures text remains visible during font load */
+}
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: var(--coffee-200);
+}
+/* Logo and text container */
+.header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+/* Logo styling */
+.logo {
+    max-width: 200px;
+    width: 50vmin;
+    height: auto;
+    margin-bottom: 1rem; /* Space between logo and text */
+}
+
+/* Text container */
+.appTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Individual letters */
+.appTitle h1 {
+    margin: 0;
+    line-height: 1;
+    font-size: 6rem;
+    transition: transform 0.3s ease;
+}
+
+.appTitle h1:hover {
+    transform: translateY(-3px);
+}
+
+/* Color classes */
+.appTitlecolor {
+    font-family: 'Macadamia', sans-serif;
+    font-weight: 300;
+    color: #51361b;
+}
+
+.appTitlecolor2 {
+    font-family: 'Macadamia', sans-serif;
+    font-weight: 300;
+    color: #c29159;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .appTitle h1 {
+        font-size: 2.5rem;
+    }
+
+    .logo {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .appTitle h1 {
+        font-size: 2rem;
+    }
+
+    .logo {
+        max-width: 120px;
+    }
+}
 
 /* ===== Custom Select Styles ===== */
 .customSelectContainer {
@@ -253,16 +340,6 @@ select.selectStyle:focus {
     font-weight: 500;
 }
 
-/*.modalContent {*/
-/*    background-color: white;*/
-/*    border-radius: 1rem;*/
-/*    border: 3px solid var(--coffee-600);*/
-/*    width: 100%;*/
-/*    max-width: 400px;*/
-/*    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);*/
-/*    align-items: center; !* Changed from flex-start to center *!*/
-/*    padding: 1rem; !* Reduced padding *!*/
-/*}*/
 
 .selectContainer {
     display: flex;
@@ -348,25 +425,36 @@ select.selectStyle:focus {
     transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-/* ===== Signup Page ===== */
-.signupPage {
-    min-height: 100vh;
-    background-color: var(--coffee-200);
-    padding: 2rem 1rem;
-    box-sizing: border-box;
-}
-
 .signupForm {
     background-color: white;
     border-radius: 0.75rem;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     padding: 2rem;
     width: 100%;
-    max-width: 28rem;
+    max-width: 40rem;
     animation: fadeIn 0.6s ease;
-    box-sizing: border-box;
-    margin: auto;
 }
+
+.signupForm > form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.signupForm > form > *:not(.inputGroup) {
+    grid-column: span 2;
+}
+
+.inputGroup {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.inputField.buttonInputField {
+    min-height: 46px; /* Match input field height */
+}
+
 
 @keyframes fadeIn {
     from {
@@ -389,9 +477,6 @@ select.selectStyle:focus {
     line-height: 1.3;
 }
 
-.inputGroup {
-    margin-bottom: 1.25rem;
-}
 
 .label {
     display: block;
@@ -431,7 +516,8 @@ select.selectStyle:focus {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    margin: 1.5rem 0 1rem;
+    /* Remove previous margins */
+    margin: 0;
     font-size: 1rem;
     line-height: 1.5;
 }
@@ -446,6 +532,14 @@ select.selectStyle:focus {
 
 /* ===== Responsive tweaks ===== */
 @media (max-width: 480px) {
+    .appTitle h1 {
+        font-size: 2.5rem;
+    }
+
+    .logo {
+        height: 2.5rem;
+        margin: 0 0.75rem;
+    }
     .loginPage {
         padding: 1rem;
     }
@@ -459,35 +553,44 @@ select.selectStyle:focus {
     }
 }
 
-/* ===== Image & Link ===== */
-.pagatu_image {
-    display: block;
-    margin: 0 auto 2rem auto;
-    width: 350px;
-    height: auto;
-    max-height: 400px;
-    object-fit: contain;
+@media (max-width: 768px) {
+    .appTitle h1 {
+        font-size: 3rem;
+    }
+
+    .logo {
+        height: 3rem;
+    }
+    .signupForm > form {
+        grid-template-columns: 1fr;
+    }
+
+    .signupForm > form > *:not(.inputGroup) {
+        grid-column: span 1;
+    }
 }
 
+
+
+
 .loginLink {
-    font-size: 0.875rem;
-    color: var(--coffee-600);
     text-align: center;
-    line-height: 1.5;
     margin-top: 1rem;
+    color: var(--coffee-600);
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
 }
 
 .loginLink a {
-    color: var(--coffee-500);
-    font-weight: 600;
+    color: var(--coffee-600);
     text-decoration: none;
-    margin-left: 0.3rem;
+    font-weight: 500;
     transition: color 0.2s;
-    display: inline-block;
 }
 
 .loginLink a:hover {
-    color: var(--coffee-600);
+    color: var(--coffee-800);
     text-decoration: underline;
 }
 
@@ -510,7 +613,7 @@ select.selectStyle:focus {
     font-size: 1rem;
 }
 
-.successMessage{
+.successMessage {
     font-weight: 600;
     font-size: 1rem;
     color: #28a745;

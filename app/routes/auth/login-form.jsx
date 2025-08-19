@@ -1,45 +1,50 @@
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
-import {Link, useNavigate} from "react-router-dom";
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const LoginForm = () => {
-    const [credentials, setCredentials] = useState({username: '', password: ''});
+    const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!error) return;
+
+        const timer = setTimeout(() => setError(''), 1000);
+        return () => clearTimeout(timer);
+    }, [error]);
+
     const handleChange = (e) => {
-        const {id, value} = e.target;
-        setCredentials(prev => ({...prev, [id]: value}));
-        // Clear error when user starts typing
+        const { id, value } = e.target;
+        setCredentials(prev => ({ ...prev, [id]: value }));
         if (error) setError('');
     };
 
     const handleLoginSuccess = (userData, authToken) => {
+        localStorage.setItem('authToken', authToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+
+        const pendingInvitation = localStorage.getItem('pendingInvitation');
+        if (!pendingInvitation) {
+            navigate('/home');
+            return;
+        }
+
         try {
-            // Store authentication data consistently
-            localStorage.setItem('authToken', authToken);
-            localStorage.setItem('user', JSON.stringify(userData));
+            const { username: invitedUser, groupName } = JSON.parse(pendingInvitation);
+            const currentUsername = userData.username;
 
-            // Check for pending invitation
-            const pendingInvitation = localStorage.getItem('pendingInvitation');
-
-            if (pendingInvitation) {
-                try {
-                    const {username, groupName} = JSON.parse(pendingInvitation);
-                    navigate(`/invitation?username=${encodeURIComponent(username)}&groupName=${encodeURIComponent(groupName)}`);
-                } catch (error) {
-                    console.error('Error parsing pending invitation:', error);
-                    localStorage.removeItem('pendingInvitation');
-                    navigate('/home');
-                }
+            if (currentUsername === invitedUser) {
+                navigate(`/invitation?username=${encodeURIComponent(invitedUser)}&groupName=${encodeURIComponent(groupName)}`);
             } else {
+                localStorage.removeItem('pendingInvitation');
                 navigate('/home');
             }
-        } catch (error) {
-            console.error('Error handling login success:', error);
+        } catch {
+            localStorage.removeItem('pendingInvitation');
             navigate('/home');
         }
     };
@@ -52,39 +57,22 @@ const LoginForm = () => {
         try {
             const response = await fetch(`${NGROK_SERVER_URL}/api/auth/login`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials),
                 credentials: 'include',
             });
 
             if (!response.ok) {
-                switch (response.status) {
-                    case 401:
-                        throw new Error('Login non riuscito. Controlla le credenziali.');
-                    case 404:
-                        throw new Error('Login non riuscito. Controlla le credenziali.');
-                    default:
-                        throw new Error('Errore sconosciuto. Riprova più tardi.');
-                }
+                const errorMsg = response.status === 401 || response.status === 404
+                    ? 'Login non riuscito. Controlla le credenziali.'
+                    : 'Errore di connessione al server.';
+                throw new Error(errorMsg);
             }
 
-            const {token, username, email} = await response.json();
-
-            // Create consistent user data object
-            const userData = {
-                username,
-                email
-            };
-
-            // Store email separately if needed for backwards compatibility
-            localStorage.setItem('email', JSON.stringify(email));
-
-            // Use the consolidated login success handler
-            handleLoginSuccess(userData, token);
-
-        } catch (error) {
-            console.error('Errore login:', error);
-            setError(error.message || 'Errore di rete. Riprova.');
+            const { token, username, email } = await response.json();
+            handleLoginSuccess({ username, email }, token);
+        } catch (err) {
+            setError(err.message);
         } finally {
             setIsLoading(false);
         }
@@ -92,16 +80,20 @@ const LoginForm = () => {
 
     return (
         <div className={styles.container}>
-            <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image}/>
-            <div className={styles.loginForm}>
+            <img src="/pagaTu.png" alt="Logo" className={styles.logo} />
+
+            <div className={styles.formContainer}>
                 <h2 className={styles.title}>Accedi al tuo account</h2>
-                <form onSubmit={handleSubmit}>
+
+                <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
-                        <label htmlFor="username" className={styles.label}>Username</label>
+                        <label htmlFor="username" className={styles.label}>
+                            Username
+                        </label>
                         <input
                             type="text"
                             id="username"
-                            className={styles.inputField}
+                            className={styles.input}
                             placeholder="Il tuo username"
                             value={credentials.username}
                             onChange={handleChange}
@@ -109,15 +101,20 @@ const LoginForm = () => {
                             disabled={isLoading}
                         />
                     </div>
+
                     <div className={styles.inputGroup}>
-                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <label htmlFor="password" className={styles.label}>Password</label>
-                            <Link to="/forgotPassword" className={styles.forgotPassword}>Password dimenticata?</Link>
+                        <div className={styles.passwordHeader}>
+                            <label htmlFor="password" className={styles.label}>
+                                Password
+                            </label>
+                            <Link to="/forgotPassword" className={styles.link}>
+                                Password dimenticata?
+                            </Link>
                         </div>
                         <input
                             type="password"
                             id="password"
-                            className={styles.inputField}
+                            className={styles.input}
                             placeholder="••••••••"
                             value={credentials.password}
                             onChange={handleChange}
@@ -126,18 +123,21 @@ const LoginForm = () => {
                         />
                     </div>
 
-                    {error && (
-                        <div className={styles.errorMessageModal}>
-                            {error}
-                        </div>
-                    )}
+                    {error && <div className={styles.error}>{error}</div>}
 
-                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                    <button
+                        type="submit"
+                        className={styles.primaryButton}
+                        disabled={isLoading}
+                    >
                         {isLoading ? 'Accesso...' : 'Accedi'}
                     </button>
-                    <div className={styles.signupLink}>
+
+                    <div className={styles.footer}>
                         Non hai un account?
-                        <Link to="/signup">Registrati</Link>
+                        <Link to="/signup" className={styles.link}>
+                            Registrati
+                        </Link>
                     </div>
                 </form>
             </div>
