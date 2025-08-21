@@ -36,17 +36,6 @@
     line-height: 1;
 }
 
-.userInfo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem; /* Increased gap */
-    background-color: white;
-    padding: 0.5rem 0.75rem 0.5rem 0.5rem; /* Increased padding */
-    border-radius: 9999px;
-    color: var(--coffee-700);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
-    height: 2.75rem; /* Fixed height for consistency */
-}
 
 .avatar {
     position: relative;

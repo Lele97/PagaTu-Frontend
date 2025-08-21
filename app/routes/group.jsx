@@ -5,6 +5,179 @@ import Header from '../view/header.jsx';
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
+const InviteUserModal = ({
+                             closeInviteForm,
+                             submitInvite,
+                             userInvitation,
+                             error,
+                             successMessage,
+                             isSubmitting,
+                             handleInputChangeInvitation
+                         }) => (
+    <div className={styles.modalOverlay}>
+        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h2>Invita un Membro</h2>
+            <form onSubmit={submitInvite}>
+                <div className={styles.formGroup}>
+                    <label htmlFor="user">Utente da invitare nel gruppo:</label>
+                    <input
+                        type="text"
+                        id="user"
+                        value={userInvitation}
+                        onChange={handleInputChangeInvitation}
+                        required
+                        className={styles.formInput}
+                        placeholder="Inserisci username..."
+                        autoFocus/>
+                </div>
+                {error && <div className={styles.errorMessageModal}>{error}</div>
+                }
+                {successMessage &&
+                    <div className={styles.successMessage}>{successMessage}</div>
+                }
+                <div>
+                    <button
+                        type="button"
+                        onClick={closeInviteForm}
+                        className={`${styles.groupButton} ${styles.cancelButton}`}
+                        disabled={isSubmitting}
+                    >
+                        Annulla
+                    </button>
+                    <button
+                        type="submit"
+                        className={`${styles.groupButton} ${styles.submitButton}`}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Invito in corso...' : 'Invita'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+);
+
+const RegisterPaymentModal = ({
+                                  submitPayment,
+                                  importo,
+                                  descrizione,
+                                  error,
+                                  successMessage,
+                                  isSubmitting,
+                                  closeRegisterPaymentModal,
+                                  handleInputChangeImporto,
+                                  handleInputChangeDescrizione
+                              }) => (
+    <div className={styles.modalOverlay}>
+        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+            <h2>Registra il pagamento</h2>
+
+            <div style={{
+                backgroundColor: 'var(--coffee-50)',
+                padding: '1rem',
+                borderRadius: '0.5rem',
+                margin: '1rem 0',
+                borderLeft: '3px solid var(--coffee-600)'
+            }}>
+                <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
+                    pagamento:</p>
+                <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
+                    <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
+                    <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
+                    <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
+                    <li>Il pagamento apparirà nella classifica del gruppo</li>
+                </ul>
+            </div>
+
+            <form onSubmit={submitPayment}>
+                <div className={styles.formGroup}>
+
+                    <label htmlFor="importo">Importo:</label>
+                    <input
+                        type="number"
+                        id="importo"
+                        value={importo}
+                        onChange={handleInputChangeImporto}
+                        required
+                        className={styles.formInput}
+                        placeholder="Inserisci importo..."
+                        step="0.01"
+                        min="0"
+                        autoFocus
+                    />
+
+                    <label htmlFor="descrizione">Descrizione:</label>
+                    <input
+                        type="text"
+                        id="descrizione"
+                        value={descrizione}
+                        onChange={handleInputChangeDescrizione}
+                        required
+                        className={styles.formInput}
+                        placeholder="Inserisci una descrizione del pagamento..."
+                    />
+
+                </div>
+                {error && <div className={styles.errorMessageModal}>{error}</div>}
+                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+                <div className={styles.formButtons}>
+                    <button
+                        type="button"
+                        onClick={closeRegisterPaymentModal}
+                        className={`${styles.groupButton} ${styles.cancelButton}`}
+                        disabled={isSubmitting}
+                    >
+                        Annulla
+                    </button>
+                    <button
+                        type="submit"
+                        className={`${styles.groupButton} ${styles.submitButton}`}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>);
+
+const PayForFriendModal = ({}) => (
+    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closePayForFriendModal)}>
+        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+            <h2>Paga per un amico</h2>
+            <p>Text........</p>
+            {/*<p>Sei sicuro di voler eliminare il gruppo <strong>"{group.groupName}"</strong>?</p>
+                <p style={{color: '#dc3545', fontSize: '0.9em', marginTop: '1rem'}}>
+                    Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
+                </p>*/}
+
+            <form onSubmit={confirmPayForFriend}>
+
+                {error && <div className={styles.errorMessageModal}>{error}</div>}
+                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+
+                <div className={styles.formButtons} style={{marginTop: '2rem'}}>
+                    <button
+                        type="button"
+                        onClick={closePayForFriendModal}
+                        className={`${styles.groupButton} ${styles.cancelButton}`}
+                        disabled={isPayForFriend}>
+                        Annulla
+                    </button>
+                    <button
+                        type="button"
+                        className={`${styles.groupButton} ${styles.deleteButton}`}
+                        disabled={isPayForFriend}>
+                        {isPayForFriend ? 'Salto del pagamento in corso...' : 'Salta pagamento'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+)
+
 const Group = () => {
 
     const [user, setUser] = useState(null);
@@ -184,6 +357,18 @@ const Group = () => {
         setError(null);
     };
 
+    const handleInputChangeInvitation = (e) => {
+        setUserInvitation(e.target.value);
+    }
+
+    const handleInputChangeImporto = (e) => {
+        setImporto(e.target.value);
+    }
+
+    const handleInputChangeDescrizione = (e) => {
+        setDescrizione(e.target.value);
+    }
+
     const isUserAdmin = (user) => {
         if (!groups || !user || !groups.userMembershipsdto) {
             return false;
@@ -331,6 +516,8 @@ const Group = () => {
                 }
 
                 setSuccessMessage('Pagamento registrato con successo');
+                setImporto('')
+                setDescrizione('')
 
                 setTimeout(() => {
                     setShowRegisterPaymentModal(false);
@@ -537,165 +724,6 @@ const Group = () => {
             </div>
         </div>
     );
-
-    const PayForFriendModal = () => (
-        <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closePayForFriendModal)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-
-                <h2>Paga per un amico</h2>
-                <p>Text........</p>
-                {/*<p>Sei sicuro di voler eliminare il gruppo <strong>"{group.groupName}"</strong>?</p>
-                <p style={{color: '#dc3545', fontSize: '0.9em', marginTop: '1rem'}}>
-                    Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
-                </p>*/}
-
-                <form onSubmit={confirmPayForFriend}>
-
-                    {error && <div className={styles.errorMessageModal}>{error}</div>}
-                    {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-
-                    <div className={styles.formButtons} style={{marginTop: '2rem'}}>
-                        <button
-                            type="button"
-                            onClick={closePayForFriendModal}
-                            className={`${styles.groupButton} ${styles.cancelButton}`}
-                            disabled={isPayForFriend}>
-                            Annulla
-                        </button>
-                        <button
-                            type="button"
-                            className={`${styles.groupButton} ${styles.deleteButton}`}
-                            disabled={isPayForFriend}>
-                            {isPayForFriend ? 'Salto del pagamento in corso...' : 'Salta pagamento'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    )
-
-    const InviteUserModal = () => (<div
-        className={styles.modalOverlay}
-        onClick={(e) => handleModalOverlayClick(e, closeInviteForm)}  // Close when clicking outside
-    >
-        <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}  // Prevent clicks inside modal from closing it
-        >
-            <h2>Invita un Membro</h2>
-            <form onSubmit={submitInvite}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="user">Utente da invitare nel gruppo:</label>
-                    <input
-                        type="text"
-                        id="user"
-                        value={userInvitation}
-                        onChange={(e) => setUserInvitation(e.target.value)}
-                        required
-                        className={styles.formInput}
-                        placeholder="Inserisci username..."
-                        autoFocus
-                    />
-                </div>
-                {error && <div className={styles.errorMessageModal}>{error}</div>}
-                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-                <div>
-                    <button
-                        type="button"
-                        onClick={closeInviteForm}
-                        className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isSubmitting}
-                    >
-                        Annulla
-                    </button>
-                    <button
-                        type="submit"
-                        className={`${styles.groupButton} ${styles.submitButton}`}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? 'Registrando il pagamento..' : 'Registra pagamento'}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>);
-
-    const RegisterPaymentModal = () => (
-        <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeRegisterPaymentModal)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-
-                <h2>Registra il pagamento</h2>
-
-                <div style={{
-                    backgroundColor: 'var(--coffee-50)',
-                    padding: '1rem',
-                    borderRadius: '0.5rem',
-                    margin: '1rem 0',
-                    borderLeft: '3px solid var(--coffee-600)'
-                }}>
-                    <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
-                        pagamento:</p>
-                    <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
-                        <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
-                        <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
-                        <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
-                        <li>Il pagamento apparirà nella classifica del gruppo</li>
-                    </ul>
-                </div>
-
-                <form onSubmit={submitPayment}>
-                    <div className={styles.formGroup}>
-
-                        <label htmlFor="importo">Importo:</label>
-                        <input
-                            type="number"
-                            id="importo"
-                            value={importo}
-                            onChange={(e) => setImporto(e.target.value)}
-                            required
-                            className={styles.formInput}
-                            placeholder="Inserisci importo..."
-                            step="0.01"
-                            min="0"
-                            autoFocus
-                        />
-
-                        <label htmlFor="descrizione">Descrizione:</label>
-                        <input
-                            type="text"
-                            id="descrizione"
-                            value={descrizione}
-                            onChange={(e) => setDescrizione(e.target.value)}
-                            required
-                            className={styles.formInput}
-                            placeholder="Inserisci una descrizione del pagamento..."
-                        />
-
-                    </div>
-                    {error && <div className={styles.errorMessageModal}>{error}</div>}
-                    {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-                    <div className={styles.formButtons}>
-                        <button
-                            type="button"
-                            onClick={closeRegisterPaymentModal}
-                            className={`${styles.groupButton} ${styles.cancelButton}`}
-                            disabled={isSubmitting}
-                        >
-                            Annulla
-                        </button>
-                        <button
-                            type="submit"
-                            className={`${styles.groupButton} ${styles.submitButton}`}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>);
-
-    const handleModalOverlayClick = () => {};
 
     const getClassificaPaymentsForGroup = async (groupToUse = group) => {
         const token = localStorage.getItem('authToken');
@@ -950,9 +978,18 @@ const Group = () => {
 
             </main>
 
-            {showInviteForm && <InviteUserModal/>}
+            {showInviteForm && <InviteUserModal closeInviteForm={closeInviteForm} submitInvite={submitInvite}
+                                                userInvitation={userInvitation} isSubmitting={isSubmitting}
+                                                error={error} successMessage={successMessage}
+                                                handleInputChangeInvitation={handleInputChangeInvitation}/>}
             {showDeleteModal && <DeleteGroupModal/>}
-            {showRegisterPaymentModal && <RegisterPaymentModal/>}
+            {showRegisterPaymentModal && <RegisterPaymentModal closeRegisterPaymentModal={closeRegisterPaymentModal}
+                                                               handleInputChangeImporto={handleInputChangeImporto}
+                                                               submitPayment={submitPayment} importo={importo}
+                                                               descrizione={descrizione}
+                                                               handleInputChangeDescrizione={handleInputChangeDescrizione}
+                                                               isSubmitting={isSubmitting} error={error}
+                                                               successMessage={successMessage}/>}
             {showSaltaPaymentModal && <SkipPaymentModal/>}
             {showPayForFriendModal && <PayForFriendModal/>}
         </div>

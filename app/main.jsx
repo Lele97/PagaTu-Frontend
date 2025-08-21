@@ -12,6 +12,7 @@ import Group from "~/routes/group.jsx";
 import Invitation from "~/routes/invitation.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
+import ResetPswForm from "~/routes/auth/resetPsw-form.jsx";
 
 const router = createBrowserRouter([
     {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
             {
                 path: "/invitation",
                 element: <Invitation/>,
+            },
+            {
+                path: "/resetPassword",
+                element: <ResetPswForm/>
             }
         ],
     },

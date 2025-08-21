@@ -27,8 +27,3 @@ body {
     color: var(--coffee-900);
     font-family: 'Segoe UI', sans-serif;
 }
-
-/* Contenuto centrale riempie lo spazio tra header e footer */
-.appWrapper > *:first-child {
-    flex: 1;
-}

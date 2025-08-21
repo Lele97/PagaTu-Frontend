@@ -41,13 +41,6 @@
 }
 
 /* Logo - 4x larger than original */
-.logo {
-    width: 380px; /* 4x the original 120px */
-    height: auto;
-    max-height: 380px; /* 4x the original 120px */
-    object-fit: contain;
-    margin-bottom: 1rem;
-}
 
 .errorIcon {
     font-size: 4rem;
