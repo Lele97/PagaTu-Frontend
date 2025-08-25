@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import styles from '~/styles/forgotPsw.module.css';
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
@@ -10,62 +10,12 @@ const ForgotPswForm = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-    const [useSearchParams] = useSearchParams();
-
-    //http://localhost:8888/resetPassword?key=Paga_Tu_20250821155233_f5fdee14-f982-468f-b328-010e95165044_Reset_Token_
-
-    useEffect(() => {
-
-        const checkTokenExpired = async () => {
-
-            const tokenResetPassword = useSearchParams.get('key')
-
-            console.log(tokenResetPassword)
-
-            if (!tokenResetPassword) {
-                // If no token is present, we're on the forgot password page, not reset
-                return;
-            }
-
-            try {
-
-                const response = await fetch(`${NGROK_SERVER_URL}/api/auth/reset-password?key=${encodeURIComponent(tokenResetPassword)}`, {
-                    method: 'GET',
-                })
-                if (!response.ok) {
-                    // Throw error to trigger error boundary
-                    throw new Response('', {
-                        status: response.status,
-                        statusText: response.statusText
-                    });
-                }
-
-                const data = await response.json();
-                if (data.valid) {
-                    // Token is valid, you might want to store the email or proceed to reset form
-                    console.log('Token is valid for email:', data.email);
-                } else {
-                    throw new Response('', {
-                        status: 401,
-                        statusText: 'Invalid or expired token'
-                    });
-                }
-            } catch (error) {
-                // This will trigger the error boundary and show the ErrorPage
-                throw error;
-            }
-
-
-        }
-
-        checkTokenExpired()
-    }, [useSearchParams])
 
     useEffect(() => {
         if (error) {
             const timer = setTimeout(() => {
                 setError(null);
-            }, 5000); // Increased to 5 seconds for better readability
+            }, 1000); // Increased to 5 seconds for better readability
             return () => clearTimeout(timer);
         }
     }, [error]);

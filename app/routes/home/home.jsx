@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
-import Header from '../view/header.jsx';
+import Header from '../../components/header.jsx';
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 

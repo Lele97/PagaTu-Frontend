@@ -1,7 +1,7 @@
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from 'react-router-dom';
 import styles from '~/styles/invitation.module.css';
-import Header from '../view/header.jsx';
+import Header from '../../components/header.jsx';
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 

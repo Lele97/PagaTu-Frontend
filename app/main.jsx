@@ -1,18 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {RouterProvider, createBrowserRouter} from 'react-router-dom';
+import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Root from './routes/root';
 import Login from './routes/auth/login';
 import ErrorPage from './routes/error/error-page.jsx';
 import './styles/app.css';
-import Signup from "~/routes/auth/signup";
-import Home from "~/routes/home.jsx";
-import ForgotPswForm from "~/routes/auth/forgotPsw-form.jsx";
-import Group from "~/routes/group.jsx";
-import Invitation from "~/routes/invitation.jsx";
+import Signup from "~/routes/register/signup";
+import Home from "~/routes/home/home.jsx";
+import ForgotPswForm from "~/routes/resetPassword/forgotPsw-form.jsx";
+import Group from "~/routes/group/group.jsx";
+import Invitation from "~/routes/invitation/invitation.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import ResetPswForm from "~/routes/auth/resetPsw-form.jsx";
+import ResetPswForm from "~/routes/resetPassword/resetPsw-form.jsx";
 
 const router = createBrowserRouter([
     {
@@ -51,6 +51,10 @@ const router = createBrowserRouter([
             {
                 path: "/resetPassword",
                 element: <ResetPswForm/>
+            },
+            {
+                path: "/errore-token",
+                element: <ErrorPage/>,
             }
         ],
     },
