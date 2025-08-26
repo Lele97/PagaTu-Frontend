@@ -7,10 +7,8 @@ const Footer = () => {
         <footer>
             <div className={styles.footerContainer}>
 
-                {/* Left Image */}
                 <img className={styles.footerImage} src="/webstorm-svgrepo-com.svg" alt="WebStorm Logo"/>
 
-                {/* Center Content */}
                 <div className={styles.footerCenter}>
 
                     <p className={styles.footerText}>PagaTu - Il caffè che unisce il
@@ -33,7 +31,6 @@ const Footer = () => {
                     <p className={styles.footerText}>© {new Date().getFullYear()} PagaTu. All rights reserved.</p>
                 </div>
 
-                {/* Right Image */}
                 <img className={styles.footerImage} src="/react-16-svgrepo-com.svg" alt="React Logo"/>
             </div>
         </footer>

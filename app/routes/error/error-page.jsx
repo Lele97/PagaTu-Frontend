@@ -5,9 +5,16 @@ import styles from '~/styles/error.module.css';
 export default function ErrorPage() {
     const error = useRouteError();
     const location = useLocation();
-    const passedError = location.state?.errorMessage; // 👈 messaggio passato da navigate
+    const passedError = location.state?.errorMessage
+    const invitationError = location.state?.errorInvitation;
 
     const getErrorInfo = () => {
+        if (invitationError) {
+            return{
+                title:"Oops! Qualcosa è andato storto",
+                message: invitationError
+            }
+        }
         if (passedError) {
             return {
                 title: "Errore nel Reset Password",

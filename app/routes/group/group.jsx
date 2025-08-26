@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/group.module.css';
 import Header from '../../components/header.jsx';
+import jp from "jsonpath";
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
@@ -202,6 +203,7 @@ const Group = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isPayForFriend, setIsPayForFriend] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
+    const [myTurn, setMyTurn] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -215,7 +217,6 @@ const Group = () => {
             }
 
             try {
-                // Parse user data
                 let username = null;
                 if (userData) {
                     const parsedUser = JSON.parse(userData);
@@ -224,18 +225,16 @@ const Group = () => {
                         : parsedUser;
                 }
 
-                if (!username) {
-                    throw new Error('No user data available');
-                }
+                if (!username) throw new Error('No user data available');
 
                 setUser(username);
 
-                // Parse group data with better error handling
                 let groupObject = {groupName: 'Unnamed Group'};
+                let parsedGroup = null;
 
                 if (groupData) {
                     try {
-                        const parsedGroup = JSON.parse(groupData);
+                        parsedGroup = JSON.parse(groupData);
                         groupObject = {
                             id: parsedGroup.id,
                             groupName: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
@@ -243,27 +242,37 @@ const Group = () => {
                             ...parsedGroup
                         };
                     } catch (parseError) {
-                        console.error('Error parsing group data:', parseError);
-                        // Keep default groupObject
+                        throw new Error('Error parsing group data: ' + parseError.message);
                     }
+                }
+
+                let userMembership = null;
+                if (parsedGroup?.userMembershipsdto) {
+                    userMembership = jp.query(parsedGroup, `$.userMembershipsdto[?(@.username == '${username}')]`)[0];
+                }
+
+                if (userMembership?.myTurn === false) {
+                    setMyTurn(false);
+                } else {
+                    setMyTurn(true);
                 }
 
                 setGroup(groupObject);
                 setGroups(groupObject);
 
-                // Only call API if we have valid group data
                 if (groupObject.id || groupObject.groupName !== 'Unnamed Group') {
                     await getClassificaPaymentsForGroup(groupObject);
                 }
 
             } catch (err) {
-                console.error('Error initializing data:', err);
+                console.error(err);
                 navigate('/login');
             }
         };
 
         fetchData();
     }, [navigate]);
+
 
     useEffect(() => {
         const container = document.querySelector('.container');
@@ -288,7 +297,6 @@ const Group = () => {
         if (user && groups && groups.userMembershipsdto) {
             const adminStatus = isUserAdmin(user);
             setIsAdmin(adminStatus);
-            console.log('Admin status for', user, ':', adminStatus);
         }
     }, [user, groups]);
 
@@ -324,28 +332,24 @@ const Group = () => {
     const goBack = () => navigate('/home');
 
     const registerPayment = () => {
-        console.log('Register payment clicked');
         setShowRegisterPaymentModal(true);
         setSuccessMessage('');
         setError(null);
     };
 
     const skipPayment = () => {
-        console.log('Skip payment clicked');
         setShowSaltaPaymentModal(true);
         setSuccessMessage('');
         setError(null);
     };
 
     const payForFriend = () => {
-        console.log('Pay for friend clicked');
         setShowPayForFriendModal(true);
         setSuccessMessage('');
         setError(null);
     }
 
     const deleteGroup = () => {
-        console.log('Delete group clicked');
         setShowDeleteModal(true)
         setSuccessMessage('');
         setError(null);
@@ -386,8 +390,6 @@ const Group = () => {
         setSuccessMessage('');
 
         try {
-            console.log('Inviting:', userInvitation, 'to group:', group.groupName);
-
             const token = localStorage.getItem('authToken');
 
             if (!token) {
@@ -432,7 +434,6 @@ const Group = () => {
                 }
 
             } catch (userCheckError) {
-                console.error('User check error:', userCheckError);
                 setError(`L'utente "${userInvitation}" non esiste nel sistema`);
                 return;
             }
@@ -460,7 +461,6 @@ const Group = () => {
             }
 
             const responseMessage = await response.text();
-            console.log('Invitation response:', responseMessage);
 
             setSuccessMessage(`Invito inviato a ${userInvitation}!`);
             setUserInvitation('');
@@ -471,7 +471,6 @@ const Group = () => {
 
         } catch (err) {
             setError(err.message || 'Errore nell\'invio dell\'invito. Riprova.');
-            console.error('Invite error:', err);
         } finally {
             setIsSubmitting(false);
         }
@@ -484,8 +483,6 @@ const Group = () => {
         setSuccessMessage('');
 
         try {
-
-            console.log('register payment...');
 
             const token = localStorage.getItem('authToken');
 
@@ -526,13 +523,12 @@ const Group = () => {
                 await getClassificaPaymentsForGroup(group)
 
             } catch (err) {
-                console.error('Payment register error:', err);
                 setError(`Problema durante la registrazione del pagamento`);
                 return;
             }
 
         } catch (err) {
-            console.error('Register payment error:', err);
+            setError('Register payment error:', err);
         } finally {
             setIsSubmitting(false);
         }
@@ -545,7 +541,6 @@ const Group = () => {
         setSuccessMessage('');
 
         try {
-            console.log('skip payment...');
 
             const token = localStorage.getItem('authToken');
 
@@ -579,7 +574,6 @@ const Group = () => {
             }, 2000);
 
         } catch (err) {
-            console.error('Skip payment error:', err);
             setError('Errore di rete. Riprova più tardi.');
         } finally {
             setIsSkipping(false); // Use the correct state variable
@@ -613,7 +607,6 @@ const Group = () => {
             }
 
             const responseMessage = await response.text();
-            console.log('Delete response:', responseMessage);
 
             // Clear group data from localStorage
             localStorage.removeItem('group');
@@ -627,7 +620,6 @@ const Group = () => {
 
         } catch (err) {
             setError('Errore nell\'eliminazione del gruppo. Riprova.');
-            console.error('Delete error:', err);
         } finally {
             setIsDeleting(false);
         }
@@ -638,7 +630,6 @@ const Group = () => {
         setIsPayForFriend(true);
         setError(null);
         setSuccessMessage('');
-        console.log("Hello confirmPayForFriend")
     }
 
     const DeleteGroupModal = () => (
@@ -725,6 +716,48 @@ const Group = () => {
         </div>
     );
 
+    const PaymentTurnCard = () => (
+        <div className={styles.paymentTurnCard}>
+            <div className={styles.paymentTurnHeader}>
+                <div className={styles.userInfo}>
+                    <div className={styles.avatar}>
+                        {user ? user.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div className={styles.userDetails}>
+                        <div className={styles.userName}>{user || 'Utente'}</div>
+                        <div className={`${styles.status} ${myTurn ? styles.statusTurn : styles.statusWaiting}`}>
+                            <i className={`fas ${myTurn ? 'fa-check-circle' : 'fa-clock'}`}></i>
+                            {myTurn ? 'È il tuo turno di pagare' : 'Non è il tuo turno'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className={styles.paymentActions}>
+                <button
+                    onClick={registerPayment}
+                    className={`${styles.groupButton} ${styles.paymentActionButton}`}
+                    disabled={!myTurn}
+                >
+                    <i className="fas fa-check-circle"></i> Registra Pagamento
+                </button>
+                <button
+                    onClick={skipPayment}
+                    className={`${styles.groupButton} ${styles.paymentActionButton} ${styles.skipButton}`}
+                    disabled={!myTurn}
+                >
+                    <i className="fas fa-forward"></i> Salta Turno
+                </button>
+            </div>
+
+            <div className={styles.helpText}>
+                {myTurn
+                    ? 'Seleziona un\'azione per gestire il tuo turno di pagamento'
+                    : 'Attendi il tuo turno per effettuare un pagamento'}
+            </div>
+        </div>
+    );
+
     const getClassificaPaymentsForGroup = async (groupToUse = group) => {
         const token = localStorage.getItem('authToken');
 
@@ -752,8 +785,6 @@ const Group = () => {
             if (groupId) requestBody.groupId = groupId;
             if (groupName) requestBody.groupName = groupName;
 
-            console.log('Sending request:', requestBody);
-
             const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamenti/classifica`, {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
@@ -765,26 +796,17 @@ const Group = () => {
                 credentials: 'include'
             });
 
-            console.log('Response status:', response.status);
-
             if (response.status === 204) {
-                // Handle No Content response - this is expected when there are no payments
-                console.log('No payments found for group');
                 setClassificaPaymentsForGroup([]);
-                // Don't set an error message - this is a normal state
             } else if (response.ok) {
                 const data = await response.json();
-                console.log("Classifica pagamenti", data);
                 setClassificaPaymentsForGroup(data);
             } else {
-                // Handle other error statuses
                 let errorMessage;
                 try {
-                    // Try to parse JSON error response first
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorData.error || `Errore del server (${response.status})`;
                 } catch (jsonError) {
-                    // If JSON parsing fails, get text response
                     try {
                         errorMessage = await response.text() || `Errore del server (${response.status})`;
                     } catch (textError) {
@@ -792,13 +814,9 @@ const Group = () => {
                     }
                 }
 
-                console.error(`HTTP ${response.status}:`, errorMessage);
-
-                // Handle specific status codes
                 switch (response.status) {
                     case 401:
                         setPaymentByGroupError("Sessione scaduta. Effettua nuovamente il login.");
-                        // Redirect to login after a delay
                         setTimeout(() => navigate('/login'), 2000);
                         break;
                     case 403:
@@ -822,7 +840,6 @@ const Group = () => {
             }
 
         } catch (err) {
-            console.error('Request failed:', err);
             if (err.name === 'TypeError' && err.message.includes('fetch')) {
                 setPaymentByGroupError("Errore di connessione. Verifica la tua connessione internet.");
             } else {
@@ -886,114 +903,158 @@ const Group = () => {
         setShowDeleteModal(false);
         setError(null);
         setSuccessMessage('');
-        // The useEffect will handle the blur cleanup automatically
     };
 
-    return (<div className={styles.groupPage}>
-        <div className={styles.container}>
+    return (
+        <div className={styles.groupPage}>
+            <div className={styles.container}>
 
-            <Header user={user} logout={logout}/>
+                <Header user={user} logout={logout}/>
 
-            {/* Main */}
-            <main className={styles.main}>
-                <button onClick={goBack} className={styles.groupButton} style={{marginBottom: '2rem'}}>
-                    <i className="fa-solid fa-arrow-left"></i> <i className="fa-solid fa-house"></i>
-                </button>
+                {/* Main */}
+                <main className={styles.main}>
+                    <button onClick={goBack} className={styles.groupButton} style={{marginBottom: '2rem'}}>
+                        <i className="fa-solid fa-arrow-left"></i> <i className="fa-solid fa-house"></i>
+                    </button>
 
-                <div className={styles.groupHeader}>
-                    <h1 className={styles.sectionTitle} style={{textAlign: 'left', margin: 0}}>
-                        <i className="fa-solid fa-user-group"></i> {group?.groupName || 'No Group Name'}
-                    </h1>
+                    <div className={styles.groupHeader}>
+                        <h1 className={styles.sectionTitle} style={{textAlign: 'left', margin: 0}}>
+                            <i className="fa-solid fa-user-group"></i> {group?.groupName || 'No Group Name'}
+                        </h1>
 
-                    {isAdmin && (<div className={styles.groupAdminButtons}>
-                        <button
-                            onClick={deleteGroup}
-                            className={`${styles.groupButton} ${styles.deleteButton}`}
-                        >
-                            <i className="fa-solid fa-trash"></i> Elimina Gruppo
-                        </button>
+                        {isAdmin && (<div className={styles.groupAdminButtons}>
+                            <button
+                                onClick={deleteGroup}
+                                className={`${styles.groupButton} ${styles.deleteButton}`}
+                            >
+                                <i className="fa-solid fa-trash"></i> Elimina Gruppo
+                            </button>
 
-                        <button
-                            onClick={inviteMember}
-                            className={`${styles.groupButton} ${styles.inviteButton}`}
-                        >
-                            <i className="fa-solid fa-user-plus"></i> Invita Membro
-                        </button>
-                    </div>)}
-
-                </div>
-
-                {/* Azioni gruppo */}
-                <section className={styles.groupSection} style={{marginTop: '2rem'}}>
-                    <div className={styles.actionButtons}>
-                        <button onClick={registerPayment}
-                                className={`${styles.groupButton} ${styles.actionButton}`}>
-                            Registra Pagamento
-                        </button>
-                        <button onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
-                            Salta Pagamento
-                        </button>
-                        <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
-                            Paga per un amico
-                        </button>
-                    </div>
-                </section>
-
-                <div className={styles.separator}></div>
-
-                <h2 className={styles.sectionTitle}><i className="fa-solid fa-ranking-star"></i> Classifica
-                    pagamenti</h2>
-
-                {paymentLoading ? (<LoadingSpinner message={"Caricamento pagamenti..."}/>) :
-                    paymentByGroupError ? (<ErrorMessage message={paymentByGroupError} onRetry={retryPayment}/>) :
-                        classificaPaymentsForGroup.length > 0 ? (<>
-                            <div className={styles.tableContainer}>
-                                <table className={styles.table}>
-                                    <thead className={styles.tableHeader}>
-                                    <tr>
-                                        <th className={styles.tableHeaderCell}>Utente</th>
-                                        <th className={styles.tableHeaderCell}>Totale Speso</th>
-                                        <th className={styles.tableHeaderCell}>Pagamenti effetuati</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody className={styles.tableBody}>
-                                    {classificaPaymentsForGroup.map((payment, index) => (
-                                        <tr key={index} className={styles.tableRow}>
-                                            <td className={styles.tableCell}>
-                                                {payment.username}
-                                            </td>
-                                            <td className={styles.tableCell}>
-                                                {formatCurrency(payment.totaleImporto)}
-                                            </td>
-                                            <td className={styles.tableCell}>
-                                                {payment.totalePagamenti}
-                                            </td>
-                                        </tr>))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </>) : (<div className={styles.textEmpty}>
-                            Nessun pagamento trovato
+                            <button
+                                onClick={inviteMember}
+                                className={`${styles.groupButton} ${styles.inviteButton}`}
+                            >
+                                <i className="fa-solid fa-user-plus"></i> Invita Membro
+                            </button>
                         </div>)}
 
-            </main>
+                    </div>
 
-            {showInviteForm && <InviteUserModal closeInviteForm={closeInviteForm} submitInvite={submitInvite}
-                                                userInvitation={userInvitation} isSubmitting={isSubmitting}
-                                                error={error} successMessage={successMessage}
-                                                handleInputChangeInvitation={handleInputChangeInvitation}/>}
-            {showDeleteModal && <DeleteGroupModal/>}
-            {showRegisterPaymentModal && <RegisterPaymentModal closeRegisterPaymentModal={closeRegisterPaymentModal}
-                                                               handleInputChangeImporto={handleInputChangeImporto}
-                                                               submitPayment={submitPayment} importo={importo}
-                                                               descrizione={descrizione}
-                                                               handleInputChangeDescrizione={handleInputChangeDescrizione}
-                                                               isSubmitting={isSubmitting} error={error}
-                                                               successMessage={successMessage}/>}
-            {showSaltaPaymentModal && <SkipPaymentModal/>}
-            {showPayForFriendModal && <PayForFriendModal/>}
-        </div>
-    </div>);
+
+                   {/* <PaymentTurnCard />*/}
+
+                    {myTurn ? (
+                        <>
+                            <h1>E il tuo turno di pagare il caffe</h1>
+                            <p>puoi fare queste azioni</p>
+                            <section className={styles.groupSection} style={{marginTop: '2rem'}}>
+                                <div className={styles.actionButtons}>
+                                    <button onClick={registerPayment}
+                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                        Registra Pagamento
+                                    </button>
+                                    <button onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                        Salta Pagamento
+                                    </button>
+                                    <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                        Paga per un amico
+                                    </button>
+                                </div>
+                            </section>
+                        </>
+                    ) : (
+                        <>
+                            <h1>Non è il tuo turno di pagare il caffe</h1>
+                            <p>non puoi fare queste azioni</p>
+                            <p>Attendi il tuo turno per effettuare un pagamento</p>
+                            <section className={styles.groupSection} style={{marginTop: '2rem'}}>
+                                <div className={styles.actionButtons}>
+                                    <button disabled={true} onClick={registerPayment}
+                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                        Registra Pagamento
+                                    </button>
+                                    <button disabled={true} onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                        Salta Pagamento
+                                    </button>
+                                    <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                        Paga per un amico
+                                    </button>
+                                </div>
+                            </section>
+                        </>
+                    )}
+
+                    {/* Azioni gruppo */}
+            {/*        <section className={styles.groupSection} style={{marginTop: '2rem'}}>
+                        <div className={styles.actionButtons}>
+                            <button onClick={registerPayment}
+                                    className={`${styles.groupButton} ${styles.actionButton}`}>
+                                Registra Pagamento
+                            </button>
+                            <button onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                Salta Pagamento
+                            </button>
+                            <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                Paga per un amico
+                            </button>
+                        </div>
+                    </section>
+*/}
+                    <div className={styles.separator}></div>
+
+                    <h2 className={styles.sectionTitle}><i className="fa-solid fa-ranking-star"></i> Classifica
+                        pagamenti</h2>
+
+                    {paymentLoading ? (<LoadingSpinner message={"Caricamento pagamenti..."}/>) :
+                        paymentByGroupError ? (<ErrorMessage message={paymentByGroupError} onRetry={retryPayment}/>) :
+                            classificaPaymentsForGroup.length > 0 ? (<>
+                                <div className={styles.tableContainer}>
+                                    <table className={styles.table}>
+                                        <thead className={styles.tableHeader}>
+                                        <tr>
+                                            <th className={styles.tableHeaderCell}>Utente</th>
+                                            <th className={styles.tableHeaderCell}>Totale Speso</th>
+                                            <th className={styles.tableHeaderCell}>Pagamenti effetuati</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody className={styles.tableBody}>
+                                        {classificaPaymentsForGroup.map((payment, index) => (
+                                            <tr key={index} className={styles.tableRow}>
+                                                <td className={styles.tableCell}>
+                                                    {payment.username}
+                                                </td>
+                                                <td className={styles.tableCell}>
+                                                    {formatCurrency(payment.totaleImporto)}
+                                                </td>
+                                                <td className={styles.tableCell}>
+                                                    {payment.totalePagamenti}
+                                                </td>
+                                            </tr>))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>) : (<div className={styles.textEmpty}>
+                                Nessun pagamento trovato
+                            </div>)}
+
+                </main>
+
+                {showInviteForm && <InviteUserModal closeInviteForm={closeInviteForm} submitInvite={submitInvite}
+                                                    userInvitation={userInvitation} isSubmitting={isSubmitting}
+                                                    error={error} successMessage={successMessage}
+                                                    handleInputChangeInvitation={handleInputChangeInvitation}/>}
+                {showDeleteModal && <DeleteGroupModal/>}
+                {showRegisterPaymentModal && <RegisterPaymentModal closeRegisterPaymentModal={closeRegisterPaymentModal}
+                                                                   handleInputChangeImporto={handleInputChangeImporto}
+                                                                   submitPayment={submitPayment} importo={importo}
+                                                                   descrizione={descrizione}
+                                                                   handleInputChangeDescrizione={handleInputChangeDescrizione}
+                                                                   isSubmitting={isSubmitting} error={error}
+                                                                   successMessage={successMessage}/>}
+                {showSaltaPaymentModal && <SkipPaymentModal/>}
+                {showPayForFriendModal && <PayForFriendModal/>}
+            </div>
+        </div>);
 };
 
 export default Group;

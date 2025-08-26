@@ -10,7 +10,6 @@
     box-sizing: border-box;
 }
 
-/* Loading state */
 .loadingSpinner {
     display: flex;
     flex-direction: column;
@@ -30,7 +29,6 @@
     animation: spin 1s linear infinite;
 }
 
-/* Cards */
 .invitationCard,
 .errorCard,
 .successCard {
@@ -56,18 +54,36 @@
     font-size: 1rem;
 }
 
-.successMessage {
-    font-weight: 600;
-    font-size: 1rem;
-    color: #28a745;
-    background-color: rgba(40, 167, 69, 0.1);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-    border-left: 3px solid #28a745;
+.successCard {
+    background: linear-gradient(135deg, var(--coffee-50), var(--coffee-0));
+    border-radius: 0.75rem;
+    padding: 2.5rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    max-width: 480px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    animation: popIn 0.5s ease forwards;
 }
 
-/* Typography */
+.successCard h2 {
+    font-size: 2rem;
+    color: var(--coffee-800);
+    margin-bottom: 1rem;
+}
+
+.successCard p {
+    font-size: 1.1rem;
+    color: var(--coffee-600);
+    margin: 0.5rem 0;
+}
+
+.successIcon {
+    color: #28a745;
+    animation: bounce 0.6s ease;
+}
+
+
 .title {
     font-size: 1.75rem;
     font-weight: 700;
@@ -105,7 +121,6 @@
     margin: 0.5rem 0;
 }
 
-/* Buttons */
 .actions {
     display: flex;
     gap: 1rem;
@@ -143,7 +158,6 @@
     background: #c82333;
 }
 
-/* Animations */
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -161,5 +175,25 @@
     to {
         transform: translateY(0) scale(1);
         opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
     }
 }

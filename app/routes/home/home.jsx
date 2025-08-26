@@ -215,7 +215,6 @@ const Home = () => {
     }, [initialPayload]);
 
     const handleGroupSelect = (groupName) => {
-        console.log('Selected group name:', groupName);
 
         // More robust group finding
         const gruppo = groups.find(g =>

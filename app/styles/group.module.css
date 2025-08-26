@@ -90,6 +90,10 @@
     transition: all 0.3s ease;
 }
 
+.actionButton:disabled {
+
+}
+
 .actionButton:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -488,4 +492,161 @@
     color: var(--coffee-600);
     padding: 2rem;
 }
+
+/* Payment Turn Card Styles */
+/*.paymentTurnCard {*/
+/*    background: linear-gradient(135deg, var(--coffee-50) 0%, var(--coffee-100) 100%);*/
+/*    border-radius: 12px;*/
+/*    padding: 1.5rem;*/
+/*    margin: 2rem 0;*/
+/*    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);*/
+/*    border: 1px solid var(--coffee-200);*/
+/*}*/
+
+/*.paymentTurnHeader {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    margin-bottom: 1.5rem;*/
+/*}*/
+
+/*.userInfo {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 1rem;*/
+/*}*/
+
+/*.avatar {*/
+/*    width: 50px;*/
+/*    height: 50px;*/
+/*    border-radius: 50%;*/
+/*    background: var(--coffee-600);*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    color: white;*/
+/*    font-weight: bold;*/
+/*    font-size: 1.2rem;*/
+/*}*/
+
+/*.userDetails {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+
+/*.userName {*/
+/*    font-weight: 600;*/
+/*    color: var(--coffee-800);*/
+/*    margin-bottom: 0.25rem;*/
+/*}*/
+
+/*.status {*/
+/*    display: inline-flex;*/
+/*    align-items: center;*/
+/*    gap: 0.5rem;*/
+/*    padding: 0.35rem 0.75rem;*/
+/*    border-radius: 20px;*/
+/*    font-size: 0.85rem;*/
+/*    font-weight: 500;*/
+/*}*/
+
+/*.statusTurn {*/
+/*    background-color: rgba(46, 204, 113, 0.15);*/
+/*    color: #27ae60;*/
+/*}*/
+
+/*.statusWaiting {*/
+/*    background-color: rgba(241, 196, 15, 0.15);*/
+/*    color: #f39c12;*/
+/*}*/
+
+/*.paymentInfo {*/
+/*    background-color: white;*/
+/*    border-radius: 8px;*/
+/*    padding: 1.25rem;*/
+/*    margin-bottom: 1.5rem;*/
+/*    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);*/
+/*}*/
+
+/*.paymentTitle {*/
+/*    font-weight: 600;*/
+/*    color: var(--coffee-700);*/
+/*    margin-bottom: 0.5rem;*/
+/*    font-size: 0.9rem;*/
+/*    text-transform: uppercase;*/
+/*    letter-spacing: 0.5px;*/
+/*}*/
+
+/*.paymentAmount {*/
+/*    font-size: 1.75rem;*/
+/*    font-weight: 700;*/
+/*    color: var(--coffee-800);*/
+/*    margin-bottom: 0.25rem;*/
+/*}*/
+
+/*.paymentDue {*/
+/*    font-size: 0.9rem;*/
+/*    color: var(--coffee-600);*/
+/*}*/
+
+/*.paymentActions {*/
+/*    display: grid;*/
+/*    grid-template-columns: 1fr 1fr;*/
+/*    gap: 1rem;*/
+/*    margin-bottom: 1rem;*/
+/*}*/
+
+/*.paymentActionButton {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    gap: 0.5rem;*/
+/*    padding: 0.875rem 1rem;*/
+/*    border-radius: 8px;*/
+/*    font-weight: 600;*/
+/*    transition: all 0.2s ease;*/
+/*}*/
+
+/*.paymentActionButton:disabled {*/
+/*    opacity: 0.6;*/
+/*    cursor: not-allowed;*/
+/*    transform: none !important;*/
+/*}*/
+
+/*.paymentActionButton:not(:disabled):hover {*/
+/*    transform: translateY(-2px);*/
+/*    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);*/
+/*}*/
+
+/*.skipButton {*/
+/*    background-color: #e74c3c;*/
+/*}*/
+
+/*.skipButton:hover:not(:disabled) {*/
+/*    background-color: #c0392b;*/
+/*}*/
+
+/*.helpText {*/
+/*    text-align: center;*/
+/*    font-size: 0.85rem;*/
+/*    color: var(--coffee-600);*/
+/*    font-style: italic;*/
+/*    margin-top: 1rem;*/
+/*}*/
+
+/*!* Responsive adjustments *!*/
+/*@media (max-width: 768px) {*/
+/*    .paymentActions {*/
+/*        grid-template-columns: 1fr;*/
+/*    }*/
+
+/*    .paymentTurnCard {*/
+/*        padding: 1.25rem;*/
+/*    }*/
+
+/*    .userInfo {*/
+/*        flex-direction: column;*/
+/*        text-align: center;*/
+/*        gap: 0.75rem;*/
+/*    }*/
+/*}*/
 
