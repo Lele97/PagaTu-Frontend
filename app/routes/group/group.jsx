@@ -143,38 +143,92 @@ const RegisterPaymentModal = ({
         </div>
     </div>);
 
-const PayForFriendModal = ({}) => (
-    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closePayForFriendModal)}>
+const PayForFriendModal = ({
+                               confirmPayForFriend,
+                               friend,
+                               importo,
+                               descrizione,
+                               error,
+                               successMessage,
+                               isSubmitting,
+                               closePayForFriendModal,
+                               handleInputChangeImporto,
+                               handleInputChangeDescrizione
+                           }) => (
+    <div className={styles.modalOverlay}>
         <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
 
             <h2>Paga per un amico</h2>
-            <p>Text........</p>
-            {/*<p>Sei sicuro di voler eliminare il gruppo <strong>"{group.groupName}"</strong>?</p>
-                <p style={{color: '#dc3545', fontSize: '0.9em', marginTop: '1rem'}}>
-                    Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
-                </p>*/}
+
+            <h6>Stai pagando al posto di <strong>{friend}</strong></h6>
+
+            <div style={{
+                backgroundColor: 'var(--coffee-50)',
+                padding: '1rem',
+                borderRadius: '0.5rem',
+                margin: '1rem 0',
+                borderLeft: '3px solid var(--coffee-600)'
+            }}>
+                <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
+                    pagamento:</p>
+                <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
+                    <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
+                    <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
+                    <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
+                    <li>Il pagamento apparirà nella classifica del gruppo</li>
+                </ul>
+            </div>
 
             <form onSubmit={confirmPayForFriend}>
+                <div className={styles.formGroup}>
 
+                    <label htmlFor="importo">Importo:</label>
+                    <input
+                        type="number"
+                        id="importo"
+                        value={importo}
+                        onChange={handleInputChangeImporto}
+                        required
+                        className={styles.formInput}
+                        placeholder="Inserisci importo..."
+                        step="0.01"
+                        min="0"
+                        autoFocus
+                    />
+
+                    <label htmlFor="descrizione">Descrizione:</label>
+                    <input
+                        type="text"
+                        id="descrizione"
+                        value={descrizione}
+                        onChange={handleInputChangeDescrizione}
+                        required
+                        className={styles.formInput}
+                        placeholder="Inserisci una descrizione del pagamento..."
+                    />
+
+                </div>
                 {error && <div className={styles.errorMessageModal}>{error}</div>}
                 {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-
-                <div className={styles.formButtons} style={{marginTop: '2rem'}}>
+                <div className={styles.formButtons}>
                     <button
                         type="button"
                         onClick={closePayForFriendModal}
                         className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isPayForFriend}>
+                        disabled={isSubmitting}
+                    >
                         Annulla
                     </button>
                     <button
-                        type="button"
-                        className={`${styles.groupButton} ${styles.deleteButton}`}
-                        disabled={isPayForFriend}>
-                        {isPayForFriend ? 'Salto del pagamento in corso...' : 'Salta pagamento'}
+                        type="submit"
+                        className={`${styles.groupButton} ${styles.submitButton}`}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
 )
@@ -204,6 +258,7 @@ const Group = () => {
     const [isPayForFriend, setIsPayForFriend] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [myTurn, setMyTurn] = useState(false);
+    const [friend, setFriend] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -235,26 +290,62 @@ const Group = () => {
                 if (groupData) {
                     try {
                         parsedGroup = JSON.parse(groupData);
-                        groupObject = {
-                            id: parsedGroup.id,
-                            groupName: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
-                            name: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
-                            ...parsedGroup
-                        };
+                        const groupName = parsedGroup.name || parsedGroup.groupName;
+
+                        // Fetch the latest group data from the server
+                        const token = localStorage.getItem('authToken');
+                        const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${username}`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify({username})
+                        });
+
+                        if (response.ok) {
+                            const allGroups = await response.json();
+
+                            // Find the specific group we're looking for
+                            const currentGroup = allGroups.find(g =>
+                                g.name === groupName ||
+                                g.groupName === groupName ||
+                                g.id?.toString() === parsedGroup.id?.toString()
+                            );
+
+                            if (currentGroup) {
+                                groupObject = {
+                                    id: currentGroup.id,
+                                    groupName: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                                    name: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                                    ...currentGroup
+                                };
+
+                                // Update localStorage with the latest data
+                                localStorage.setItem('group', JSON.stringify(groupObject));
+                            } else {
+                                // Fallback to localStorage data if group not found in response
+                                groupObject = {
+                                    id: parsedGroup.id,
+                                    groupName: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
+                                    name: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
+                                    ...parsedGroup
+                                };
+                            }
+                        } else {
+                            // Fallback to localStorage data if server fetch fails
+                            groupObject = {
+                                id: parsedGroup.id,
+                                groupName: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
+                                name: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
+                                ...parsedGroup
+                            };
+                        }
                     } catch (parseError) {
                         throw new Error('Error parsing group data: ' + parseError.message);
                     }
-                }
-
-                let userMembership = null;
-                if (parsedGroup?.userMembershipsdto) {
-                    userMembership = jp.query(parsedGroup, `$.userMembershipsdto[?(@.username == '${username}')]`)[0];
-                }
-
-                if (userMembership?.myTurn === false) {
-                    setMyTurn(false);
-                } else {
-                    setMyTurn(true);
                 }
 
                 setGroup(groupObject);
@@ -265,7 +356,6 @@ const Group = () => {
                 }
 
             } catch (err) {
-                console.error(err);
                 navigate('/login');
             }
         };
@@ -273,6 +363,9 @@ const Group = () => {
         fetchData();
     }, [navigate]);
 
+    useEffect(() => {
+        setMyTurn(checkMyTurn());
+    }, [groups, user]);
 
     useEffect(() => {
         const container = document.querySelector('.container');
@@ -337,16 +430,71 @@ const Group = () => {
         setError(null);
     };
 
+    const getFriend = async () => {
+
+        setFriend('');
+
+        const userMember = jp.query(groups, '$..[?(@.myTurn== true)]')
+
+        if (userMember.length > 0) {
+            const friendUsername = userMember[0].username;
+
+            try {
+
+                const token = localStorage.getItem('authToken');
+
+                if (!token) {
+                    setError("No token provided");
+                    return;
+                }
+
+                const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/user?username=${encodeURIComponent(friendUsername)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        "ngrok-skip-browser-warning": "true",
+                    },
+                    credentials: 'include'
+                })
+
+                if (!response.ok) {
+                    setFriend('');
+                }
+
+                const userData = await response.json();
+                setFriend(userData.name + ' ' + userData.lastname || '');
+
+            } catch (error) {
+                setFriend('');
+
+            }
+
+        } else {
+            setFriend('');
+        }
+    }
+
     const skipPayment = () => {
         setShowSaltaPaymentModal(true);
         setSuccessMessage('');
         setError(null);
     };
 
+    const checkMyTurn = () => {
+        if (!groups || !user || !groups.userMembershipsdto) return false;
+
+        const currentUserMembership = groups.userMembershipsdto.find(
+            member => member.username === user
+        );
+
+        return currentUserMembership ? currentUserMembership.myTurn : false;
+    };
+
     const payForFriend = () => {
         setShowPayForFriendModal(true);
         setSuccessMessage('');
-        setError(null);
+        setError(null)
+        getFriend()
     }
 
     const deleteGroup = () => {
@@ -483,7 +631,6 @@ const Group = () => {
         setSuccessMessage('');
 
         try {
-
             const token = localStorage.getItem('authToken');
 
             if (!token) {
@@ -492,7 +639,6 @@ const Group = () => {
             }
 
             try {
-
                 const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
                     method: 'POST',
                     headers: {
@@ -516,6 +662,42 @@ const Group = () => {
                 setImporto('')
                 setDescrizione('')
 
+                // Fetch the latest group data after payment
+                const groupResponse = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${user}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({username: user})
+                });
+
+                if (groupResponse.ok) {
+                    const allGroups = await groupResponse.json();
+                    const currentGroupName = group.groupName;
+
+                    // Find the current group in the list of groups
+                    const currentGroup = allGroups.find(g =>
+                        g.name === currentGroupName ||
+                        g.groupName === currentGroupName
+                    );
+
+                    if (currentGroup) {
+                        const updatedGroup = {
+                            id: currentGroup.id,
+                            groupName: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                            name: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                            ...currentGroup
+                        };
+
+                        setGroup(updatedGroup);
+                        setGroups(updatedGroup);
+                        localStorage.setItem('group', JSON.stringify(updatedGroup));
+                    }
+                }
+
                 setTimeout(() => {
                     setShowRegisterPaymentModal(false);
                 }, 2000);
@@ -528,7 +710,7 @@ const Group = () => {
             }
 
         } catch (err) {
-            setError('Register payment error:', err);
+            setError('Problema durante la registrazione del pagamento');
         } finally {
             setIsSubmitting(false);
         }
@@ -569,6 +751,42 @@ const Group = () => {
             // Set success message and close modal after delay
             setSuccessMessage('Pagamento saltato con successo!');
 
+            // Fetch the latest group data after payment
+            const groupResponse = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${user}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                credentials: 'include',
+                body: JSON.stringify({username: user})
+            });
+
+            if (groupResponse.ok) {
+                const allGroups = await groupResponse.json();
+                const currentGroupName = group.groupName;
+
+                // Find the current group in the list of groups
+                const currentGroup = allGroups.find(g =>
+                    g.name === currentGroupName ||
+                    g.groupName === currentGroupName
+                );
+
+                if (currentGroup) {
+                    const updatedGroup = {
+                        id: currentGroup.id,
+                        groupName: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                        name: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                        ...currentGroup
+                    };
+
+                    setGroup(updatedGroup);
+                    setGroups(updatedGroup);
+                    localStorage.setItem('group', JSON.stringify(updatedGroup));
+                }
+            }
+
             setTimeout(() => {
                 setShowSaltaPaymentModal(false);
             }, 2000);
@@ -576,7 +794,8 @@ const Group = () => {
         } catch (err) {
             setError('Errore di rete. Riprova più tardi.');
         } finally {
-            setIsSkipping(false); // Use the correct state variable
+            setIsSkipping(false);
+            setMyTurn(checkMyTurn());
         }
     };
 
@@ -630,6 +849,92 @@ const Group = () => {
         setIsPayForFriend(true);
         setError(null);
         setSuccessMessage('');
+        setIsSubmitting(true);
+
+
+        try {
+
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                setError("No token provided");
+                return;
+            }
+
+            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamento/pagaPer?groupNme=${encodeURIComponent(group.groupName)}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    importo: importo,
+                    descrizione: descrizione,
+                })
+            })
+
+            if (!response.ok) {
+                switch (response.status) {
+                    case 500:
+                        throw new Error('Problema durante la registrazione del pagamento');
+                    case 400:
+                    case 401:
+                        throw new Error('Problema durante la registrazione del pagamento');
+                }
+            }
+
+            setSuccessMessage('Pagamento registrato con successo')
+            setImporto('')
+            setDescrizione('')
+
+            // Fetch the latest group data after payment
+            const groupResponse = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${user}`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                credentials: 'include',
+                body: JSON.stringify({username: user})
+            });
+
+            if (groupResponse.ok) {
+                const allGroups = await groupResponse.json();
+                const currentGroupName = group.groupName;
+
+                // Find the current group in the list of groups
+                const currentGroup = allGroups.find(g =>
+                    g.name === currentGroupName ||
+                    g.groupName === currentGroupName
+                );
+
+                if (currentGroup) {
+                    const updatedGroup = {
+                        id: currentGroup.id,
+                        groupName: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                        name: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                        ...currentGroup
+                    };
+
+                    setGroup(updatedGroup);
+                    setGroups(updatedGroup);
+                    localStorage.setItem('group', JSON.stringify(updatedGroup));
+                }
+            }
+
+            setTimeout(() => {
+                showPayForFriendModal(false);
+            }, 2000);
+
+
+        } catch (e) {
+            setError('Problema durante la registrazione del pagamento')
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     const DeleteGroupModal = () => (
@@ -940,9 +1245,6 @@ const Group = () => {
 
                     </div>
 
-
-                   {/* <PaymentTurnCard />*/}
-
                     {myTurn ? (
                         <>
                             <h1>E il tuo turno di pagare il caffe</h1>
@@ -953,10 +1255,12 @@ const Group = () => {
                                             className={`${styles.groupButton} ${styles.actionButton}`}>
                                         Registra Pagamento
                                     </button>
-                                    <button onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                    <button onClick={skipPayment}
+                                            className={`${styles.groupButton} ${styles.actionButton}`}>
                                         Salta Pagamento
                                     </button>
-                                    <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                    <button onClick={payForFriend}
+                                            className={`${styles.groupButton} ${styles.actionButton}`}>
                                         Paga per un amico
                                     </button>
                                 </div>
@@ -973,10 +1277,12 @@ const Group = () => {
                                             className={`${styles.groupButton} ${styles.actionButton}`}>
                                         Registra Pagamento
                                     </button>
-                                    <button disabled={true} onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                    <button disabled={true} onClick={skipPayment}
+                                            className={`${styles.groupButton} ${styles.actionButton}`}>
                                         Salta Pagamento
                                     </button>
-                                    <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
+                                    <button onClick={payForFriend}
+                                            className={`${styles.groupButton} ${styles.actionButton}`}>
                                         Paga per un amico
                                     </button>
                                 </div>
@@ -984,22 +1290,6 @@ const Group = () => {
                         </>
                     )}
 
-                    {/* Azioni gruppo */}
-            {/*        <section className={styles.groupSection} style={{marginTop: '2rem'}}>
-                        <div className={styles.actionButtons}>
-                            <button onClick={registerPayment}
-                                    className={`${styles.groupButton} ${styles.actionButton}`}>
-                                Registra Pagamento
-                            </button>
-                            <button onClick={skipPayment} className={`${styles.groupButton} ${styles.actionButton}`}>
-                                Salta Pagamento
-                            </button>
-                            <button onClick={payForFriend} className={`${styles.groupButton} ${styles.actionButton}`}>
-                                Paga per un amico
-                            </button>
-                        </div>
-                    </section>
-*/}
                     <div className={styles.separator}></div>
 
                     <h2 className={styles.sectionTitle}><i className="fa-solid fa-ranking-star"></i> Classifica
@@ -1043,16 +1333,31 @@ const Group = () => {
                                                     userInvitation={userInvitation} isSubmitting={isSubmitting}
                                                     error={error} successMessage={successMessage}
                                                     handleInputChangeInvitation={handleInputChangeInvitation}/>}
-                {showDeleteModal && <DeleteGroupModal/>}
+
+                {showPayForFriendModal && <PayForFriendModal closePayForFriendModal={closePayForFriendModal}
+                                                             handleInputChangeImporto={handleInputChangeImporto}
+                                                             confirmPayForFriend={confirmPayForFriend}
+                                                             importo={importo}
+                                                             descrizione={descrizione}
+                                                             handleInputChangeDescrizione={handleInputChangeDescrizione}
+                                                             isSubmitting={isSubmitting} error={error}
+                                                             friend={friend}
+                                                             successMessage={successMessage}/>}
+
                 {showRegisterPaymentModal && <RegisterPaymentModal closeRegisterPaymentModal={closeRegisterPaymentModal}
                                                                    handleInputChangeImporto={handleInputChangeImporto}
-                                                                   submitPayment={submitPayment} importo={importo}
+                                                                   submitPayment={submitPayment}
+                                                                   importo={importo}
                                                                    descrizione={descrizione}
                                                                    handleInputChangeDescrizione={handleInputChangeDescrizione}
-                                                                   isSubmitting={isSubmitting} error={error}
+                                                                   isSubmitting={isSubmitting}
+                                                                   error={error}
                                                                    successMessage={successMessage}/>}
+
+                {showDeleteModal && <DeleteGroupModal/>}
+
                 {showSaltaPaymentModal && <SkipPaymentModal/>}
-                {showPayForFriendModal && <PayForFriendModal/>}
+
             </div>
         </div>);
 };

@@ -1,9 +1,9 @@
 @font-face {
     font-family: 'CustomFont';
-    src: url('/public/Oatlander.ttf') format('opentype');
+    src: url('/Oatlander.ttf') format('opentype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap; /* Ensures text remains visible during font load */
+    font-display: swap;
 }
 
 .container {
@@ -15,7 +15,6 @@
     flex-direction: column;
 }
 
-/* Logo and text container */
 .header-container {
     display: flex;
     flex-direction: column;
@@ -24,7 +23,6 @@
     margin-bottom: 2rem;
     width: 100%;
 }
-
 
 .logo {
     max-width: 200px;
@@ -38,7 +36,6 @@
     transform: scale(1.1);
 }
 
-/* Text container */
 .appTitle {
     display: flex;
     align-items: center;
@@ -48,21 +45,19 @@
     margin-bottom: 3rem;
 }
 
-/* Individual letters */
 .appTitle h1 {
     margin: 0;
     line-height: 1;
-    font-size: 5rem; /* Reduced from 6rem */
+    font-size: 5rem;
     transition: transform 0.3s ease, color 0.3s ease;
     cursor: default;
 }
 
 .appTitle h1:hover {
-    transform: translateY(-2px); /* Reduced from -3px */
-    text-shadow: 0 2px 4px rgba(81, 54, 27, 0.2); /* Added subtle shadow instead of just moving */
+    transform: translateY(-2px);
+    text-shadow: 0 2px 4px rgba(81, 54, 27, 0.2);
 }
 
-/* Color classes */
 .appTitlecolor {
     font-family: 'CustomFont', sans-serif;
     font-weight: 300;
@@ -75,7 +70,6 @@
     color: #c29159;
 }
 
-/* Form */
 .formContainer {
     background-color: var(--coffee-0);
     border-radius: 0.75rem;
@@ -101,7 +95,6 @@
     gap: 1.5rem;
 }
 
-/* Inputs */
 .inputGroup {
     display: flex;
     flex-direction: column;
@@ -142,7 +135,6 @@
     align-items: center;
 }
 
-/* Buttons & Links */
 .primaryButton {
     background-color: var(--coffee-600);
     color: white;
@@ -177,7 +169,6 @@
     text-decoration: underline;
 }
 
-/* Footer */
 .footer {
     text-align: center;
     margin-top: 1rem;
@@ -187,7 +178,6 @@
     gap: 0.25rem;
 }
 
-/* Error */
 .error {
     background: linear-gradient(to right, #fff5f5, #ffe6e6);
     color: #dc3545;
@@ -205,10 +195,9 @@
     }
 }
 
-
 @media (max-width: 768px) {
     .appTitle h1 {
-        font-size: 3rem; /* Increased from 2.5rem for better readability */
+        font-size: 3rem;
     }
 
     .logo {
@@ -218,11 +207,11 @@
 
 @media (max-width: 480px) {
     .appTitle {
-        gap: 0.15rem; /* Even smaller gap on mobile */
+        gap: 0.15rem;
     }
 
     .appTitle h1 {
-        font-size: 2.25rem; /* Increased from 2rem */
+        font-size: 2.25rem;
     }
 
     .logo {

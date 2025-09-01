@@ -63,7 +63,6 @@
     }
 }
 
-/* Text styling to match your main app */
 .errorTitle {
     font-size: 2rem;
     font-weight: 700;
@@ -142,7 +141,6 @@
     font-size: 1rem;
 }
 
-
 .secondaryButton:hover {
     background-color: var(--coffee-700);
     transform: translateY(-2px);
@@ -180,7 +178,6 @@
     transform: translateY(0);
 }
 
-
 .helpMessage {
     margin-top: 2rem;
     padding-top: 2rem;
@@ -202,7 +199,6 @@
     font-style: italic;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .errorPage {
         padding: 1rem;
@@ -243,7 +239,7 @@
     }
 
     .logo {
-        width: 240px; /* 4x smaller for very small screens */
+        width: 240px;
         max-height: 240px;
     }
 
@@ -260,7 +256,6 @@
     }
 }
 
-/* Animation for better UX */
 .errorPage * {
     animation-fill-mode: both;
 }

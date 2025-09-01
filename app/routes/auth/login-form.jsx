@@ -72,7 +72,7 @@ const LoginForm = () => {
             const { token, username, email } = await response.json();
             handleLoginSuccess({ username, email }, token);
         } catch (err) {
-            setError(err.message);
+            setError("Errore di connessione al server.");
         } finally {
             setIsLoading(false);
         }

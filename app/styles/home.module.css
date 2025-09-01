@@ -157,7 +157,7 @@
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--coffee-200);
     background-color: white;
-    border-radius: 0.25rem;
+    border-radius: 0.75rem;
     cursor: pointer;
     font-size: large;
 }
@@ -171,6 +171,13 @@
     color: white;
     border-color: var(--coffee-600);
 }
+
+.paginationButtonActive:hover {
+    background-color: var(--coffee-600) !important;
+    color: white !important;
+    border-color: var(--coffee-600) !important;
+}
+
 
 /* =============== MODAL STYLES =============== */
 .modalOverlay {

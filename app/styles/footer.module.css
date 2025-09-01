@@ -39,6 +39,10 @@ footer {
     margin-top: 0.25rem;
 }
 
+.gitbtn{
+    width: 3rem;
+    height: auto;
+}
 
 .footerLinks {
     margin-bottom: 1rem;

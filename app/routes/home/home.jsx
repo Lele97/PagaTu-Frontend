@@ -69,7 +69,8 @@ const AddGroupModal = ({
 );
 
 const Home = () => {
-    const initialPayload = { name: '', description: '' };
+
+    const initialPayload = {name: '', description: ''};
     const [payload, setPayload] = useState(initialPayload);
     const GROUPS_PER_PAGE = 6;
     const PAYMENTS_PER_PAGE = 8;
@@ -136,12 +137,12 @@ const Home = () => {
     }, [showAddGroupModal]);
 
     const handleChangeName = useCallback((e) => {
-        setPayload(prev => ({ ...prev, name: e.target.value }));
+        setPayload(prev => ({...prev, name: e.target.value}));
         if (error) setError(null);
     }, [error]);
 
     const handleChangeDescription = useCallback((e) => {
-        setPayload(prev => ({ ...prev, description: e.target.value }));
+        setPayload(prev => ({...prev, description: e.target.value}));
         if (error) setError(null);
     }, [error]);
 
@@ -224,7 +225,6 @@ const Home = () => {
         );
 
         if (gruppo) {
-            // Ensure consistent data structure
             const normalizedGroup = {
                 id: gruppo.id,
                 name: gruppo.name || gruppo.groupName,
@@ -260,7 +260,7 @@ const Home = () => {
                     'Authorization': `Bearer ${token}`,
                 },
                 credentials: 'include',
-                body: JSON.stringify({ username })
+                body: JSON.stringify({username})
             });
             if (response.ok) {
                 const data = await response.json();
@@ -327,39 +327,44 @@ const Home = () => {
 
     const getTotalPaymentPages = () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE);
 
-    const PaginationControls = ({ currentPage, totalPages, onPageChange, className }) => {
+    const PaginationControls = ({currentPage, totalPages, onPageChange, className}) => {
         if (totalPages <= 1) return null;
         return (
             <div className={`${styles.paginationControls} ${className}`}>
-                <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} className={styles.paginationButton}>←</button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <button key={page} onClick={() => onPageChange(page)} className={`${styles.paginationButton} ${currentPage === page ? styles.paginationButtonActive : ''}`}>
+                <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}
+                        className={styles.paginationButton}><i className="bi bi-arrow-left"></i></button>
+                {Array.from({length: totalPages}, (_, i) => i + 1).map(page => (
+                    <button key={page} onClick={() => onPageChange(page)}
+                            className={`${styles.paginationButton} ${currentPage === page ? styles.paginationButtonActive : ''}`}>
                         {page}
                     </button>
                 ))}
-                <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} className={styles.paginationButton}>→</button>
+                <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}
+                        className={styles.paginationButton}><i className="bi bi-arrow-right"></i>
+                </button>
             </div>
         );
     };
 
-    const LoadingSpinner = ({ message }) => (
+    const LoadingSpinner = ({message}) => (
         <div className={styles.loadingSpinner}>
             <div className={styles.spinner}></div>
             <span className={styles.spinnerText}>{message}</span>
         </div>
     );
 
-    const ErrorMessage = ({ message, onRetry }) => (
+    const ErrorMessage = ({message, onRetry}) => (
         <div className={styles.errorMessage}>
             <div className={styles.errorText}>{message}</div>
-            <button onClick={onRetry} className={styles.retryButton}>Riprova <i className="fa-solid fa-repeat"></i></button>
+            <button onClick={onRetry} className={styles.retryButton}>Riprova <i className="fa-solid fa-repeat"></i>
+            </button>
         </div>
     );
 
     return (
         <div className={styles.homePage}>
             <div className={`${styles.container} ${showAddGroupModal ? styles.modalActive : ''}`}>
-                <Header user={user} logout={logout} />
+                <Header user={user} logout={logout}/>
                 <main className={styles.main}>
                     <div className={styles.heroSection}>
                         <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
@@ -373,9 +378,9 @@ const Home = () => {
                     <section className={styles.groupSection}>
                         <h2 className={styles.sectionTitle}><i className="bi bi-people-fill"></i> I tuoi gruppi</h2>
                         {groupsLoading ? (
-                            <LoadingSpinner message="Caricamento gruppi..." />
+                            <LoadingSpinner message="Caricamento gruppi..."/>
                         ) : groupsError ? (
-                            <ErrorMessage message={groupsError} onRetry={() => getGroupsByUser(user)} />
+                            <ErrorMessage message={groupsError} onRetry={() => getGroupsByUser(user)}/>
                         ) : groups.length > 0 ? (
                             <>
                                 <div className={styles.groupGrid}>
@@ -392,7 +397,8 @@ const Home = () => {
                                         </button>
                                     ))}
                                 </div>
-                                <PaginationControls currentPage={currentGroupPage} totalPages={getTotalGroupPages()} onPageChange={setCurrentGroupPage} />
+                                <PaginationControls currentPage={currentGroupPage} totalPages={getTotalGroupPages()}
+                                                    onPageChange={setCurrentGroupPage}/>
                             </>
                         ) : (
                             <div className={styles.textEmpty}>Non fai parte di nessun gruppo</div>
@@ -402,11 +408,12 @@ const Home = () => {
                     <div className={styles.separator}></div>
 
                     <section className={styles.recentSection}>
-                        <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi pagamenti</h2>
+                        <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi
+                            pagamenti</h2>
                         {paymentsLoading ? (
-                            <LoadingSpinner message="Caricamento pagamenti..." />
+                            <LoadingSpinner message="Caricamento pagamenti..."/>
                         ) : paymentsError ? (
-                            <ErrorMessage message={paymentsError} onRetry={() => getHistoryPayments(user)} />
+                            <ErrorMessage message={paymentsError} onRetry={() => getHistoryPayments(user)}/>
                         ) : pagamentis.length > 0 ? (
                             <>
                                 <div className={styles.tableContainer}>
@@ -431,7 +438,8 @@ const Home = () => {
                                         </tbody>
                                     </table>
                                 </div>
-                                <PaginationControls currentPage={currentPaymentPage} totalPages={getTotalPaymentPages()} onPageChange={setCurrentPaymentPage} />
+                                <PaginationControls currentPage={currentPaymentPage} totalPages={getTotalPaymentPages()}
+                                                    onPageChange={setCurrentPaymentPage}/>
                             </>
                         ) : (
                             <div className={styles.textEmpty}>Nessun pagamento trovato</div>

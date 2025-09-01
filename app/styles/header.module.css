@@ -1,21 +1,54 @@
 .header {
     top: 0;
     z-index: 1000;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 0.5rem 2rem;
-    height: 72px;
     display: flex;
+    justify-content: center;
     align-items: center;
+    width: 100%;
 }
 
 .headerContent {
     width: 100%;
-    max-width: 1200px;
+    max-width: 120rem;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 69, 19, 0.1);
+    border-radius: 2rem;
+    padding: 0.75rem;
+    gap: 0.50rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.userInfo:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.userInfo i {
+    font-size: 1.5rem;
+    color: var(--coffee-600) !important;
+    padding: 0;
+    margin: 0;
+}
+
+.welcomeText {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--coffee-800);
+    margin: 0;
+    padding: 0;
+    letter-spacing: -0.01em;
 }
 
 .logoTitleContainer {
@@ -24,8 +57,35 @@
 }
 
 .pagatu_image {
-    width: 5rem;
+    width: 7rem;
     object-fit: contain;
+}
+
+.logoutBtn{
+    cursor: pointer;
+    border-radius: 2rem;
+    color: var(--coffee-600) !important;
+    width: 2rem;
+    height: auto;
+    transition: all 0.3s ease;
+}
+
+.logoutBtn:hover {
+    transform: translateY(-1px);
+}
+
+.btnimg {
+    border-radius: 2rem;
+
+    width: 10rem;
+    height: auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+
+}
+
+.btnimg:hover {
+    transform: translateY(-1px);
 }
 
 .headerTitle {
@@ -34,57 +94,4 @@
     color: var(--coffee-800);
     margin: 0;
     line-height: 1;
-}
-
-
-.avatar {
-    position: relative;
-    width: 2rem; /* Larger avatar */
-    height: 2rem;
-}
-
-.avatar .head {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50%;
-    height: 50%;
-    background: var(--coffee-600);
-    border-radius: 50%;
-}
-
-.avatar .body {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    height: 50%;
-    background: var(--coffee-600);
-    border-radius: 40% / 60%;
-}
-
-.welcomeText {
-    font-size: 1rem; /* Larger text */
-    color: var(--coffee-600);
-    font-weight: 500;
-    margin-right: 0.25rem;
-}
-
-.logoutButton {
-    background-color: var(--coffee-600);
-    color: white;
-    border: none;
-    padding: 0.375rem 0.75rem; /* Larger button */
-    border-radius: 9999px;
-    font-size: 0.875rem; /* Slightly larger font */
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 4rem; /* Ensures consistent width */
-}
-
-.logoutButton:hover {
-    background-color: var(--coffee-700);
 }
