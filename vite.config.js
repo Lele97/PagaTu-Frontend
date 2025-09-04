@@ -7,7 +7,7 @@ export default defineConfig({
         allowedHosts: ['lens-drinking-dec-note.trycloudflare.com'],
         port: 8888,
         open: true,
-        host: '0.0.0.0',
+        host: true,
     },
     resolve: {
         alias: {

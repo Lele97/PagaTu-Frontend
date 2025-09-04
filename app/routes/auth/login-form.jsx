@@ -72,7 +72,8 @@ const LoginForm = () => {
             const { token, username, email } = await response.json();
             handleLoginSuccess({ username, email }, token);
         } catch (err) {
-            setError("Errore di connessione al server.");
+            // Extract the error message instead of the whole error object
+            setError(err.message || 'Si è verificato un errore durante il login');
         } finally {
             setIsLoading(false);
         }

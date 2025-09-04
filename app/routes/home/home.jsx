@@ -368,8 +368,10 @@ const Home = () => {
                 <Header user={user} logout={logout}/>
 
                 <main className={styles.main}>
+
                     <div className={styles.heroSection}>
                         <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
+                        <h6 className={styles.heroSubtitle}>Crea gruppi e controlla i pagamenti in modo semplice veloce e divertente</h6>
                     </div>
 
                     <section className={styles.groupSection}>
@@ -378,7 +380,7 @@ const Home = () => {
                                 <i className="bi bi-people-fill"></i> I tuoi gruppi
                             </h2>
                             <button onClick={addGroup} className={styles.createGroupButton}>
-                                <i className="bi bi-plus-circle"></i>
+                                <i className="bi bi-plus-lg"></i>
                                 Crea nuovo gruppo
                             </button>
                         </div>
@@ -434,8 +436,10 @@ const Home = () => {
                     <div className={styles.separator}></div>
 
                     <section className={styles.recentSection}>
+                        <div className={styles.sectionHeader}>
                         <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi
                             pagamenti</h2>
+                        </div>
                         {paymentsLoading ? (
                             <LoadingSpinner message="Caricamento pagamenti..."/>
                         ) : paymentsError ? (

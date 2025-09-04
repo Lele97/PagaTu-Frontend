@@ -90,9 +90,7 @@
     transition: all 0.3s ease;
 }
 
-.actionButton:disabled {
-
-}
+.actionButton:disabled {}
 
 .actionButton:hover {
     transform: translateY(-5px);
