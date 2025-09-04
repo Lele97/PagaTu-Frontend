@@ -1021,48 +1021,6 @@ const Group = () => {
         </div>
     );
 
-    const PaymentTurnCard = () => (
-        <div className={styles.paymentTurnCard}>
-            <div className={styles.paymentTurnHeader}>
-                <div className={styles.userInfo}>
-                    <div className={styles.avatar}>
-                        {user ? user.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <div className={styles.userDetails}>
-                        <div className={styles.userName}>{user || 'Utente'}</div>
-                        <div className={`${styles.status} ${myTurn ? styles.statusTurn : styles.statusWaiting}`}>
-                            <i className={`fas ${myTurn ? 'fa-check-circle' : 'fa-clock'}`}></i>
-                            {myTurn ? 'È il tuo turno di pagare' : 'Non è il tuo turno'}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className={styles.paymentActions}>
-                <button
-                    onClick={registerPayment}
-                    className={`${styles.groupButton} ${styles.paymentActionButton}`}
-                    disabled={!myTurn}
-                >
-                    <i className="fas fa-check-circle"></i> Registra Pagamento
-                </button>
-                <button
-                    onClick={skipPayment}
-                    className={`${styles.groupButton} ${styles.paymentActionButton} ${styles.skipButton}`}
-                    disabled={!myTurn}
-                >
-                    <i className="fas fa-forward"></i> Salta Turno
-                </button>
-            </div>
-
-            <div className={styles.helpText}>
-                {myTurn
-                    ? 'Seleziona un\'azione per gestire il tuo turno di pagamento'
-                    : 'Attendi il tuo turno per effettuare un pagamento'}
-            </div>
-        </div>
-    );
-
     const getClassificaPaymentsForGroup = async (groupToUse = group) => {
         const token = localStorage.getItem('authToken');
 
@@ -1326,7 +1284,6 @@ const Group = () => {
                             </>) : (<div className={styles.textEmpty}>
                                 Nessun pagamento trovato
                             </div>)}
-
                 </main>
 
                 {showInviteForm && <InviteUserModal closeInviteForm={closeInviteForm} submitInvite={submitInvite}

@@ -73,7 +73,7 @@ const Home = () => {
     const initialPayload = {name: '', description: ''};
     const [payload, setPayload] = useState(initialPayload);
     const GROUPS_PER_PAGE = 6;
-    const PAYMENTS_PER_PAGE = 8;
+    const PAYMENTS_PER_PAGE = 4;
     const [user, setUser] = useState(null);
     const [groups, setGroups] = useState([]);
     const [pagamentis, setPagamentis] = useState([]);
@@ -364,19 +364,25 @@ const Home = () => {
     return (
         <div className={styles.homePage}>
             <div className={`${styles.container} ${showAddGroupModal ? styles.modalActive : ''}`}>
+
                 <Header user={user} logout={logout}/>
+
                 <main className={styles.main}>
                     <div className={styles.heroSection}>
                         <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
                     </div>
 
-                    <button onClick={addGroup} className={styles.groupButton}>
-                        <i className="bi bi-plus"></i>
-                        <i className="bi bi-people-fill"></i> Crea un nuovo gruppo
-                    </button>
-
                     <section className={styles.groupSection}>
-                        <h2 className={styles.sectionTitle}><i className="bi bi-people-fill"></i> I tuoi gruppi</h2>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>
+                                <i className="bi bi-people-fill"></i> I tuoi gruppi
+                            </h2>
+                            <button onClick={addGroup} className={styles.createGroupButton}>
+                                <i className="bi bi-plus-circle"></i>
+                                Crea nuovo gruppo
+                            </button>
+                        </div>
+
                         {groupsLoading ? (
                             <LoadingSpinner message="Caricamento gruppi..."/>
                         ) : groupsError ? (
@@ -385,23 +391,43 @@ const Home = () => {
                             <>
                                 <div className={styles.groupGrid}>
                                     {getPaginatedGroups().map((group, index) => (
-                                        <button
+                                        <div
                                             key={index}
-                                            className={`${styles.groupButton} ${
-                                                selectedGroup === group.name ? styles.groupButtonSelected : ''
+                                            className={`${styles.groupCard} ${
+                                                selectedGroup === group.name ? styles.groupCardSelected : ''
                                             }`}
                                             onClick={() => handleGroupSelect(group.name)}
                                         >
-                                            <i className="fa-solid fa-user-group"></i>
-                                            {group.name}
-                                        </button>
+                                            <div className={styles.groupIcon}>
+                                                <i className="fa-solid fa-user-group"></i>
+                                            </div>
+                                            <div className={styles.groupInfo}>
+                                                <h3 className={styles.groupName}>{group.name}</h3>
+                                                {group.description && (
+                                                    <p className={styles.groupDescription}>{group.description}</p>
+                                                )}
+                                            </div>
+                                            <div className={styles.groupAction}>
+                                                <i className="bi bi-arrow-right"></i>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                                 <PaginationControls currentPage={currentGroupPage} totalPages={getTotalGroupPages()}
                                                     onPageChange={setCurrentGroupPage}/>
                             </>
                         ) : (
-                            <div className={styles.textEmpty}>Non fai parte di nessun gruppo</div>
+                            <div className={styles.emptyState}>
+                                <div className={styles.emptyIcon}>
+                                    <i className="bi bi-people"></i>
+                                </div>
+                                <h3>Nessun gruppo ancora</h3>
+                                <p>Inizia creando il tuo primo gruppo per gestire i pagamenti del caffè</p>
+                                <button onClick={addGroup} className={styles.createGroupButton}>
+                                    <i className="bi bi-plus-circle"></i>
+                                    Crea il tuo primo gruppo
+                                </button>
+                            </div>
                         )}
                     </section>
 
@@ -416,27 +442,29 @@ const Home = () => {
                             <ErrorMessage message={paymentsError} onRetry={() => getHistoryPayments(user)}/>
                         ) : pagamentis.length > 0 ? (
                             <>
-                                <div className={styles.tableContainer}>
-                                    <table className={styles.table}>
-                                        <thead className={styles.tableHeader}>
-                                        <tr>
-                                            <th className={styles.tableHeaderCell}>Data</th>
-                                            <th className={styles.tableHeaderCell}>Importo</th>
-                                            <th className={styles.tableHeaderCell}>Descrizione</th>
-                                            <th className={styles.tableHeaderCell}>Gruppo</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {getPaginatedPayments().map((payment, index) => (
-                                            <tr key={index} className={styles.tableRow}>
-                                                <td className={styles.tableCell}>{payment.dataPagamento}</td>
-                                                <td className={styles.tableCell}>{payment.importo}</td>
-                                                <td className={styles.tableCell}>{payment.descrizione}</td>
-                                                <td className={styles.tableCell}>{payment.groupName}</td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </table>
+                                <div className={styles.paymentCardsContainer}>
+                                    {getPaginatedPayments().map((payment, index) => (
+                                        <div key={index} className={styles.paymentCard}>
+                                            <div className={styles.paymentCardHeader}>
+                                                <i className="bi bi-ticket-perforated-fill"></i>
+                                                <span className={styles.paymentGroup}>{payment.groupName}</span>
+                                            </div>
+                                            <div className={styles.paymentCardBody}>
+                                                <div className={styles.paymentInfo}>
+                                                    <span className={styles.paymentLabel}>Descrizione:</span>
+                                                    <span
+                                                        className={styles.paymentDescription}>{payment.descrizione}</span>
+                                                </div>
+                                                <div className={styles.paymentInfo}>
+                                                    <span className={styles.paymentLabel}>Data:</span>
+                                                    <span className={styles.paymentData}>{payment.dataPagamento}</span>
+                                                </div>
+                                            </div>
+                                            <div className={styles.paymentCardFooter}>
+                                                <span className={styles.paymentAmount}>€{payment.importo}</span>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                                 <PaginationControls currentPage={currentPaymentPage} totalPages={getTotalPaymentPages()}
                                                     onPageChange={setCurrentPaymentPage}/>
@@ -445,6 +473,7 @@ const Home = () => {
                             <div className={styles.textEmpty}>Nessun pagamento trovato</div>
                         )}
                     </section>
+
                 </main>
             </div>
 
