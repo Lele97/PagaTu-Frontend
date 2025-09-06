@@ -49,7 +49,6 @@
 }
 
 /* =============== GROUP SECTION ENHANCEMENTS =============== */
-
 .groupButton {
     background-color: var(--coffee-600);
     color: white;
@@ -154,30 +153,23 @@
     background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
     border: 1px solid var(--coffee-100);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 2.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 .groupCard:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(139, 92, 60, 0.15);
-    border-color: var(--coffee-300);
-}
-
-.groupCardSelected {
-    border: 2px solid var(--coffee-500);
-    background: linear-gradient(135deg, #f5f2eb 0%, #f0e6d9 100%);
 }
 
 .groupIcon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, var(--coffee-500) 0%, var(--coffee-600) 100%);
+    background: var(--coffee-600);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -199,7 +191,7 @@
 }
 
 .groupDescription {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--coffee-600);
     margin: 0;
     line-height: 1.4;
@@ -210,14 +202,83 @@
 }
 
 .groupAction {
-    color: var(--coffee-500);
-    font-size: 1.25rem;
+    color: var(--coffee-600);
+    font-size: 1.75rem;
     transition: transform 0.3s ease;
 }
 
 .groupCard:hover .groupAction {
     transform: translateX(4px);
 }
+
+/* =============== GROUP SECTION ENHANCEMENTS =============== */
+.groupGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.groupCard {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: 1px solid var(--coffee-100);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    min-height: 120px;
+}
+
+.groupIcon {
+    width: 45px;
+    height: 45px;
+    background: var(--coffee-600);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.groupInfo {
+    flex: 1;
+    min-width: 0; /* Prevents text overflow */
+}
+
+.groupName {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--coffee-800);
+    margin: 0 0 0.25rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.groupDescription {
+    font-size: 0.85rem;
+    color: var(--coffee-600);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.groupAction {
+    color: var(--coffee-600);
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
 
 /* =============== EMPTY STATE STYLES =============== */
 .emptyState {
@@ -313,7 +374,7 @@
     margin-top: 5rem;
     background-color: white;
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 2rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -427,9 +488,9 @@
 }
 
 .paginationButtonActive:hover {
-    background-color: var(--coffee-600);
-    color: white;
-    border-color: var(--coffee-600);
+    background-color: var(--coffee-600) !important;
+    color: white !important;
+    border-color: var(--coffee-600) !important;
 }
 
 /* =============== Modal Styles =============== */
@@ -705,5 +766,68 @@
     .cancelButton, .submitButton {
         width: 100%;
         margin-bottom: 0.5rem;
+    }
+}
+
+/* =============== ENHANCED RESPONSIVE STYLES =============== */
+@media (max-width: 1024px) {
+    .groupGrid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .groupGrid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+        gap: 1rem;
+    }
+
+    .groupCard {
+        padding: 1.25rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
+    .groupInfo {
+        width: 100%;
+    }
+
+    .groupName {
+        white-space: normal;
+        text-overflow: clip;
+    }
+}
+
+@media (max-width: 480px) {
+    .groupGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .groupCard {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .groupIcon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 360px) {
+    .groupCard {
+        padding: 1rem;
+    }
+
+    .groupIcon {
+        width: 35px;
+        height: 35px;
+    }
+
+    .groupAction {
+        font-size: 1.25rem;
     }
 }
