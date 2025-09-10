@@ -12,7 +12,7 @@ const Footer = () => {
                     <p className={styles.footerText}>PagaTu - Il caffè che unisce il
                         team</p>
                     <div className={styles.footerLinks}>
-                        <Link to="mailto:someone@example.com" className={styles.footerLink}>Contact Us</Link>
+                        <Link to="mailto:support@pagatu.app" className={styles.footerLink}>Contact Us</Link>
                     </div>
                     <a href="https://github.com/Lele97">
                         <img src="/github-svgrepo-com.svg" className={styles.gitbtn}/>
