@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
@@ -72,7 +72,8 @@ const LoginForm = () => {
             const { token, username, email } = await response.json();
             handleLoginSuccess({ username, email }, token);
         } catch (err) {
-            setError(err.message);
+            // Extract the error message instead of the whole error object
+            setError(err.message || 'Si è verificato un errore durante il login');
         } finally {
             setIsLoading(false);
         }
@@ -80,7 +81,19 @@ const LoginForm = () => {
 
     return (
         <div className={styles.container}>
-            <img src="/pagaTu.png" alt="Logo" className={styles.logo} />
+
+            <div className={styles['header-container']}>
+                <img src="/pagaTu.png" alt="Logo" className={styles.logo}/>
+                <div className={styles.appTitle}>
+                    <h1 className={styles.appTitlecolor}>P</h1>
+                    <h1 className={styles.appTitlecolor2}>a</h1>
+                    <h1 className={styles.appTitlecolor}>g</h1>
+                    <h1 className={styles.appTitlecolor2}>a</h1>
+                    <br></br>
+                    <h1 className={styles.appTitlecolor}>T</h1>
+                    <h1 className={styles.appTitlecolor2}>u</h1>
+                </div>
+            </div>
 
             <div className={styles.formContainer}>
                 <h2 className={styles.title}>Accedi al tuo account</h2>

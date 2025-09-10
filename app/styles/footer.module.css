@@ -39,11 +39,9 @@ footer {
     margin-top: 0.25rem;
 }
 
-.footerText_ {
-    color: var(--coffee-300);
-    font-size: 1rem;
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
+.gitbtn{
+    width: 3rem;
+    height: auto;
 }
 
 .footerLinks {

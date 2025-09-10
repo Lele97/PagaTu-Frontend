@@ -1,5 +1,3 @@
-/* Remove all @tailwind and @layer directives */
-/* Keep only your custom CSS variables if needed */
 :root {
     --coffee-0: #ffffff;
     --coffee-50: #FAF7F2;
@@ -26,9 +24,4 @@ body {
     background-color: var(--coffee-50);
     color: var(--coffee-900);
     font-family: 'Segoe UI', sans-serif;
-}
-
-/* Contenuto centrale riempie lo spazio tra header e footer */
-.appWrapper > *:first-child {
-    flex: 1;
 }

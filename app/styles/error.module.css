@@ -10,6 +10,11 @@
     color: var(--coffee-900);
 }
 
+.logo {
+    width: 15rem;
+    height: auto;
+}
+
 .errorContainer {
     background-color: white;
     border-radius: 0.75rem;
@@ -40,15 +45,6 @@
     gap: 1.5rem;
 }
 
-/* Logo - 4x larger than original */
-.logo {
-    width: 380px; /* 4x the original 120px */
-    height: auto;
-    max-height: 380px; /* 4x the original 120px */
-    object-fit: contain;
-    margin-bottom: 1rem;
-}
-
 .errorIcon {
     font-size: 4rem;
     margin-bottom: 0.5rem;
@@ -67,7 +63,6 @@
     }
 }
 
-/* Text styling to match your main app */
 .errorTitle {
     font-size: 2rem;
     font-weight: 700;
@@ -92,7 +87,7 @@
     text-align: left;
     background-color: var(--coffee-50);
     border-radius: 0.5rem;
-    border: 1px solid var(--coffee-200);
+    border: 2px solid var(--coffee-200);
 }
 
 .errorSummary {
@@ -130,84 +125,80 @@
     margin-top: 1rem;
 }
 
-.primaryButton {
-    display: inline-flex;
+.secondaryButton {
+    border: none;
     align-items: center;
     gap: 0.5rem;
+    width: 15rem;
     padding: 0.875rem 2rem;
     background-color: var(--coffee-600);
-    color: white;
+    color: var(--coffee-0);
     font-weight: 600;
     border-radius: 0.5rem;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(111, 78, 55, 0.3);
     font-size: 1rem;
-    line-height: 1.5;
-    border: none;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.primaryButton:hover {
-    background-color: var(--coffee-700);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(111, 78, 55, 0.4);
-}
-
-.primaryButton:active {
-    transform: translateY(0);
-}
-
-.secondaryButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.875rem 2rem;
-    background-color: transparent;
-    color: var(--coffee-600);
-    font-weight: 600;
-    border: 2px solid var(--coffee-600);
-    border-radius: 0.5rem;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-    line-height: 1.5;
-    font-family: 'Segoe UI', sans-serif;
 }
 
 .secondaryButton:hover {
-    background-color: var(--coffee-600);
-    color: white;
+    background-color: var(--coffee-700);
     transform: translateY(-2px);
+    color: #fff;
 }
 
 .secondaryButton:active {
     transform: translateY(0);
 }
 
+.support {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--coffee-600);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 1rem;
+    border: none;
+}
+
+.support:hover {
+    background-color: var(--coffee-700);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.support:active {
+    transform: translateY(0);
+}
+
 .helpMessage {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid var(--coffee-200);
+    border-top: 2px solid var(--coffee-200);
 }
 
 .helpMessage p {
     margin: 0.5rem 0;
     color: var(--coffee-600);
-    font-size: 0.875rem;
+    font-size: 1rem;
     line-height: 1.5;
     font-family: 'Segoe UI', sans-serif;
 }
 
 .coffeeMessage {
+    margin-top: 1rem;
     font-weight: 600;
     color: var(--coffee-700) !important;
     font-style: italic;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .errorPage {
         padding: 1rem;
@@ -235,7 +226,6 @@
         align-items: center;
     }
 
-    .primaryButton,
     .secondaryButton {
         width: 100%;
         max-width: 280px;
@@ -249,7 +239,7 @@
     }
 
     .logo {
-        width: 240px; /* 4x smaller for very small screens */
+        width: 240px;
         max-height: 240px;
     }
 
@@ -266,7 +256,6 @@
     }
 }
 
-/* Animation for better UX */
 .errorPage * {
     animation-fill-mode: both;
 }

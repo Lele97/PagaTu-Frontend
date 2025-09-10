@@ -17,6 +17,7 @@
     "bootstrap-icons": "^1.13.1",
     "dotenv": "^17.0.1",
     "isbot": "^5.1.27",
+    "jsonpath": "^1.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dotenv": "^0.1.3",

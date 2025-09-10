@@ -1,6 +1,6 @@
 import styles from "~/styles/signup.module.css";
-import {useEffect, useState, useRef} from "react";
-import {useNavigate, Link} from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
@@ -214,30 +214,33 @@ const SignupForm = () => {
                 credentials: 'include',
             });
 
-            let data = null;
+            let data;
             try {
-                // Prova a leggere il body in JSON
                 data = await response.json();
             } catch {
                 data = {};
             }
 
             if (!response.ok) {
-                if (response.status === 409) {
-                    switch (data.message) {
-                        case 'Email already exists':
-                            setError("Un'utenza con questa email è già presente nel sistema.");
-                            break;
-                        case 'Username already exists':
-                            setError("Un'utenza con questo username è già presente nel sistema.");
-                            break;
-                        default:
-                            setError("Registrazione fallita.");
-                    }
+                if (response.status === 405) {
+                    setError("Errore di connessione al server.");
                 } else {
-                    setError("Registrazione fallita.");
+                    if (response.status === 409) {
+                        switch (data.message) {
+                            case 'Email already exists':
+                                setError("Un'utenza con questa email è già presente nel sistema.");
+                                break;
+                            case 'Username already exists':
+                                setError("Un'utenza con questo username è già presente nel sistema.");
+                                break;
+                            default:
+                                setError("Registrazione fallita.");
+                        }
+                    } else {
+                        setError("Registrazione fallita.");
+                    }
                 }
-                return; // Evita di proseguire
+                return;
             }
 
             setSuccessMessage("Registrazione Effettuata")
@@ -333,11 +336,11 @@ const SignupForm = () => {
                     <h1 className={styles.appTitlecolor2}>a</h1>
                     <h1 className={styles.appTitlecolor}>g</h1>
                     <h1 className={styles.appTitlecolor2}>a</h1>
+                    <br></br>
                     <h1 className={styles.appTitlecolor}>T</h1>
                     <h1 className={styles.appTitlecolor2}>u</h1>
                 </div>
             </div>
-
 
 
             <div className={styles.signupForm}>
