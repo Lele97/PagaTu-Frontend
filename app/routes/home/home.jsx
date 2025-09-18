@@ -268,7 +268,9 @@ const Home = () => {
                 setCurrentGroupPage(1);
             } else if (response.status === 401) {
                 logout();
-            } else {
+            } else if(response.status === 404) {
+                setGroups([]);
+            }else {
                 setGroups([]);
                 setGroupsError("Errore nel recupero dei gruppi");
             }
