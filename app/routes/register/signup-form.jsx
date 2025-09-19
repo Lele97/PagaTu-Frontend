@@ -244,7 +244,11 @@ const SignupForm = () => {
             }
 
             setSuccessMessage("Registrazione Effettuata")
-            navigate('/');
+
+            setTimeout(() => {
+                navigate('/');
+            }, 3000)
+
 
         } catch (error) {
             setError("Errore di registrazione. " + error)

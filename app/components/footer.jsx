@@ -20,7 +20,7 @@ const Footer = () => {
                     <p className={styles.footerText_}>
                         Built with <i className={styles.heart}></i> using React & Express
                     </p>
-                    <p className={styles.footerText}>© {new Date().getFullYear()} PagaTu. All rights reserved.</p>
+                    <p className={styles.footerText}>© {new Date().getFullYear()} PagaTu.app All rights reserved.</p>
                 </div>
                 <img className={styles.footerImage} src="/react-16-svgrepo-com.svg" alt="React Logo"/>
             </div>
