@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/group.module.css';
 import Header from '../../components/header.jsx';
@@ -258,7 +258,7 @@ const Group = () => {
     const [isPayForFriend, setIsPayForFriend] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [myTurn, setMyTurn] = useState(false);
-    const [friend, setFriend] = useState(false);
+    const [friend, setFriend] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -431,7 +431,6 @@ const Group = () => {
     };
 
     const getFriend = async () => {
-
         setFriend('');
 
         const userMember = jp.query(groups, '$..[?(@.myTurn== true)]')
@@ -440,7 +439,6 @@ const Group = () => {
             const friendUsername = userMember[0].username;
 
             try {
-
                 const token = localStorage.getItem('authToken');
 
                 if (!token) {
@@ -466,9 +464,7 @@ const Group = () => {
 
             } catch (error) {
                 setFriend('');
-
             }
-
         } else {
             setFriend('');
         }
@@ -851,9 +847,7 @@ const Group = () => {
         setSuccessMessage('');
         setIsSubmitting(true);
 
-
         try {
-
             const token = localStorage.getItem('authToken');
 
             if (!token) {
@@ -926,9 +920,8 @@ const Group = () => {
             }
 
             setTimeout(() => {
-                showPayForFriendModal(false);
+                setShowPayForFriendModal(false);
             }, 2000);
-
 
         } catch (e) {
             setError('Problema durante la registrazione del pagamento')
@@ -937,8 +930,10 @@ const Group = () => {
         }
     }
 
-    const DeleteGroupModal = () => (
-        <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeDeleteModal)}>
+    const DeleteGroupModal = ({closeDeleteModal, confirmDeleteGroup, isDeleting, error, successMessage}) => (
+        <div className={styles.modalOverlay} onClick={(e) => {
+            if (e.target === e.currentTarget) closeDeleteModal();
+        }}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
 
                 <h2>Elimina Gruppo</h2>
@@ -972,8 +967,10 @@ const Group = () => {
             </div>
         </div>);
 
-    const SkipPaymentModal = () => (
-        <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeSaltaPaymentForm)}>
+    const SkipPaymentModal = ({closeSaltaPaymentForm, confirmSkipPayment, isSkipping, error, successMessage}) => (
+        <div className={styles.modalOverlay} onClick={(e) => {
+            if (e.target === e.currentTarget) closeSaltaPaymentForm();
+        }}>
             <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
 
                 <h2>Salta Pagamento</h2>
@@ -1119,7 +1116,6 @@ const Group = () => {
         setError(null);
         setSuccessMessage('');
         setUserInvitation('');
-        // The useEffect will handle the blur cleanup automatically
     };
 
     const retryPayment = async () => {
@@ -1168,6 +1164,50 @@ const Group = () => {
         setSuccessMessage('');
     };
 
+    const handleModalOverlayClick = (e, closeFunction) => {
+        if (e.target === e.currentTarget) {
+            closeFunction();
+        }
+    };
+
+    const renderPaymentCards = () => {
+        if (!classificaPaymentsForGroup || classificaPaymentsForGroup.length === 0) {
+            return (
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>
+                        <i className="fa-solid fa-ranking-star"></i>
+                    </div>
+                    <h3>Non sono stati ancora registrati pagamenti per questo gruppo</h3>
+                    <p>Registra i pagamenti per i gruppi di cui fai parte</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className={styles.paymentCardsContainer}>
+                {classificaPaymentsForGroup.map((payment, index) => (
+                    <div key={index} className={styles.paymentCard}>
+                        <div className={styles.paymentCardHeader}>
+                            <i className="bi bi-ticket-perforated-fill"></i>
+                            <span className={styles.paymentLabel}>Utente:</span>
+                            <span className={styles.paymentData}>{payment.username}</span>
+                        </div>
+                        <div className={styles.paymentCardBody}>
+                            <div className={styles.paymentInfo}>
+                                <span className={styles.paymentLabel}>Totale pagamenti:</span>
+                                <span className={styles.paymentDescription}>{payment.totalePagamenti}</span>
+                            </div>
+                        </div>
+                        <div className={styles.paymentCardFooter}>
+                            <span className={styles.paymentLabel}>Totale speso:</span>
+                            <span className={styles.paymentAmount}>€{payment.totaleImporto}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div className={styles.groupPage}>
             <div className={styles.container}>
@@ -1205,8 +1245,8 @@ const Group = () => {
 
                     {myTurn ? (
                         <>
-                            <h1>E il tuo turno di pagare il caffe</h1>
-                            <p>puoi fare queste azioni</p>
+                            <h1>È il tuo turno di pagare il caffè</h1>
+                            <p>Puoi fare queste azioni</p>
                             <section className={styles.groupSection} style={{marginTop: '2rem'}}>
                                 <div className={styles.actionButtons}>
                                     <button onClick={registerPayment}
@@ -1226,8 +1266,8 @@ const Group = () => {
                         </>
                     ) : (
                         <>
-                            <h1>Non è il tuo turno di pagare il caffe</h1>
-                            <p>non puoi fare queste azioni</p>
+                            <h1>Non è il tuo turno di pagare il caffè</h1>
+                            <p>Non puoi fare queste azioni</p>
                             <p>Attendi il tuo turno per effettuare un pagamento</p>
                             <section className={styles.groupSection} style={{marginTop: '2rem'}}>
                                 <div className={styles.actionButtons}>
@@ -1248,75 +1288,98 @@ const Group = () => {
                         </>
                     )}
 
-                    <div className={styles.separator}></div>
+                    <div className={styles.separator}>
+                        <div className={styles.separatorLeft}></div>
+                        <img src="/coffee-medium-svgrepo-com.svg" alt=""/>
+                        <div className={styles.separatorRight}></div>
+                    </div>
 
-                    <h2 className={styles.sectionTitle}><i className="fa-solid fa-ranking-star"></i> Classifica
-                        pagamenti</h2>
+                    <section className={styles.recentSection}>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}><i className="fa-solid fa-ranking-star"></i> Classifica
+                                pagamenti</h2>
+                        </div>
 
-                    {paymentLoading ? (<LoadingSpinner message={"Caricamento pagamenti..."}/>) :
-                        paymentByGroupError ? (<ErrorMessage message={paymentByGroupError} onRetry={retryPayment}/>) :
-                            classificaPaymentsForGroup.length > 0 ? (<>
-                                <div className={styles.tableContainer}>
-                                    <table className={styles.table}>
-                                        <thead className={styles.tableHeader}>
-                                        <tr>
-                                            <th className={styles.tableHeaderCell}>Utente</th>
-                                            <th className={styles.tableHeaderCell}>Totale Speso</th>
-                                            <th className={styles.tableHeaderCell}>Pagamenti effetuati</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody className={styles.tableBody}>
-                                        {classificaPaymentsForGroup.map((payment, index) => (
-                                            <tr key={index} className={styles.tableRow}>
-                                                <td className={styles.tableCell}>
-                                                    {payment.username}
-                                                </td>
-                                                <td className={styles.tableCell}>
-                                                    {formatCurrency(payment.totaleImporto)}
-                                                </td>
-                                                <td className={styles.tableCell}>
-                                                    {payment.totalePagamenti}
-                                                </td>
-                                            </tr>))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </>) : (<div className={styles.textEmpty}>
-                                Nessun pagamento trovato
-                            </div>)}
+                        {paymentLoading ? (
+                            <LoadingSpinner message={"Caricamento pagamenti..."}/>
+                        ) : paymentByGroupError ? (
+                            <ErrorMessage message={paymentByGroupError} onRetry={retryPayment}/>
+                        ) : (
+                            renderPaymentCards()
+                        )}
+                    </section>
                 </main>
 
-                {showInviteForm && <InviteUserModal closeInviteForm={closeInviteForm} submitInvite={submitInvite}
-                                                    userInvitation={userInvitation} isSubmitting={isSubmitting}
-                                                    error={error} successMessage={successMessage}
-                                                    handleInputChangeInvitation={handleInputChangeInvitation}/>}
+                {showInviteForm && (
+                    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeInviteForm)}>
+                        <InviteUserModal
+                            closeInviteForm={closeInviteForm}
+                            submitInvite={submitInvite}
+                            userInvitation={userInvitation}
+                            isSubmitting={isSubmitting}
+                            error={error}
+                            successMessage={successMessage}
+                            handleInputChangeInvitation={handleInputChangeInvitation}
+                        />
+                    </div>
+                )}
 
-                {showPayForFriendModal && <PayForFriendModal closePayForFriendModal={closePayForFriendModal}
-                                                             handleInputChangeImporto={handleInputChangeImporto}
-                                                             confirmPayForFriend={confirmPayForFriend}
-                                                             importo={importo}
-                                                             descrizione={descrizione}
-                                                             handleInputChangeDescrizione={handleInputChangeDescrizione}
-                                                             isSubmitting={isSubmitting} error={error}
-                                                             friend={friend}
-                                                             successMessage={successMessage}/>}
+                {showPayForFriendModal && (
+                    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closePayForFriendModal)}>
+                        <PayForFriendModal
+                            closePayForFriendModal={closePayForFriendModal}
+                            handleInputChangeImporto={handleInputChangeImporto}
+                            confirmPayForFriend={confirmPayForFriend}
+                            importo={importo}
+                            descrizione={descrizione}
+                            handleInputChangeDescrizione={handleInputChangeDescrizione}
+                            isSubmitting={isSubmitting}
+                            error={error}
+                            friend={friend}
+                            successMessage={successMessage}
+                        />
+                    </div>
+                )}
 
-                {showRegisterPaymentModal && <RegisterPaymentModal closeRegisterPaymentModal={closeRegisterPaymentModal}
-                                                                   handleInputChangeImporto={handleInputChangeImporto}
-                                                                   submitPayment={submitPayment}
-                                                                   importo={importo}
-                                                                   descrizione={descrizione}
-                                                                   handleInputChangeDescrizione={handleInputChangeDescrizione}
-                                                                   isSubmitting={isSubmitting}
-                                                                   error={error}
-                                                                   successMessage={successMessage}/>}
+                {showRegisterPaymentModal && (
+                    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeRegisterPaymentModal)}>
+                        <RegisterPaymentModal
+                            closeRegisterPaymentModal={closeRegisterPaymentModal}
+                            handleInputChangeImporto={handleInputChangeImporto}
+                            submitPayment={submitPayment}
+                            importo={importo}
+                            descrizione={descrizione}
+                            handleInputChangeDescrizione={handleInputChangeDescrizione}
+                            isSubmitting={isSubmitting}
+                            error={error}
+                            successMessage={successMessage}
+                        />
+                    </div>
+                )}
 
-                {showDeleteModal && <DeleteGroupModal/>}
+                {showDeleteModal && (
+                    <DeleteGroupModal
+                        closeDeleteModal={closeDeleteModal}
+                        confirmDeleteGroup={confirmDeleteGroup}
+                        isDeleting={isDeleting}
+                        error={error}
+                        successMessage={successMessage}
+                    />
+                )}
 
-                {showSaltaPaymentModal && <SkipPaymentModal/>}
+                {showSaltaPaymentModal && (
+                    <SkipPaymentModal
+                        closeSaltaPaymentForm={closeSaltaPaymentForm}
+                        confirmSkipPayment={confirmSkipPayment}
+                        isSkipping={isSkipping}
+                        error={error}
+                        successMessage={successMessage}
+                    />
+                )}
 
             </div>
-        </div>);
+        </div>
+    );
 };
 
 export default Group;

@@ -171,6 +171,12 @@ const Home = () => {
                 setError("Il nome del gruppo deve avere minimo 6 caratteri");
                 return;
             }
+
+            if (!/^[a-zA-Z0-9_]+$/.test(payload.name.trim())) {
+                setError("il nome del gruppo può contenere solo lettere , numeri, e underscore");
+                return;
+            }
+
             const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group`, {
                 method: 'POST',
                 headers: {
@@ -193,7 +199,7 @@ const Home = () => {
 
             setTimeout(() => {
                 setShowAddGroupModal(false);
-            }, 1000);
+            }, 3000);
             await getGroupsByUser(user);
         } catch (err) {
             setError(err.message || "Errore durante la creazione");
@@ -268,9 +274,9 @@ const Home = () => {
                 setCurrentGroupPage(1);
             } else if (response.status === 401) {
                 logout();
-            } else if(response.status === 404) {
+            } else if (response.status === 404) {
                 setGroups([]);
-            }else {
+            } else {
                 setGroups([]);
                 setGroupsError("Errore nel recupero dei gruppi");
             }
@@ -373,7 +379,8 @@ const Home = () => {
 
                     <div className={styles.heroSection}>
                         <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
-                        <h5 className={styles.heroSubtitle}>Crea gruppi e controlla i pagamenti in modo semplice veloce e divertente</h5>
+                        <h5 className={styles.heroSubtitle}>Crea gruppi e controlla i pagamenti in modo semplice veloce
+                            e divertente</h5>
                     </div>
 
                     <section className={styles.groupSection}>
@@ -381,10 +388,15 @@ const Home = () => {
                             <h2 className={styles.sectionTitle}>
                                 <i className="bi bi-people-fill"></i> I tuoi gruppi
                             </h2>
-                            <button onClick={addGroup} className={styles.createGroupButton}>
+
+                            { groups.length > 0 ?(  <button onClick={addGroup} className={styles.createGroupButton}>
                                 <i className="bi bi-plus-lg"></i>
                                 Crea nuovo gruppo
-                            </button>
+                            </button>):( <button onClick={addGroup} className={styles.createGroupButton}>
+                                <i className="bi bi-plus-lg"></i>
+                                Crea il tuo primo gruppo
+                            </button>)}
+
                         </div>
 
                         {groupsLoading ? (
@@ -425,12 +437,8 @@ const Home = () => {
                                 <div className={styles.emptyIcon}>
                                     <i className="bi bi-people"></i>
                                 </div>
-                                <h3>Nessun gruppo ancora</h3>
+                                <h3>Non fai parte di nessun gruppo</h3>
                                 <p>Inizia creando il tuo primo gruppo per gestire i pagamenti del caffè</p>
-                                <button onClick={addGroup} className={styles.createGroupButton}>
-                                    <i className="bi bi-plus-circle"></i>
-                                    Crea il tuo primo gruppo
-                                </button>
                             </div>
                         )}
                     </section>
@@ -443,8 +451,8 @@ const Home = () => {
 
                     <section className={styles.recentSection}>
                         <div className={styles.sectionHeader}>
-                        <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi
-                            pagamenti</h2>
+                            <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi
+                                pagamenti</h2>
                         </div>
                         {paymentsLoading ? (
                             <LoadingSpinner message="Caricamento pagamenti..."/>
@@ -480,7 +488,13 @@ const Home = () => {
                                                     onPageChange={setCurrentPaymentPage}/>
                             </>
                         ) : (
-                            <div className={styles.textEmpty}>Nessun pagamento trovato</div>
+                            <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>
+                            <i className="bi bi-credit-card"></i>
+                        </div>
+                        <h3>Non hai effettuato ancora un pagamento</h3>
+                        <p>Registra i pagamenti per i gruppi di cui fai parte</p>
+                            </div>
                         )}
                     </section>
 

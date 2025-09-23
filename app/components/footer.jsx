@@ -7,22 +7,45 @@ const Footer = () => {
 
         <footer>
             <div className={styles.footerContainer}>
-                <img className={styles.footerImage} src="/webstorm-svgrepo-com.svg" alt="WebStorm Logo"/>
+
                 <div className={styles.footerCenter}>
+
                     <p className={styles.footerText}>PagaTu - Il caffè che unisce il
                         team</p>
+
                     <div className={styles.footerLinks}>
+                        <p>Hai bisogno di supporto?</p>
                         <Link to="mailto:support@pagatu.app" className={styles.footerLink}>Contact Us</Link>
                     </div>
-                    <a href="https://github.com/Lele97">
+
+
+
+                    <div>
+                        <h1>Scopri il progetto PagaTu</h1>
+                        <span>
+                            <p>Repository applicativo backend</p>
+                            <a href="https://github.com/Lele97/PagaTu-Backend">
+                            <img src="/github-svgrepo-com.svg" className={styles.gitbtn}/>
+                            </a>
+                        </span>
+                    <span>
+                        <p>Repository applicativo frontend</p>
+                         <a href="https://github.com/Lele97/PagaTu-Frontend">
                         <img src="/github-svgrepo-com.svg" className={styles.gitbtn}/>
                     </a>
+                    </span>
+
+                        <h2></h2>
+
+                    </div>
+
+
                     <p className={styles.footerText_}>
-                        Built with <i className={styles.heart}></i> using React & Express
+                        Built with <i className={styles.heart}></i> using Java & React
                     </p>
                     <p className={styles.footerText}>© {new Date().getFullYear()} PagaTu.app All rights reserved.</p>
                 </div>
-                <img className={styles.footerImage} src="/react-16-svgrepo-com.svg" alt="React Logo"/>
+
             </div>
         </footer>
     );
