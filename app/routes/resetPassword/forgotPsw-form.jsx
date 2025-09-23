@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import styles from '~/styles/forgotPsw.module.css';
 import {Link, useNavigate} from "react-router-dom";
 
-const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const ForgotPswForm = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,7 @@ const ForgotPswForm = () => {
         setSuccess(null);
 
         try {
-            const response = await fetch(`${NGROK_SERVER_URL}/api/auth/forgotPassword?email=${encodeURIComponent(email)}`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/forgotPassword?email=${encodeURIComponent(email)}`, {
                 method: 'POST',
                 credentials: 'include',
             });

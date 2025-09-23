@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 import Header from '../../components/header.jsx';
 
-const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const AddGroupModal = ({
                            payload,
@@ -177,7 +177,7 @@ const Home = () => {
                 return;
             }
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -258,7 +258,7 @@ const Home = () => {
         try {
             setGroupsLoading(true);
             setGroupsError(null);
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${username}`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -294,7 +294,7 @@ const Home = () => {
         try {
             setPaymentsLoading(true);
             setPaymentsError(null);
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

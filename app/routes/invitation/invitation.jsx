@@ -3,7 +3,7 @@ import {useNavigate, useSearchParams} from 'react-router-dom';
 import styles from '~/styles/invitation.module.css';
 import Header from '../../components/header.jsx';
 
-const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const InvitationHandler = () => {
     const [searchParams] = useSearchParams();
@@ -86,7 +86,7 @@ const InvitationHandler = () => {
             }
 
             const response = await fetch(
-                `${NGROK_SERVER_URL}/api/coffee/group/update/addtogroup?username=${encodeURIComponent(invitationData.username)}&groupName=${encodeURIComponent(invitationData.groupName)}`,
+                `${GETAWAY_SERVER_URL}/api/coffee/group/update/addtogroup?username=${encodeURIComponent(invitationData.username)}&groupName=${encodeURIComponent(invitationData.groupName)}`,
                 {
                     method: 'PUT',
                     headers: {

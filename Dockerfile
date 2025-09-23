@@ -28,15 +28,3 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
-
-
-
-# To build:
-# export DOCKER_CLI_EXPERIMENTAL=enabled
-# docker buildx create --use --name multi-builder
-# docker buildx inspect --bootstrap
-
-# docker buildx build --platform linux/amd64,linux/arm64 -t registry.ivanbattimiello.xyz/react-sample:latest --push .
-
-# verify
-# docker buildx imagetools inspect registry.ivanbattimiello.xyz/react-sample:latest

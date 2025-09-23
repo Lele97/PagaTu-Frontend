@@ -4,7 +4,7 @@ import styles from '~/styles/group.module.css';
 import Header from '../../components/header.jsx';
 import jp from "jsonpath";
 
-const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const InviteUserModal = ({
                              closeInviteForm,
@@ -294,7 +294,7 @@ const Group = () => {
 
                         // Fetch the latest group data from the server
                         const token = localStorage.getItem('authToken');
-                        const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${username}`, {
+                        const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
                             method: 'POST',
                             headers: {
                                 'Accept': 'application/json',
@@ -446,7 +446,7 @@ const Group = () => {
                     return;
                 }
 
-                const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/user?username=${encodeURIComponent(friendUsername)}`, {
+                const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/user?username=${encodeURIComponent(friendUsername)}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -543,7 +543,7 @@ const Group = () => {
 
             // First check if user exists in the system using the backend endpoint
             try {
-                const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/user/by-username?username=${encodeURIComponent(userInvitation)}`, {
+                const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/user/by-username?username=${encodeURIComponent(userInvitation)}`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -588,7 +588,7 @@ const Group = () => {
                 groupName: group.groupName,
             }
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/update/invitation`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/update/invitation`, {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
                 headers: {
@@ -635,7 +635,7 @@ const Group = () => {
             }
 
             try {
-                const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
+                const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -659,7 +659,7 @@ const Group = () => {
                 setDescrizione('')
 
                 // Fetch the latest group data after payment
-                const groupResponse = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${user}`, {
+                const groupResponse = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${user}`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -727,7 +727,7 @@ const Group = () => {
                 return;
             }
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/salta/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/salta/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -748,7 +748,7 @@ const Group = () => {
             setSuccessMessage('Pagamento saltato con successo!');
 
             // Fetch the latest group data after payment
-            const groupResponse = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${user}`, {
+            const groupResponse = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${user}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -809,7 +809,7 @@ const Group = () => {
                 return;
             }
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/delete/${group.groupName}`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/delete/${group.groupName}`, {
                 method: 'DELETE', headers: {
                     'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token,
                 }, credentials: 'include'
@@ -855,7 +855,7 @@ const Group = () => {
                 return;
             }
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamento/pagaPer?groupNme=${encodeURIComponent(group.groupName)}`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/pagamento/pagaPer?groupNme=${encodeURIComponent(group.groupName)}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -884,7 +884,7 @@ const Group = () => {
             setDescrizione('')
 
             // Fetch the latest group data after payment
-            const groupResponse = await fetch(`${NGROK_SERVER_URL}/api/coffee/group/get/${user}`, {
+            const groupResponse = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${user}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -1045,7 +1045,7 @@ const Group = () => {
             if (groupId) requestBody.groupId = groupId;
             if (groupName) requestBody.groupName = groupName;
 
-            const response = await fetch(`${NGROK_SERVER_URL}/api/coffee/pagamenti/classifica`, {
+            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/pagamenti/classifica`, {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
                 headers: {
