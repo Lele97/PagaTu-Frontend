@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
 
-const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
+const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const LoginForm = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });

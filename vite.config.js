@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
                 : ['localhost'],
             proxy: {
                 '/api': {
-                    target: env.VITE_NGROK_SERVER_URL,
+                    target: env.VITE_GETAWAY_SERVER_URL,
                     changeOrigin: true,
                     secure: false,
                 },

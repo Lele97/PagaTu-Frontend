@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 import Header from '../../components/header.jsx';
 
-const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
+const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const AddGroupModal = ({
                            payload,

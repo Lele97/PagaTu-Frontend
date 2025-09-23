@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import styles from '~/styles/forgotPsw.module.css';
 import {Link, useNavigate} from "react-router-dom";
 
-const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
+const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const ForgotPswForm = () => {
     const [isLoading, setIsLoading] = useState(false);
