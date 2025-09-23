@@ -3,7 +3,7 @@ import {useNavigate, useSearchParams} from 'react-router-dom';
 import styles from '~/styles/invitation.module.css';
 import Header from '../../components/header.jsx';
 
-const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
+const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const InvitationHandler = () => {
     const [searchParams] = useSearchParams();

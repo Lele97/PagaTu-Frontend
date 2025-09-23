@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import styles from "~/styles/resetPsw.module.css";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
-const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
+const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const ResetPswForm = () => {
 

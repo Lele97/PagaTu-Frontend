@@ -2,7 +2,7 @@ import styles from "~/styles/signup.module.css";
 import {useEffect, useRef, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 
-const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
+const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const SignupForm = () => {
     const [registration, setRegistration] = useState({

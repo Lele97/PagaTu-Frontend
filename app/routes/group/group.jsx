@@ -4,7 +4,7 @@ import styles from '~/styles/group.module.css';
 import Header from '../../components/header.jsx';
 import jp from "jsonpath";
 
-const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
+const NGROK_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const InviteUserModal = ({
                              closeInviteForm,
