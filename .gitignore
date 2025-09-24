@@ -8,4 +8,6 @@
 /.idea/
 
 # Project
+.env
+.env.local
 .env.buildone
