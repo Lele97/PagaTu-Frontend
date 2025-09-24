@@ -2,8 +2,6 @@
 
 set -e
 
-REGISTRY="registry.pagatu.app"
-
 cd "$(dirname "$0")"
 
 # Load environment variables from .env.buildone
@@ -16,15 +14,12 @@ fi
 
 echo "INFO - You can pass the 'all' argument to build and push all the applications"
 
-
-#git pull origin develop
-
 export DOCKER_CLI_EXPERIMENTAL=enabled
 #docker buildx create --use --name multi-builder
 #docker buildx inspect --bootstrap
 
-docker login "$REGISTRY" -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+docker login "$REGISTRY_URL" -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 
-docker buildx build --platform linux/amd64,linux/arm64 -t "$REGISTRY"/pagatu-fe:latest --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t "$REGISTRY_URL"/pagatu-fe:latest --push .
 
 echo "Successfully built: fe"
