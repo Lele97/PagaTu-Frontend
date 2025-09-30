@@ -7,18 +7,22 @@ const Footer = () => {
 
         <footer>
             <div className={styles.footerContainer}>
-                <div className={styles.footer-split}>
+                <div className={styles.footerSplit}>
                     <div className={styles.footerCenter}>
                         {/* On the center footer*/}
                         <p className={styles.footerText}>PagaTu - Il caffè che unisce il
                             team</p>
+                    </div>
 
+                    <div className={styles.footerLeft}>
                         {/* On the left footer*/}
                         <div className={styles.footerLinks}>
                             <p>Hai bisogno di supporto?</p>
                             <Link to="mailto:support@pagatu.app" className={styles.footerLink}>Contact Us</Link>
                         </div>
+                    </div>
 
+                    <div className={styles.footerRight}>
                         {/* On the right footer*/}
                         <div>
                             <div>
@@ -41,7 +45,9 @@ const Footer = () => {
                                 </a>
                             </div>
                         </div>
+                    </div>
 
+                    <div className={styles.footerCenter}>
                         {/* On the center footer*/}
                         <p className={styles.footerText_}>
                             Built with <i className={styles.heart}></i> using Java & React

@@ -20,6 +20,35 @@ footer {
     text-align: center;
 }
 
+.footerSplit {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.footerCenter {
+}
+
+.footerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.footerLeft h2{
+    color: var(--coffee-100);
+    font-size: 1.5rem;
+}
+
+.footerLeft p {
+    color: var(--coffee-100);
+    line-height: 1.6;
+}
+
+.footerRight {
+}
+
 @media (min-width: 768px) {
     .footerContainer {
         grid-template-columns: auto 1fr auto;
@@ -39,7 +68,7 @@ footer {
     margin-top: 0.25rem;
 }
 
-.gitbtn{
+.gitbtn {
     width: 3rem;
     height: auto;
 }
