@@ -101,7 +101,7 @@ const LoginForm = () => {
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
                         <label htmlFor="username" className={styles.label}>
-                            Username
+                            Username*
                         </label>
                         <input
                             type="text"
@@ -118,7 +118,7 @@ const LoginForm = () => {
                     <div className={styles.inputGroup}>
                         <div className={styles.passwordHeader}>
                             <label htmlFor="password" className={styles.label}>
-                                Password
+                                Password*
                             </label>
                             <Link to="/forgotPassword" className={styles.link}>
                                 Password dimenticata?

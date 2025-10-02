@@ -494,7 +494,7 @@ const SignupForm = () => {
                 <form onSubmit={handleSubmit}>
                     <div className={styles.inputGroup}>
                         <label htmlFor="username" className={styles.label}>
-                            Username
+                            Username*
                         </label>
                         <input
                             type="text"
@@ -508,7 +508,7 @@ const SignupForm = () => {
 
                     <div className={styles.inputGroup}>
                         <label htmlFor="password" className={styles.label}>
-                            Password
+                            Password*
                         </label>
                         <input
                             type="password"
@@ -522,7 +522,7 @@ const SignupForm = () => {
 
                     <div className={styles.inputGroup}>
                         <label htmlFor="email" className={styles.label}>
-                            Email
+                            Email*
                         </label>
                         <input
                             type="email"
@@ -536,7 +536,7 @@ const SignupForm = () => {
 
                     <div className={styles.inputGroup}>
                         <label htmlFor="dateOfBirth" className={styles.label}>
-                            Data di nascita
+                            Data di nascita*
                         </label>
                         <button
                             type="button"
@@ -550,7 +550,7 @@ const SignupForm = () => {
 
                     <div className={styles.inputGroup}>
                         <label htmlFor="firstName" className={styles.label}>
-                            Nome
+                            Nome*
                         </label>
                         <input
                             type="text"
@@ -564,7 +564,7 @@ const SignupForm = () => {
 
                     <div className={styles.inputGroup}>
                         <label htmlFor="lastName" className={styles.label}>
-                            Cognome
+                            Cognome*
                         </label>
                         <input
                             type="text"
