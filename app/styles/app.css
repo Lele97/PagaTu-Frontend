@@ -1,15 +1,16 @@
 :root {
     --coffee-0: #ffffff;
     --coffee-50: #FAF7F2;
-    --coffee-100: #F5F5F0;
+    --coffee-100: #ffffff;
     --coffee-200: #E8E0D9;
-    --coffee-300: #D7CEC4;
+    --coffee-300: #ffffff;
     --coffee-400: #B8A99C;
     --coffee-500: #9C8B7D;
     --coffee-600: #6F4E37;
     --coffee-700: #5A3E2D;
     --coffee-800: #3E2C20;
     --coffee-900: #2A1E16;
+    --coffee-1000: #BEBEBE;
 }
 
 body {

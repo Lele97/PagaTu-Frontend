@@ -3,7 +3,7 @@ footer {
     inset 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     background-color: var(--coffee-600);
     color: white;
-    padding: 2rem 1rem;
+    padding: 3rem 1rem 1.5rem;
     width: 100%;
     margin-top: auto;
     flex-shrink: 0;
@@ -11,115 +11,251 @@ footer {
 }
 
 .footerContainer {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
-    align-items: center;
-    text-align: center;
 }
 
 .footerSplit {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
     margin-bottom: 2rem;
 }
 
-.footerCenter {
+@media (min-width: 768px) {
+    .footerSplit {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
 }
 
+.footerBottom {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(245, 245, 240, 0.2);
+    font-size: 0.9rem;
+}
+
+.footerBottom .footerBottomText {
+    color: var(--coffee-200);
+}
+
+.footerBottom .footerBottomCopyright {
+    color: var(--coffee-1000);
+}
+
+/* About Section */
+.footerCenter {
+    text-align: center;
+    padding-bottom: 1.5rem;
+}
+
+.footerText {
+    color: var(--coffee-200);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.pagatuimage {
+    width: 4.5rem;
+    height: auto;
+    object-fit: contain;
+    margin-top: 0.75rem;
+}
+
+/* Links & Social Section (Left) */
 .footerLeft {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.footerLeft h2{
-    color: var(--coffee-100);
-    font-size: 1.5rem;
-}
-
 .footerLeft p {
+    color: var(--coffee-200);
+}
+
+
+.footerLeft h3 {
     color: var(--coffee-100);
-    line-height: 1.6;
-}
-
-.footerRight {
-}
-
-@media (min-width: 768px) {
-    .footerContainer {
-        grid-template-columns: auto 1fr auto;
-        text-align: left;
-    }
-}
-
-.footerImage {
-    width: 3rem;
-    height: auto;
-    justify-self: center;
-}
-
-.footerText {
-    color: var(--coffee-300);
-    font-size: 1rem;
-    margin-top: 0.25rem;
-}
-
-.gitbtn {
-    width: 3rem;
-    height: auto;
+    font-size: 1.125rem;
+    margin: 0 0 0.75rem 0;
+    font-weight: 600;
 }
 
 .footerLinks {
-    margin-bottom: 1rem;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.75rem 1.25rem;
-    margin-top: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-@media (min-width: 768px) {
-    .footerLinks {
-        justify-content: flex-start;
-    }
+.footerLinks p {
+    margin: 0;
+    color: var(--coffee-200);
+    font-size: 0.9rem;
 }
 
 .footerLink {
-    color: var(--coffee-400);
-    font-weight: 600;
-    font-size: 0.9375rem;
+    color: var(--coffee-1000);
+    font-weight: 500;
     text-decoration: none;
-    position: relative;
-    transition: color 0.3s ease;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
-.footerLink:hover,
-.footerLink:focus {
+/* Social & Repos Section */
+.footerRight {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.footerRight h3 {
     color: var(--coffee-200);
-    text-decoration: underline;
 }
 
+.footerRight strong {
+    color: var(--coffee-1000);
+}
+
+.socialSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.socialSection h3 {
+    color: var(--coffee-100);
+    font-size: 1.125rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.socialButtons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.footerSocial{
+    color: var(--coffee-200);
+}
+
+.btnimg {
+    border-radius: 2rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s ease;
+    display: block;
+}
+
+.btnimg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.btnimgGitHub {
+    border-radius: 2rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s ease;
+    display: block;
+}
+
+.btnimgGitHub:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Repository Cards */
+.repoSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.repoSection h3 {
+    font-size: 1.125rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.repoGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.repoCard {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.repoCard:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+}
+
+.cardIcon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.cardContent {
+    flex: 1;
+}
+
+.cardContent strong {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.cardGithub {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    opacity: 0.8;
+    transition: opacity 0.25s ease;
+}
+
+.repoCard:hover .cardGithub {
+    opacity: 0.8;
+}
+
+/* Heart Animation */
 .heart {
-    background-color: red;
+    background-color: #ef4444;
     display: inline-block;
     height: 8px;
-    margin: 0 10px;
+    margin: 0 6px;
     position: relative;
     top: 0;
     transform: rotate(-45deg);
     width: 8px;
-    animation: beat 1s ease-in infinite;
+    animation: beat 1.2s ease-in-out infinite;
 }
 
 .heart:before,
 .heart:after {
     content: "";
-    background-color: red;
+    background-color: #ef4444;
     border-radius: 50%;
     height: 8px;
     position: absolute;
@@ -135,26 +271,33 @@ footer {
     left: 4px;
 }
 
-.heart:hover {
-    background-color: hotpink;
-}
-
-.heart:hover:before,
-.heart:hover:after {
-    background-color: hotpink;
-}
-
 @keyframes beat {
     0%, 100% {
         transform: scale(1) rotate(-45deg);
     }
     50% {
-        transform: scale(1.2) rotate(-45deg);
+        transform: scale(1.15) rotate(-45deg);
     }
 }
 
-.footerCenter {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* Mobile Responsive */
+@media (max-width: 767px) {
+    footer {
+        padding: 2rem 1rem 1.5rem;
+    }
+
+    .footerCenter,
+    .footerLeft,
+    .footerRight {
+        text-align: center;
+        align-items: center;
+    }
+
+    .socialButtons {
+        justify-content: center;
+    }
+
+    .repoCard {
+        justify-content: center;
+    }
 }

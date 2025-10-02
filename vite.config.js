@@ -10,9 +10,11 @@ export default defineConfig(({ mode }) => {
             host: env.VITE_HOST,
             port: parseInt(env.VITE_PORT || '8888', 10),
             open: true,
-            allowedHosts: env.VITE_ALLOWED_HOSTS
-                ? env.VITE_ALLOWED_HOSTS.split(',')
-                : ['localhost'],
+            ...(mode !== 'development' && {
+                allowedHosts: env.VITE_ALLOWED_HOSTS
+                    ? env.VITE_ALLOWED_HOSTS.split(',')
+                    : ['localhost']
+            }),
             proxy: {
                 '/api': {
                     target: env.VITE_GETAWAY_SERVER_URL,
