@@ -14,6 +14,8 @@ fi
 
 echo "INFO - You can pass the 'all' argument to build and push all the applications"
 
+cd ..
+
 export DOCKER_CLI_EXPERIMENTAL=enabled
 #docker buildx create --use --name multi-builder
 #docker buildx inspect --bootstrap
@@ -21,5 +23,6 @@ export DOCKER_CLI_EXPERIMENTAL=enabled
 docker login "$REGISTRY_URL" -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 
 docker buildx build --platform linux/amd64,linux/arm64 -t "$REGISTRY_URL"/pagatu-fe:latest --push .
+kubectl rollout restart deploy pagatu-fe -n pagatu
 
 echo "Successfully built: fe"

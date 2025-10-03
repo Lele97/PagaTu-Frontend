@@ -10,4 +10,4 @@
 # Project
 .env
 .env.local
-.env.buildone
+script/.env.buildone
