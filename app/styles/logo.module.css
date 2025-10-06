@@ -1,0 +1,109 @@
+.logo {
+    max-width: clamp(160px, 35vw, 220px);
+    width: clamp(160px, 35vw, 220px);
+    height: auto;
+    margin-bottom: clamp(var(--spacing-md), 3vw, var(--spacing-lg));
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: translateY(-5px);
+}
+
+.appTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.1rem, 1vw, 0.25rem);
+    margin-top: clamp(-2rem, -8vw, -4rem);
+    margin-bottom: clamp(var(--spacing-lg), 6vw, var(--spacing-xxl));
+}
+
+.appTitle h1 {
+    margin: 0;
+    line-height: 1;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    transition: transform 0.3s ease;
+    cursor: default;
+}
+
+.appTitle h1:hover {
+    transform: translateY(-5px);
+}
+
+.appTitlecolor {
+    font-family: 'CustomFont', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
+    color: var(--coffee-700);
+}
+
+.appTitlecolor2 {
+    font-family: 'CustomFont', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
+    color: var(--coffee-500);
+}
+
+/* =============== RESPONSIVE STYLES =============== */
+
+/* Mobile Small (up to 360px) */
+@media (max-width: 360px) {
+    .logo {
+        max-width: 140px;
+        width: 140px;
+    }
+    
+    .appTitle {
+        margin-top: -0.5rem;
+        margin-bottom: var(--spacing-md);
+        gap: 0.1rem;
+    }
+    
+    .appTitle h1 {
+        font-size: 2.2rem;
+    }
+}
+
+/* Mobile (361px to 480px) */
+@media (min-width: 361px) and (max-width: 480px) {
+    .logo {
+        max-width: 160px;
+        width: 160px;
+    }
+    
+    .appTitle {
+        margin-top: -1rem;
+        margin-bottom: var(--spacing-lg);
+        gap: 0.1rem;
+    }
+    
+    .appTitle h1 {
+        font-size: 2.5rem;
+    }
+    
+    .appTitle h1:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* Mobile Large (481px to 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .logo {
+        max-width: 180px;
+        width: 180px;
+    }
+    
+    .appTitle h1 {
+        font-size: 3.5rem;
+    }
+}
+
+/* Desktop hover effects (1024px and up) */
+@media (min-width: 1024px) {
+    .logo:hover {
+        transform: translateY(-10px);
+    }
+    
+    .appTitle h1:hover {
+        transform: translateY(-10px);
+    }
+}
