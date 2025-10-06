@@ -1,11 +1,12 @@
 import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
+import logostyle from '~/styles/logo.module.css'
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
 const LoginForm = () => {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const [credentials, setCredentials] = useState({username: '', password: ''});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -18,8 +19,8 @@ const LoginForm = () => {
     }, [error]);
 
     const handleChange = (e) => {
-        const { id, value } = e.target;
-        setCredentials(prev => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setCredentials(prev => ({...prev, [id]: value}));
         if (error) setError('');
     };
 
@@ -34,7 +35,7 @@ const LoginForm = () => {
         }
 
         try {
-            const { username: invitedUser, groupName } = JSON.parse(pendingInvitation);
+            const {username: invitedUser, groupName} = JSON.parse(pendingInvitation);
             const currentUsername = userData.username;
 
             if (currentUsername === invitedUser) {
@@ -57,7 +58,7 @@ const LoginForm = () => {
         try {
             const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(credentials),
                 credentials: 'include',
             });
@@ -69,8 +70,8 @@ const LoginForm = () => {
                 throw new Error(errorMsg);
             }
 
-            const { token, username, email } = await response.json();
-            handleLoginSuccess({ username, email }, token);
+            const {token, username, email} = await response.json();
+            handleLoginSuccess({username, email}, token);
         } catch (err) {
             // Extract the error message instead of the whole error object
             setError(err.message || 'Si è verificato un errore durante il login');
@@ -83,15 +84,15 @@ const LoginForm = () => {
         <div className={styles.container}>
 
             <div className={styles['header-container']}>
-                <img src="/pagaTu.png" alt="Logo" className={styles.logo}/>
-                <div className={styles.appTitle}>
-                    <h1 className={styles.appTitlecolor}>P</h1>
-                    <h1 className={styles.appTitlecolor2}>a</h1>
-                    <h1 className={styles.appTitlecolor}>g</h1>
-                    <h1 className={styles.appTitlecolor2}>a</h1>
+                <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
+                <div className={logostyle.appTitle}>
+                    <h1 className={logostyle.appTitlecolor}>P</h1>
+                    <h1 className={logostyle.appTitlecolor2}>a</h1>
+                    <><h1 className={logostyle.appTitlecolor}>g</h1></>
+                    <h1 className={logostyle.appTitlecolor2}>a</h1>
                     <br></br>
-                    <h1 className={styles.appTitlecolor}>T</h1>
-                    <h1 className={styles.appTitlecolor2}>u</h1>
+                    <h1 className={logostyle.appTitlecolor}>T</h1>
+                    <h1 className={logostyle.appTitlecolor2}>u</h1>
                 </div>
             </div>
 

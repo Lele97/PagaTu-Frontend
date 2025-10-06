@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import styles from '~/styles/forgotPsw.module.css';
+import logostyle from '~/styles/logo.module.css'
 import {Link, useNavigate} from "react-router-dom";
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
@@ -66,15 +67,15 @@ const ForgotPswForm = () => {
     return (
         <div className={styles.container}>
             <div className={styles['header-container']}>
-                <img src="/pagaTu.png" alt="Logo" className={styles.logo}/>
-                <div className={styles.appTitle}>
-                    <h1 className={styles.appTitlecolor}>P</h1>
-                    <h1 className={styles.appTitlecolor2}>a</h1>
-                    <h1 className={styles.appTitlecolor}>g</h1>
-                    <h1 className={styles.appTitlecolor2}>a</h1>
+                <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
+                <div className={logostyle.appTitle}>
+                    <h1 className={logostyle.appTitlecolor}>P</h1>
+                    <h1 className={logostyle.appTitlecolor2}>a</h1>
+                    <h1 className={logostyle.appTitlecolor}>g</h1>
+                    <h1 className={logostyle.appTitlecolor2}>a</h1>
                     <br></br>
-                    <h1 className={styles.appTitlecolor}>T</h1>
-                    <h1 className={styles.appTitlecolor2}>u</h1>
+                    <h1 className={logostyle.appTitlecolor}>T</h1>
+                    <h1 className={logostyle.appTitlecolor2}>u</h1>
                 </div>
             </div>
 
