@@ -22,7 +22,7 @@
 .appTitle h1 {
     margin: 0;
     line-height: 1;
-    font-size: 5rem;
+    font-size: 4rem;
     transition: transform 0.3s ease, color 0.3s ease;
     cursor: default;
 }
@@ -41,4 +41,94 @@
     font-family: 'CustomFont', sans-serif;
     font-weight: 300;
     color: #c29159;
+}
+
+/* =============== MOBILE & TABLET RESPONSIVE STYLES =============== */
+/* Note: Desktop styles (1025px+) remain unchanged */
+
+/* Mobile Portrait: 320px - 480px */
+@media only screen and (max-width: 480px) and (orientation: portrait) {
+    .logo {
+        max-width: 140px;
+        width: 40vmin;
+        margin-bottom: 0.75rem;
+    }
+    
+    .logo:hover {
+        transform: translateY(-5px); /* Less dramatic on mobile */
+    }
+    
+    .appTitle {
+        margin-top: -3rem;
+        margin-bottom: 2rem;
+        gap: 0.2rem;
+    }
+    
+    .appTitle h1 {
+        font-size: 3rem;
+    }
+    
+    .appTitle h1:hover {
+        transform: translateY(-5px); /* Less dramatic on mobile */
+    }
+}
+
+/* Mobile Landscape: 480px - 768px */
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+    .logo {
+        max-width: 160px;
+        width: 45vmin;
+        margin-bottom: 0.875rem;
+    }
+    
+    .logo:hover {
+        transform: translateY(-7px);
+    }
+    
+    .appTitle {
+        margin-top: -3.5rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    .appTitle h1 {
+        font-size: 3.5rem;
+    }
+    
+    .appTitle h1:hover {
+        transform: translateY(-7px);
+    }
+}
+
+/* Tablet Portrait: 768px - 1024px */
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .logo {
+        max-width: 190px;
+        width: 48vmin;
+        margin-bottom: 0.9375rem;
+    }
+    
+    .logo:hover {
+        transform: translateY(-8px);
+    }
+    
+    .appTitle {
+        margin-top: -3.75rem;
+        margin-bottom: 2.75rem;
+    }
+    
+    .appTitle h1 {
+        font-size: 3.75rem;
+    }
+    
+    .appTitle h1:hover {
+        transform: translateY(-8px);
+    }
+}
+
+/* Tablet Landscape: specific adjustments */
+@media only screen and (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+    .appTitle {
+        margin-top: -3rem;
+        margin-bottom: 2rem;
+    }
 }
