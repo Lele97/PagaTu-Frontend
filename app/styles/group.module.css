@@ -1,4 +1,12 @@
-/* =============== Base/Layout Styles =============== */
+/**
+ * GROUP PAGE STYLES
+ * Styling for group management, members, and payment tracking
+ */
+
+/* ===============================================================================
+   LAYOUT & CONTAINER
+   ================================================================================ */
+
 .container {
     min-height: 100vh;
     display: flex;

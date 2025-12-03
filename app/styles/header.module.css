@@ -1,3 +1,12 @@
+/**
+ * HEADER STYLES
+ * Application header with navigation, logo, and user info
+ */
+
+/* ===============================================================================
+   HEADER LAYOUT & CONTAINER
+   ================================================================================ */
+
 .header {
     top: 0;
     z-index: 1000;

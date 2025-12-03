@@ -1,4 +1,12 @@
-/* =============== BASE LAYOUT STYLES =============== */
+/**
+ * FORGOT PASSWORD PAGE STYLES
+ * Styling for password recovery form and process
+ */
+
+/* ===============================================================================
+   LAYOUT & CONTAINER
+   ================================================================================ */
+
 .forgotPswPage {
     min-height: 100vh;
     background-color: var(--coffee-200);

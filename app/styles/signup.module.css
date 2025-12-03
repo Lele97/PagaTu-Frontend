@@ -1,4 +1,12 @@
-/* ===== Modal Datepicker ===== */
+/**
+ * SIGNUP/REGISTRATION PAGE STYLES
+ * Styling for user registration form with custom date picker
+ */
+
+/* ===============================================================================
+   CUSTOM FONTS
+   ================================================================================ */
+
 @font-face {
     font-family: 'CustomFont';
     src: url('/public/Oatlander.ttf') format('opentype');

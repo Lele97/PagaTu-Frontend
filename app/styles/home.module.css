@@ -1,4 +1,12 @@
-/* =============== BASE LAYOUT STYLES =============== */
+/**
+ * HOME PAGE STYLES
+ * Main landing page after login with groups and payment history
+ */
+
+/* ===============================================================================
+   BASE LAYOUT
+   ================================================================================ */
+
 .homePage {
     min-height: 100vh;
     background-color: var(--coffee-200);
