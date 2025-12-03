@@ -11,3 +11,4 @@
 .env
 .env.local
 script/.env.buildone
+/package-lock.json
