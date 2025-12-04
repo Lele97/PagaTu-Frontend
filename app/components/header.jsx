@@ -8,12 +8,14 @@ const Header = ({user, logout}) => {
             <div className={styles.headerContent}>
                 <BuyMeACoffeeButton></BuyMeACoffeeButton>
                 <div className={styles.logoTitleContainer}>
-                    <img src="/pagaTu.png" alt="Logo" className={styles.pagatu_image}/>
+                    <img src="/pagaTu.png" alt="PagaTu - Logo applicazione caffè aziendale" className={styles.pagatu_image}/>
                 </div>
                 <div className={styles.userInfo}>
-                    <i className="bi bi-person-circle"></i>
+                    <i className="bi bi-person-circle" aria-hidden="true"></i>
                     <span className={styles.welcomeText}>Ciao {user}</span>
-                    <img onClick={logout} className={styles.logoutBtn} src="/logout-svgrepo-com.svg"/>
+                    <button onClick={logout} className={styles.logoutBtn} aria-label="Logout" title="Esci dall'applicazione">
+                        <img src="/logout-svgrepo-com.svg" alt="" role="presentation"/>
+                    </button>
                 </div>
             </div>
         </header>

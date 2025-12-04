@@ -377,11 +377,11 @@ const Home = () => {
 
                 <main className={styles.main}>
 
-                    <div className={styles.heroSection}>
+                    <section className={styles.heroSection}>
                         <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
-                        <h5 className={styles.heroSubtitle}>Crea gruppi e controlla i pagamenti in modo semplice veloce
-                            e divertente</h5>
-                    </div>
+                        <p className={styles.heroSubtitle}>Crea gruppi e controlla i pagamenti in modo semplice veloce
+                            e divertente</p>
+                    </section>
 
                     <section className={styles.groupSection}>
                         <div className={styles.sectionHeader}>
@@ -444,8 +444,8 @@ const Home = () => {
                     </section>
 
                     <div className={styles.separator}>
-                        <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt=""/>
+                                        <div className={styles.separatorLeft}></div>
+                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
                         <div className={styles.separatorRight}></div>
                     </div>
 

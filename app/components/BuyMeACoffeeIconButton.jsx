@@ -1,7 +1,6 @@
 import React from 'react'
 import styles from '~/styles/footer.module.css'
 
-
 const BuyMeACoffeeIconButton = () => {
     return (
         <a href="https://buymeacoffee.com/lele_97">

@@ -1,0 +1,26 @@
+{
+  "name": "PagaTu • Il caffè che unisce il team",
+  "short_name": "PagaTu",
+  "description": "PagaTu • Il caffè che unisce il team. La pausa con i colleghi non è mai stata cosi divertente.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#ffc107",
+  "lang": "it",
+  "categories": ["business", "productivity", "social"],
+  "icons": [
+    {
+      "src": "/pagaTu.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pagaTu.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import styles from "~/styles/footer.module.css";
 import BuyMeACoffeeIconButton from "~/components/BuyMeACoffeeIconButton.jsx";
 import GithubPersonalProfileIconButton from "~/components/GithubPersonalProfileIconButton.jsx";
@@ -14,9 +13,10 @@ const Footer = () => {
                 </div>
                 <div className={styles.footerSplit}>
                     <div className={styles.footerLeft}>
-                        <p className={styles.footerSupportTitle}>Hai bisogno di supporto? <Link to="mailto:support@pagatu.app" className={styles.footerLink}>Contattaci</Link></p>
+                        <p className={styles.footerSupportTitle}>Hai bisogno di supporto? <a
+                            href="mailto:support@pagatu.app" className={styles.footerLink}>Contattaci</a></p>
                         <div className={styles.footerSocial}>
-                            <p className={styles.socialTitle}>Follow the my journey</p>
+                            <p className={styles.socialTitle}>Seguimi nel mio viaggio</p>
                             <div className={styles.socialButtons}>
                                 <BuyMeACoffeeIconButton/>
                                 <GithubPersonalProfileIconButton/>
@@ -26,22 +26,28 @@ const Footer = () => {
                     </div>
                     <div className={styles.footerRight}>
                         <h3>Scopri il progetto su <strong>Github</strong></h3>
-                        <div className={styles.repoGrid}>
-                            <a href="https://github.com/Lele97/PagaTu-Backend" className={styles.repoCardBackEnd}>
-                                <img src="/server-minimalistic-svgrepo-com.svg" alt="" className={styles.cardIcon}/>
+                        <nav className={styles.repoGrid} aria-label="Repository GitHub">
+                            <a href="https://github.com/Lele97/PagaTu-Backend" className={styles.repoCardBackEnd}
+                               target="_blank" rel="noopener noreferrer"
+                               aria-label="Vai al repository Backend su GitHub">
+                                <img src="/server-minimalistic-svgrepo-com.svg" alt="Icona server"
+                                     className={styles.cardIcon}/>
                                 <div className={styles.cardContent}>
                                     <strong>Backend</strong>
                                 </div>
-                                <img src="/github-svgrepo-com.svg" className={styles.cardGithub}/>
+                                <img src="/github-svgrepo-com.svg" alt="GitHub" className={styles.cardGithub}/>
                             </a>
-                            <a href="https://github.com/Lele97/PagaTu-Frontend" className={styles.repoCardFrontEnd}>
-                                <img src="/tablet-laptop-2-svgrepo-com.svg" alt="" className={styles.cardIcon}/>
+                            <a href="https://github.com/Lele97/PagaTu-Frontend" className={styles.repoCardFrontEnd}
+                               target="_blank" rel="noopener noreferrer"
+                               aria-label="Vai al repository Frontend su GitHub">
+                                <img src="/tablet-laptop-2-svgrepo-com.svg" alt="Icona dispositivi"
+                                     className={styles.cardIcon}/>
                                 <div className={styles.cardContent}>
                                     <strong>Frontend</strong>
                                 </div>
-                                <img src="/github-svgrepo-com.svg" className={styles.cardGithub}/>
+                                <img src="/github-svgrepo-com.svg" alt="GitHub" className={styles.cardGithub}/>
                             </a>
-                        </div>
+                        </nav>
                     </div>
                 </div>
                 <div className={styles.footerBottom}>
