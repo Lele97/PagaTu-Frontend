@@ -530,7 +530,6 @@ select.selectStyle:focus {
 
 .loginLink a:hover {
     color: var(--coffee-800);
-    text-decoration: underline;
 }
 
 .errorMessage {

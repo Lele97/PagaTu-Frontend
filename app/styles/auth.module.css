@@ -195,7 +195,6 @@
 
 .link:hover {
     color: var(--coffee-800);
-    text-decoration: underline;
 }
 
 .footer {
