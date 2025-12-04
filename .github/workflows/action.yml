@@ -20,7 +20,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # full history: essenziale
 
       - name: Sync to GitLab
         uses: keninkujovic/gitlab-sync@2.0.0
@@ -28,3 +28,5 @@ jobs:
           gitlab_url: ${{ secrets.GIT_LAB_URI }}
           username: ${{ secrets.GIT_LAB_USERNAME }}
           gitlab_pat: ${{ secrets.GIT_LAB_TOKEN }}
+          local_branch: "develop"   # 🔥 fondamentale
+          remote_branch: "develop"  # 🔥 fondamentale
