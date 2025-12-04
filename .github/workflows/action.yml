@@ -20,12 +20,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # 🔥 magia: clone completo, niente errori nel mirror
+          fetch-depth: 0
 
       - name: Sync to GitLab
-        uses: anmolnagpal/gitlab-mirror-and-ci-action@v2.0.7
+        uses: keninkujovic/gitlab-sync@2.0.0
         with:
-          gitlab_url: ${{ secrets.GITLAB_URL }}
-          gitlab_username: ${{ secrets.GITLAB_USERNAME }}
-          gitlab_password: ${{ secrets.GITLAB_PASSWORD }}
-          force: true
+          gitlab_url: ${{ secrets.GIT_LAB_URI }}
+          username: ${{ secrets.GIT_LAB_USERNAME }}
+          gitlab_pat: ${{ secrets.GIT_LAB_TOKEN }}
