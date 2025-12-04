@@ -28,5 +28,3 @@ jobs:
           gitlab_url: ${{ secrets.GIT_LAB_URI }}
           username: ${{ secrets.GIT_LAB_USERNAME }}
           gitlab_pat: ${{ secrets.GIT_LAB_TOKEN }}
-          local_branch: "develop"   # 🔥 fondamentale
-          remote_branch: "develop"  # 🔥 fondamentale
