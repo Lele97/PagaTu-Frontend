@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 🔥 magia: clone completo, niente errori nel mirror
 
       - name: Sync to GitLab
         uses: anmolnagpal/gitlab-mirror-and-ci-action@v2.0.7
