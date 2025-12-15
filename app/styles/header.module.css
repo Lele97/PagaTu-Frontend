@@ -39,26 +39,29 @@
     transition: all 0.3s ease;
 }
 
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    padding: 0.4rem 0.6rem;
+    border-radius: 2rem;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 69, 19, 0.1);
+
+    box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    transition: all 0.3s ease;
+}
+
 .userInfo:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.userInfo i {
-    font-size: 1.5rem;
-    color: var(--coffee-600) !important;
-    padding: 0;
-    margin: 0;
-}
-
-.welcomeText {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--coffee-800);
-    margin: 0;
-    padding: 0;
-    letter-spacing: -0.01em;
-}
 
 .logoTitleContainer {
     display: flex;
@@ -70,18 +73,21 @@
     object-fit: contain;
 }
 
-.logoutBtn{
-    cursor: pointer;
-    border-radius: 2rem;
-    color: var(--coffee-600) !important;
-    width: 2rem;
-    height: auto;
-    transition: all 0.3s ease;
-}
+/*.logoutBtn {*/
+/*    cursor: pointer;*/
+/*    width: 2rem;*/
 
-.logoutBtn:hover {
-    transform: translateY(-1px);
-}
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+
+/*    border-radius: 50%;*/
+/*    transition: transform 0.2s ease;*/
+/*}*/
+
+/*.logoutBtn:hover {*/
+/*    transform: translateY(-1px);*/
+/*}*/
 
 .btnimg {
     border-radius: 2rem;
@@ -101,4 +107,121 @@
     color: var(--coffee-800);
     margin: 0;
     line-height: 1;
+}
+
+
+.coffeeAvatar {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    padding: 5px;
+    border-radius: 50%;
+    background: #ececec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+            inset 0 1px 2px rgba(255,255,255,0.7),
+            0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.25s ease;
+}
+
+.coffeeAvatar:hover {
+    transform: translateY(-1px) scale(1.04);
+}
+
+.coffeeImg {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.coffeeLetter {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--coffee-700);
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    user-select: none;
+}
+
+.door_container {
+    position: relative;
+    width: 40px;
+    height: 50px;
+    margin-left: 0.5rem;
+    /*cursor: pointer;*/
+    /*transition: transform 0.2s ease;*/
+}
+
+/*.door_container:hover {*/
+/*    transform: translateY(-1px) scale(1.05);*/
+/*}*/
+
+/* Top bar */
+.top_bar {
+    position: relative;
+    width: 85%;
+    height: 4px;
+    border-radius: 0.125rem;
+    border: 2px solid black;
+    background: #51361b;
+}
+
+/* Outer frame (architrave) */
+.door_frame {
+    position: absolute;
+    top: 2px;
+    width: 85%;
+    height: calc(100% - 2px);
+    border-radius: 0 0 0 0;
+    background: #51361b;
+    border: 2px solid black;
+    border-top: 0 solid #51361b;
+}
+
+/* Inner door panel */
+.door_panel {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(100% - 12px);
+    height: calc(100% - 3px);
+    background: #c29159;
+    border: 2px solid #000;
+    box-sizing: border-box;
+    border-radius: 0.125rem 0.125rem 0 0;
+}
+
+/* Doorknob */
+.doorknob {
+    position: absolute;
+    left: calc(85% - 6px); /* Positioned near the right edge of the door */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    background: #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.doorknob_inner {
+    width: 2px;
+    height: 2px;
+    background: #BEBEBE;
+    border-radius: 50%;
 }
