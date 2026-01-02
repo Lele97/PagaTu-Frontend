@@ -1,72 +1,75 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
+import sharedStyles from '~/styles/shared.module.css';
 import Header from '../../components/header.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
-const AddGroupModal = ({
-                           payload,
-                           handleChangeName,
-                           handleChangeDescription,
-                           confirmCreateGroup,
-                           closeAddGroupModal,
-                           error,
-                           success,
-                           isSubmitting
-                       }) => (
-    <div className={styles.modalOverlay}>
-        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h2>Crea un nuovo gruppo</h2>
-            <form onSubmit={confirmCreateGroup}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="nome">Nome</label>
-                    <input
-                        type="text"
-                        id="nome"
-                        value={payload.name}
-                        onChange={handleChangeName}
-                        required
-                        className={styles.formInput}
-                        placeholder="Inserisci un nome per il gruppo..."
-                        autoFocus
-                    />
+const AddGroupModal = React.memo(({
+                                      payload,
+                                      handleChangeName,
+                                      handleChangeDescription,
+                                      confirmCreateGroup,
+                                      closeAddGroupModal,
+                                      error,
+                                      success,
+                                      isSubmitting
+                                  })=> {
+    return(
+        <div className={sharedStyles.modalOverlay}>
+            <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
+                <h2>Crea un nuovo gruppo</h2>
+                <form onSubmit={confirmCreateGroup}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="nome">Nome</label>
+                        <input
+                            type="text"
+                            id="nome"
+                            value={payload.name}
+                            onChange={handleChangeName}
+                            required
+                            className={sharedStyles.formInput}
+                            placeholder="Inserisci un nome per il gruppo..."
+                            autoFocus
+                        />
 
-                    <label htmlFor="descrizione">Descrizione</label>
-                    <input
-                        type="text"
-                        id="descrizione"
-                        value={payload.description}
-                        onChange={handleChangeDescription}
-                        className={styles.formInput}
-                        placeholder="Inserisci una breve descrizione..."
-                    />
-                </div>
+                        <label htmlFor="descrizione">Descrizione</label>
+                        <input
+                            type="text"
+                            id="descrizione"
+                            value={payload.description}
+                            onChange={handleChangeDescription}
+                            className={sharedStyles.formInput}
+                            placeholder="Inserisci una breve descrizione..."
+                        />
+                    </div>
 
-                {error && <div className={styles.errorMessageModal}>{error}</div>}
-                {success && <div className={styles.successMessage}>{success}</div>}
+                    {error && <div className={sharedStyles.errorMessageModal}>{error}</div>}
+                    {success && <div className={sharedStyles.successMessage}>{success}</div>}
 
-                <div>
-                    <button
-                        type="button"
-                        onClick={closeAddGroupModal}
-                        className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isSubmitting}
-                    >
-                        Annulla
-                    </button>
-                    <button
-                        type="submit"
-                        className={`${styles.groupButton} ${styles.submitButton}`}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? "Creando il gruppo..." : "Crea gruppo"}
-                    </button>
-                </div>
-            </form>
+                    <div>
+                        <button
+                            type="button"
+                            onClick={closeAddGroupModal}
+                            className={`${sharedStyles.groupButton} ${styles.cancelButton}`}
+                            disabled={isSubmitting}
+                        >
+                            Annulla
+                        </button>
+                        <button
+                            type="submit"
+                            className={`${sharedStyles.groupButton} ${styles.submitButton}`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Creando il gruppo..." : "Crea gruppo"}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-);
+    )
+});
 
 const Home = () => {
 
@@ -355,7 +358,7 @@ const Home = () => {
     };
 
     const LoadingSpinner = ({message}) => (
-        <div className={styles.loadingSpinner}>
+        <div className={sharedStyles.loadingSpinner}>
             <div className={styles.spinner}></div>
             <span className={styles.spinnerText}>{message}</span>
         </div>

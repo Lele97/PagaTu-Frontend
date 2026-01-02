@@ -9,21 +9,27 @@ const Header = ({user, logout}) => {
                 <BuyMeACoffeeButton/>
 
                 <div className={styles.logoTitleContainer}>
-                    <img
-                        src="/pagaTu.png"
-                        alt="PagaTu - Logo applicazione caffè aziendale"
-                        className={styles.pagatu_image}
-                    />
+                        <img
+                            src="/pagaTu.webp"
+                            alt="PagaTu - Logo applicazione caffè aziendale"
+                            width={200}
+                            height={300}
+                            className={styles.pagatu_image}
+                        />
                 </div>
+
 
                 <div className={styles.userInfo}>
                     <div
                         className={styles.coffeeAvatar}
                         aria-label={`Utente ${user}`}>
                         <img
-                            src="/coffee-cup-coffee-svgrepo-com.png"
+                            src="/coffee-cup-coffee-svgrepo-com.webp"
                             alt=""
-                            className={styles.coffeeImg}/>
+                            width={45}
+                            height={45}
+                            className={styles.coffeeImg}
+                        />
                         <span className={styles.coffeeLetter}>
               {user?.charAt(0).toUpperCase()}
             </span>

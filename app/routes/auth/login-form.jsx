@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
+import sharedStyles from '~/styles/shared.module.css';
 import logostyle from '~/styles/logo.module.css'
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
@@ -130,6 +131,7 @@ const LoginForm = () => {
                             id="password"
                             className={styles.input}
                             placeholder="••••••••"
+                            autoComplete={"current-password"}
                             value={credentials.password}
                             onChange={handleChange}
                             required

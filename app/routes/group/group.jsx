@@ -1,237 +1,349 @@
-import React, {useEffect, useState} from 'react';
+import React, {cache, useCallback, useEffect, useMemo, useState, useRef} from 'react';
 import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/group.module.css';
+import sharedStyles from '~/styles/shared.module.css';
 import Header from '../../components/header.jsx';
 import jp from "jsonpath";
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
-const InviteUserModal = ({
-                             closeInviteForm,
-                             submitInvite,
-                             userInvitation,
-                             error,
-                             successMessage,
-                             isSubmitting,
-                             handleInputChangeInvitation
-                         }) => (
-    <div className={styles.modalOverlay}>
-        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h2>Invita un Membro</h2>
-            <form onSubmit={submitInvite}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="user">Utente da invitare nel gruppo:</label>
-                    <input
-                        type="text"
-                        id="user"
-                        value={userInvitation}
-                        onChange={handleInputChangeInvitation}
-                        required
-                        className={styles.formInput}
-                        placeholder="Inserisci username..."
-                        autoFocus/>
-                </div>
-                {error && <div className={styles.errorMessageModal}>{error}</div>
-                }
-                {successMessage &&
-                    <div className={styles.successMessage}>{successMessage}</div>
-                }
-                <div>
-                    <button
-                        type="button"
-                        onClick={closeInviteForm}
-                        className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isSubmitting}
-                    >
-                        Annulla
-                    </button>
-                    <button
-                        type="submit"
-                        className={`${styles.groupButton} ${styles.submitButton}`}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? 'Invito in corso...' : 'Invita'}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-);
-
-const RegisterPaymentModal = ({
-                                  submitPayment,
-                                  importo,
-                                  descrizione,
-                                  error,
-                                  successMessage,
-                                  isSubmitting,
-                                  closeRegisterPaymentModal,
-                                  handleInputChangeImporto,
-                                  handleInputChangeDescrizione
-                              }) => (
-    <div className={styles.modalOverlay}>
-        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-
-            <h2>Registra il pagamento</h2>
-
-            <div style={{
-                backgroundColor: 'var(--coffee-50)',
-                padding: '1rem',
-                borderRadius: '0.5rem',
-                margin: '1rem 0',
-                borderLeft: '3px solid var(--coffee-600)'
-            }}>
-                <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
-                    pagamento:</p>
-                <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
-                    <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
-                    <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
-                    <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
-                    <li>Il pagamento apparirà nella classifica del gruppo</li>
-                </ul>
+const InviteUserModal = React.memo(({
+                                        closeInviteForm,
+                                        submitInvite,
+                                        userInvitation,
+                                        error,
+                                        successMessage,
+                                        isSubmitting,
+                                        handleInputChangeInvitation
+                                    }) => {
+    return (
+        <div className={sharedStyles.modalOverlay}>
+            <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
+                <h2>Invita un Membro</h2>
+                <form onSubmit={submitInvite}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="user">Utente da invitare nel gruppo:</label>
+                        <input
+                            type="text"
+                            id="user"
+                            value={userInvitation}
+                            onChange={handleInputChangeInvitation}
+                            required
+                            className={sharedStyles.formInput}
+                            placeholder="Inserisci username..."
+                            autoFocus/>
+                    </div>
+                    {error && <div className={sharedStyles.errorMessageModal}>{error}</div>
+                    }
+                    {successMessage &&
+                        <div className={sharedStyles.successMessage}>{successMessage}</div>
+                    }
+                    <div>
+                        <button
+                            type="button"
+                            onClick={closeInviteForm}
+                            className={`${sharedStyles.groupButton} ${styles.cancelButton}`}
+                            disabled={isSubmitting}
+                        >
+                            Annulla
+                        </button>
+                        <button
+                            type="submit"
+                            className={`${sharedStyles.groupButton} ${styles.submitButton}`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Invito in corso...' : 'Invita'}
+                        </button>
+                    </div>
+                </form>
             </div>
+        </div>)
+});
 
-            <form onSubmit={submitPayment}>
-                <div className={styles.formGroup}>
+const RegisterPaymentModal = React.memo(({
+                                             submitPayment,
+                                             importo,
+                                             descrizione,
+                                             error,
+                                             successMessage,
+                                             isSubmitting,
+                                             closeRegisterPaymentModal,
+                                             handleInputChangeImporto,
+                                             handleInputChangeDescrizione
+                                         }) => {
+    return (
+        <div className={sharedStyles.modalOverlay}>
+            <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
 
-                    <label htmlFor="importo">Importo:</label>
-                    <input
-                        type="number"
-                        id="importo"
-                        value={importo}
-                        onChange={handleInputChangeImporto}
-                        required
-                        className={styles.formInput}
-                        placeholder="Inserisci importo..."
-                        step="0.01"
-                        min="0"
-                        autoFocus
-                    />
+                <h2>Registra il pagamento</h2>
 
-                    <label htmlFor="descrizione">Descrizione:</label>
-                    <input
-                        type="text"
-                        id="descrizione"
-                        value={descrizione}
-                        onChange={handleInputChangeDescrizione}
-                        required
-                        className={styles.formInput}
-                        placeholder="Inserisci una descrizione del pagamento..."
-                    />
-
+                <div style={{
+                    backgroundColor: 'var(--coffee-50)',
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    margin: '1rem 0',
+                    borderLeft: '3px solid var(--coffee-600)'
+                }}>
+                    <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
+                        pagamento:</p>
+                    <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
+                        <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
+                        <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
+                        <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
+                        <li>Il pagamento apparirà nella classifica del gruppo</li>
+                    </ul>
                 </div>
-                {error && <div className={styles.errorMessageModal}>{error}</div>}
-                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-                <div className={styles.formButtons}>
-                    <button
-                        type="button"
-                        onClick={closeRegisterPaymentModal}
-                        className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isSubmitting}
-                    >
-                        Annulla
-                    </button>
-                    <button
-                        type="submit"
-                        className={`${styles.groupButton} ${styles.submitButton}`}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>);
 
-const PayForFriendModal = ({
-                               confirmPayForFriend,
-                               friend,
-                               importo,
-                               descrizione,
-                               error,
-                               successMessage,
-                               isSubmitting,
-                               closePayForFriendModal,
-                               handleInputChangeImporto,
-                               handleInputChangeDescrizione
-                           }) => (
-    <div className={styles.modalOverlay}>
-        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                <form onSubmit={submitPayment}>
+                    <div className={styles.formGroup}>
 
-            <h2>Paga per un amico</h2>
+                        <label htmlFor="importo">Importo:</label>
+                        <input
+                            type="number"
+                            id="importo"
+                            value={importo}
+                            onChange={handleInputChangeImporto}
+                            required
+                            className={sharedStyles.formInput}
+                            placeholder="Inserisci importo..."
+                            step="0.01"
+                            min="0"
+                            autoFocus
+                        />
 
-            <h6>Stai pagando al posto di <strong>{friend}</strong></h6>
+                        <label htmlFor="descrizione">Descrizione:</label>
+                        <input
+                            type="text"
+                            id="descrizione"
+                            value={descrizione}
+                            onChange={handleInputChangeDescrizione}
+                            required
+                            className={sharedStyles.formInput}
+                            placeholder="Inserisci una descrizione del pagamento..."
+                        />
 
-            <div style={{
-                backgroundColor: 'var(--coffee-50)',
-                padding: '1rem',
-                borderRadius: '0.5rem',
-                margin: '1rem 0',
-                borderLeft: '3px solid var(--coffee-600)'
-            }}>
-                <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
-                    pagamento:</p>
-                <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
-                    <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
-                    <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
-                    <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
-                    <li>Il pagamento apparirà nella classifica del gruppo</li>
-                </ul>
+                    </div>
+                    {error && <div className={sharedStyles.errorMessageModal}>{error}</div>}
+                    {successMessage && <div className={sharedStyles.successMessage}>{successMessage}</div>}
+                    <div className={styles.formButtons}>
+                        <button
+                            type="button"
+                            onClick={closeRegisterPaymentModal}
+                            className={`${sharedStyles.groupButton} ${styles.cancelButton}`}
+                            disabled={isSubmitting}
+                        >
+                            Annulla
+                        </button>
+                        <button
+                            type="submit"
+                            className={`${sharedStyles.groupButton} ${styles.submitButton}`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
+                        </button>
+                    </div>
+                </form>
             </div>
+        </div>
+    )
+});
 
-            <form onSubmit={confirmPayForFriend}>
-                <div className={styles.formGroup}>
+const PayForFriendModal = React.memo(({
+                                          confirmPayForFriend,
+                                          friend,
+                                          importo,
+                                          descrizione,
+                                          error,
+                                          successMessage,
+                                          isSubmitting,
+                                          closePayForFriendModal,
+                                          handleInputChangeImporto,
+                                          handleInputChangeDescrizione
+                                      }) => {
+    return (
+        <div className={sharedStyles.modalOverlay}>
+            <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
 
-                    <label htmlFor="importo">Importo:</label>
-                    <input
-                        type="number"
-                        id="importo"
-                        value={importo}
-                        onChange={handleInputChangeImporto}
-                        required
-                        className={styles.formInput}
-                        placeholder="Inserisci importo..."
-                        step="0.01"
-                        min="0"
-                        autoFocus
-                    />
+                <h2>Paga per un amico</h2>
 
-                    <label htmlFor="descrizione">Descrizione:</label>
-                    <input
-                        type="text"
-                        id="descrizione"
-                        value={descrizione}
-                        onChange={handleInputChangeDescrizione}
-                        required
-                        className={styles.formInput}
-                        placeholder="Inserisci una descrizione del pagamento..."
-                    />
+                <h6>Stai pagando al posto di <strong>{friend}</strong></h6>
 
+                <div style={{
+                    backgroundColor: 'var(--coffee-50)',
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    margin: '1rem 0',
+                    borderLeft: '3px solid var(--coffee-600)'
+                }}>
+                    <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando registri un
+                        pagamento:</p>
+                    <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
+                        <li>Il tuo stato verrà marcato come "pagato" per questo turno</li>
+                        <li>Il pagamento verrà registrato con importo, descrizione e data corrente</li>
+                        <li>Verrà automaticamente selezionato il prossimo pagatore del gruppo</li>
+                        <li>Il pagamento apparirà nella classifica del gruppo</li>
+                    </ul>
                 </div>
-                {error && <div className={styles.errorMessageModal}>{error}</div>}
-                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-                <div className={styles.formButtons}>
+
+                <form onSubmit={confirmPayForFriend}>
+                    <div className={styles.formGroup}>
+
+                        <label htmlFor="importo">Importo:</label>
+                        <input
+                            type="number"
+                            id="importo"
+                            value={importo}
+                            onChange={handleInputChangeImporto}
+                            required
+                            className={sharedStyles.formInput}
+                            placeholder="Inserisci importo..."
+                            step="0.01"
+                            min="0"
+                            autoFocus
+                        />
+
+                        <label htmlFor="descrizione">Descrizione:</label>
+                        <input
+                            type="text"
+                            id="descrizione"
+                            value={descrizione}
+                            onChange={handleInputChangeDescrizione}
+                            required
+                            className={sharedStyles.formInput}
+                            placeholder="Inserisci una descrizione del pagamento..."
+                        />
+
+                    </div>
+                    {error && <div className={sharedStyles.errorMessageModal}>{error}</div>}
+                    {successMessage && <div className={sharedStyles.successMessage}>{successMessage}</div>}
+                    <div className={styles.formButtons}>
+                        <button
+                            type="button"
+                            onClick={closePayForFriendModal}
+                            className={`${sharedStyles.groupButton} ${styles.cancelButton}`}
+                            disabled={isSubmitting}
+                        >
+                            Annulla
+                        </button>
+                        <button
+                            type="submit"
+                            className={`${sharedStyles.groupButton} ${styles.submitButton}`}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    )
+})
+
+const DeleteGroupModal = React.memo(({
+                                         closeDeleteModal,
+                                         confirmDeleteGroup,
+                                         isDeleting,
+                                         error,
+                                         successMessage
+                                     }) => {
+    return (
+        <div className={sharedStyles.modalOverlay} onClick={(e) => {
+            if (e.target === e.currentTarget) closeDeleteModal();
+        }}>
+            <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+                <h2>Elimina Gruppo</h2>
+                <p>Sei sicuro di voler eliminare il gruppo <strong
+                    className={styles.groupName}>{group.groupName}</strong>?</p>
+                <p style={{color: '#dc3545', fontSize: '0.9em', marginTop: '1rem'}}>
+                    Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
+                </p>
+
+                {error && <div className={sharedStyles.errorMessageModal}>{error}</div>}
+                {successMessage && <div className={sharedStyles.successMessage}>{successMessage}</div>}
+
+                <div className={styles.formButtons} style={{marginTop: '2rem'}}>
                     <button
                         type="button"
-                        onClick={closePayForFriendModal}
-                        className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isSubmitting}
+                        onClick={closeDeleteModal}
+                        className={`${sharedStyles.groupButton} ${styles.cancelButton}`}
+                        disabled={isDeleting}
                     >
                         Annulla
                     </button>
                     <button
-                        type="submit"
-                        className={`${styles.groupButton} ${styles.submitButton}`}
-                        disabled={isSubmitting}
+                        type="button"
+                        onClick={confirmDeleteGroup}
+                        className={`${sharedStyles.groupButton} ${styles.deleteButton}`}
+                        disabled={isDeleting}
                     >
-                        {isSubmitting ? 'Registrazione in corso...' : 'Registra Pagamento'}
+                        {isDeleting ? 'Eliminazione in corso...' : 'Elimina Gruppo'}
                     </button>
                 </div>
-            </form>
-
+            </div>
         </div>
-    </div>
-)
+    )
+})
+
+const SkipPaymentModal = React.memo(({
+                                         closeSaltaPaymentForm,
+                                         confirmSkipPayment,
+                                         isSkipping,
+                                         error,
+                                         successMessage
+                                     }) => {
+    return (
+        <div className={sharedStyles.modalOverlay} onClick={(e) => {
+            if (e.target === e.currentTarget) closeSaltaPaymentForm();
+        }}>
+            <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
+
+                <h2>Salta Pagamento</h2>
+                <p>Vuoi saltare il tuo turno di pagamento per questo gruppo?</p>
+                <div style={{
+                    backgroundColor: 'var(--coffee-50)',
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    margin: '1rem 0',
+                    borderLeft: '3px solid var(--coffee-600)'
+                }}>
+                    <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando salti:</p>
+                    <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
+                        <li>Il tuo stato verrà marcato come "saltato" per questo turno</li>
+                        <li>Verrai automaticamente reinserito nella prossima rotazione</li>
+                        <li>Un altro membro del gruppo verrà selezionato casualmente per il prossimo pagamento</li>
+                    </ul>
+                </div>
+                <p style={{color: 'var(--coffee-700)', fontSize: '0.9em', fontStyle: 'italic'}}>
+                    Nota: Puoi saltare solo quando è il tuo turno di pagare.
+                </p>
+
+                {error && <div className={sharedStyles.errorMessageModal}>{error}</div>}
+                {successMessage && <div className={sharedStyles.successMessage}>{successMessage}</div>}
+
+                <div className={styles.formButtons} style={{marginTop: '2rem'}}>
+                    <button
+                        type="button"
+                        onClick={closeSaltaPaymentForm}
+                        className={`${sharedStyles.groupButton} ${styles.cancelButton}`}
+                        disabled={isSkipping}
+                    >
+                        Annulla
+                    </button>
+                    <button
+                        type="button"
+                        onClick={confirmSkipPayment}
+                        className={`${sharedStyles.groupButton} ${styles.deleteButton}`}
+                        disabled={isSkipping}
+                    >
+                        {isSkipping ? 'Salto del pagamento in corso...' : 'Salta pagamento'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+})
 
 const Group = () => {
 
@@ -257,7 +369,6 @@ const Group = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isPayForFriend, setIsPayForFriend] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
-    const [myTurn, setMyTurn] = useState(false);
     const [friend, setFriend] = useState('');
 
     useEffect(() => {
@@ -364,10 +475,6 @@ const Group = () => {
     }, [navigate]);
 
     useEffect(() => {
-        setMyTurn(checkMyTurn());
-    }, [groups, user]);
-
-    useEffect(() => {
         const container = document.querySelector('.container');
         if (showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal) {
             container?.classList.add('modal-active');
@@ -403,6 +510,120 @@ const Group = () => {
             return () => clearTimeout(timer);
         }
     }, [error])
+
+    const useFetchWithCache = () => {
+        const cache = useRef(new Map());
+
+        return async (url, options = {}, cacheKey, ttl = 30000) => {
+            const now = Date.now();
+            const cached = cache.current.get(cacheKey);
+
+            if (cached && (now - cached.timestamp) < ttl) {
+                return cached.data;
+            }
+
+            const response = await fetch(url, options);
+            const body = await response.json();
+
+            const data = {
+                status: response.status,
+                body: body,
+            }
+
+            console.log("data", data);
+
+            cache.current.set(cacheKey, {
+                data,
+                timestamp: now
+            });
+
+            return data;
+        };
+    };
+
+    const cachedFetch = useFetchWithCache();
+
+    const getClassificaPaymentsForGroup = useCallback(async (groupToUse = group) => {
+        const token = localStorage.getItem('authToken');
+
+        if (!token) {
+            setError("No token provided");
+            return;
+        }
+
+        const cacheKey = `classifica_${groupToUse?.id || groupToUse?.groupName}`;
+
+        const requestBody = {
+            groupId: groupToUse.id,
+            groupName: groupToUse.groupName,
+        }
+
+        try {
+            setPaymentLoading(true);
+            const data = await cachedFetch(
+                `${GETAWAY_SERVER_URL}/api/coffee/pagamenti/classifica`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(requestBody),
+                    credentials: 'include',
+                },
+                cacheKey
+            );
+
+            switch (data.status) {
+                case 200:
+                    const payload = Array.isArray(data.body) ? data.body : [data.body];
+                    console.log('API body ===>', data.body);
+                    setClassificaPaymentsForGroup(payload);
+                    break;
+                case 204:
+                    setClassificaPaymentsForGroup([]);
+                    break;
+                case 401:
+                    setPaymentByGroupError("Sessione scaduta. Effettua nuovamente il login.");
+                    setTimeout(() => navigate('/login'), 2000);
+                    break;
+                case 403:
+                    setPaymentByGroupError(`Accesso negato. Verifica di appartenere al gruppo "${groupName || 'sconosciuto'}"`);
+                    break;
+                case 404:
+                    if (errorMessage.toLowerCase().includes('group')) {
+                        setPaymentByGroupError(`Gruppo "${groupName || 'sconosciuto'}" non trovato`);
+                    } else {
+                        setPaymentByGroupError("Risorsa non trovata");
+                    }
+                    break;
+                case 500:
+                    setPaymentByGroupError("Errore interno del server. Riprova più tardi.");
+                    break;
+            }
+
+        } catch (err) {
+            if (err.name === 'TypeError' && err.message.includes('fetch')) {
+                setPaymentByGroupError("Errore di connessione. Verifica la tua connessione internet.");
+            } else {
+                setPaymentByGroupError("Errore nel recupero dei pagamenti. Riprova più tardi.");
+            }
+            setClassificaPaymentsForGroup([]);
+        } finally {
+            setPaymentLoading(false);
+        }
+    }, [group?.id, group?.groupName])
+
+    const myTurn = useMemo(() => {
+        if (!groups || !user || !groups.userMembershipsdto) return false;
+
+        const currentUserMembership = groups.userMembershipsdto.find(
+            member => member.username === user
+        );
+
+        return currentUserMembership ? currentUserMembership.myTurn : false;
+    }, [groups, user])
 
     const formatCurrency = (amount) => {
         if (!amount && amount !== 0) return '€ 0,00';
@@ -474,16 +695,6 @@ const Group = () => {
         setShowSaltaPaymentModal(true);
         setSuccessMessage('');
         setError(null);
-    };
-
-    const checkMyTurn = () => {
-        if (!groups || !user || !groups.userMembershipsdto) return false;
-
-        const currentUserMembership = groups.userMembershipsdto.find(
-            member => member.username === user
-        );
-
-        return currentUserMembership ? currentUserMembership.myTurn : false;
     };
 
     const payForFriend = () => {
@@ -617,100 +828,9 @@ const Group = () => {
             setError(err.message || 'Errore nell\'invio dell\'invito. Riprova.');
         } finally {
             setIsSubmitting(false);
+
         }
     };
-
-    const submitPayment = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setError(null);
-        setSuccessMessage('');
-
-        try {
-            const token = localStorage.getItem('authToken');
-
-            if (!token) {
-                setError("No token provided");
-                return;
-            }
-
-            try {
-                const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        importo: importo,
-                        descrizione: descrizione,
-                    })
-                });
-
-                if (!response.ok) {
-                    setError('Problema durante la registrazione del pagamento');
-                    return;
-                }
-
-                setSuccessMessage('Pagamento registrato con successo');
-                setImporto('')
-                setDescrizione('')
-
-                // Fetch the latest group data after payment
-                const groupResponse = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${user}`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({username: user})
-                });
-
-                if (groupResponse.ok) {
-                    const allGroups = await groupResponse.json();
-                    const currentGroupName = group.groupName;
-
-                    // Find the current group in the list of groups
-                    const currentGroup = allGroups.find(g =>
-                        g.name === currentGroupName ||
-                        g.groupName === currentGroupName
-                    );
-
-                    if (currentGroup) {
-                        const updatedGroup = {
-                            id: currentGroup.id,
-                            groupName: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
-                            name: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
-                            ...currentGroup
-                        };
-
-                        setGroup(updatedGroup);
-                        setGroups(updatedGroup);
-                        localStorage.setItem('group', JSON.stringify(updatedGroup));
-                    }
-                }
-
-                setTimeout(() => {
-                    setShowRegisterPaymentModal(false);
-                }, 2000);
-
-                await getClassificaPaymentsForGroup(group)
-
-            } catch (err) {
-                setError(`Problema durante la registrazione del pagamento`);
-                return;
-            }
-
-        } catch (err) {
-            setError('Problema durante la registrazione del pagamento');
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
 
     const confirmSkipPayment = async (e) => {
         e.preventDefault();
@@ -746,6 +866,9 @@ const Group = () => {
 
             // Set success message and close modal after delay
             setSuccessMessage('Pagamento saltato con successo!');
+
+            const cacheKey = `classifica_${group.id || group.groupName}`;
+            clearCache(cacheKey);
 
             // Fetch the latest group data after payment
             const groupResponse = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${user}`, {
@@ -786,6 +909,8 @@ const Group = () => {
             setTimeout(() => {
                 setShowSaltaPaymentModal(false);
             }, 2000);
+
+            await getClassificaPaymentsForGroup(group)
 
         } catch (err) {
             setError('Errore di rete. Riprova più tardi.');
@@ -883,6 +1008,9 @@ const Group = () => {
             setImporto('')
             setDescrizione('')
 
+            const cacheKey = `classifica_${group.id || group.groupName}`
+            clearCache(cacheKey)
+
             // Fetch the latest group data after payment
             const groupResponse = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${user}`, {
                 method: 'POST',
@@ -923,193 +1051,14 @@ const Group = () => {
                 setShowPayForFriendModal(false);
             }, 2000);
 
+            await getClassificaPaymentsForGroup(group)
+
         } catch (e) {
             setError('Problema durante la registrazione del pagamento')
         } finally {
             setIsSubmitting(false);
         }
     }
-
-    const DeleteGroupModal = ({closeDeleteModal, confirmDeleteGroup, isDeleting, error, successMessage}) => (
-        <div className={styles.modalOverlay} onClick={(e) => {
-            if (e.target === e.currentTarget) closeDeleteModal();
-        }}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-
-                <h2>Elimina Gruppo</h2>
-                <p>Sei sicuro di voler eliminare il gruppo <strong
-                    className={styles.groupName}>{group.groupName}</strong>?</p>
-                <p style={{color: '#dc3545', fontSize: '0.9em', marginTop: '1rem'}}>
-                    Questa azione non può essere annullata. Tutti i dati del gruppo verranno persi definitivamente.
-                </p>
-
-                {error && <div className={styles.errorMessageModal}>{error}</div>}
-                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-
-                <div className={styles.formButtons} style={{marginTop: '2rem'}}>
-                    <button
-                        type="button"
-                        onClick={closeDeleteModal}
-                        className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isDeleting}
-                    >
-                        Annulla
-                    </button>
-                    <button
-                        type="button"
-                        onClick={confirmDeleteGroup}
-                        className={`${styles.groupButton} ${styles.deleteButton}`}
-                        disabled={isDeleting}
-                    >
-                        {isDeleting ? 'Eliminazione in corso...' : 'Elimina Gruppo'}
-                    </button>
-                </div>
-            </div>
-        </div>);
-
-    const SkipPaymentModal = ({closeSaltaPaymentForm, confirmSkipPayment, isSkipping, error, successMessage}) => (
-        <div className={styles.modalOverlay} onClick={(e) => {
-            if (e.target === e.currentTarget) closeSaltaPaymentForm();
-        }}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-
-                <h2>Salta Pagamento</h2>
-                <p>Vuoi saltare il tuo turno di pagamento per questo gruppo?</p>
-                <div style={{
-                    backgroundColor: 'var(--coffee-50)',
-                    padding: '1rem',
-                    borderRadius: '0.5rem',
-                    margin: '1rem 0',
-                    borderLeft: '3px solid var(--coffee-600)'
-                }}>
-                    <p style={{margin: '0 0 0.5rem 0', fontWeight: '500'}}>Cosa succede quando salti:</p>
-                    <ul style={{margin: '0', paddingLeft: '1.5rem'}}>
-                        <li>Il tuo stato verrà marcato come "saltato" per questo turno</li>
-                        <li>Verrai automaticamente reinserito nella prossima rotazione</li>
-                        <li>Un altro membro del gruppo verrà selezionato casualmente per il prossimo pagamento</li>
-                    </ul>
-                </div>
-                <p style={{color: 'var(--coffee-700)', fontSize: '0.9em', fontStyle: 'italic'}}>
-                    Nota: Puoi saltare solo quando è il tuo turno di pagare.
-                </p>
-
-                {error && <div className={styles.errorMessageModal}>{error}</div>}
-                {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-
-                <div className={styles.formButtons} style={{marginTop: '2rem'}}>
-                    <button
-                        type="button"
-                        onClick={closeSaltaPaymentForm}
-                        className={`${styles.groupButton} ${styles.cancelButton}`}
-                        disabled={isSkipping}
-                    >
-                        Annulla
-                    </button>
-                    <button
-                        type="button"
-                        onClick={confirmSkipPayment}
-                        className={`${styles.groupButton} ${styles.deleteButton}`}
-                        disabled={isSkipping}
-                    >
-                        {isSkipping ? 'Salto del pagamento in corso...' : 'Salta pagamento'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
-    const getClassificaPaymentsForGroup = async (groupToUse = group) => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) {
-            setError("No token provided");
-            return;
-        }
-
-        try {
-            setPaymentLoading(true);
-            setError(null);
-            setPaymentByGroupError(null); // Clear previous errors
-
-            // Ensure we have valid group data
-            const groupId = groupToUse?.id;
-            const groupName = groupToUse?.groupName || groupToUse?.name;
-
-            if (!groupId && !groupName) {
-                setPaymentByGroupError("Dati del gruppo mancanti");
-                return;
-            }
-
-            // Build request body with only defined values
-            const requestBody = {};
-            if (groupId) requestBody.groupId = groupId;
-            if (groupName) requestBody.groupName = groupName;
-
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/pagamenti/classifica`, {
-                method: 'POST',
-                body: JSON.stringify(requestBody),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include'
-            });
-
-            if (response.status === 204) {
-                setClassificaPaymentsForGroup([]);
-            } else if (response.ok) {
-                const data = await response.json();
-                setClassificaPaymentsForGroup(data);
-            } else {
-                let errorMessage;
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorData.error || `Errore del server (${response.status})`;
-                } catch (jsonError) {
-                    try {
-                        errorMessage = await response.text() || `Errore del server (${response.status})`;
-                    } catch (textError) {
-                        errorMessage = `Errore del server (${response.status})`;
-                    }
-                }
-
-                switch (response.status) {
-                    case 401:
-                        setPaymentByGroupError("Sessione scaduta. Effettua nuovamente il login.");
-                        setTimeout(() => navigate('/login'), 2000);
-                        break;
-                    case 403:
-                        setPaymentByGroupError(`Accesso negato. Verifica di appartenere al gruppo "${groupName || 'sconosciuto'}"`);
-                        break;
-                    case 404:
-                        if (errorMessage.toLowerCase().includes('group')) {
-                            setPaymentByGroupError(`Gruppo "${groupName || 'sconosciuto'}" non trovato`);
-                        } else {
-                            setPaymentByGroupError("Risorsa non trovata");
-                        }
-                        break;
-                    case 500:
-                        setPaymentByGroupError("Errore interno del server. Riprova più tardi.");
-                        break;
-                    default:
-                        setPaymentByGroupError(errorMessage);
-                }
-
-                setClassificaPaymentsForGroup([]);
-            }
-
-        } catch (err) {
-            if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                setPaymentByGroupError("Errore di connessione. Verifica la tua connessione internet.");
-            } else {
-                setPaymentByGroupError("Errore nel recupero dei pagamenti. Riprova più tardi.");
-            }
-            setClassificaPaymentsForGroup([]);
-        } finally {
-            setPaymentLoading(false);
-        }
-    };
 
     const closeInviteForm = () => {
         setShowInviteForm(false);
@@ -1140,7 +1089,7 @@ const Group = () => {
     );
 
     const LoadingSpinner = ({message}) => (
-        <div className={styles.loadingSpinner}>
+        <div className={sharedStyles.loadingSpinner}>
             <div className={styles.spinner}></div>
             <span className={styles.spinnerText}>{message}</span>
         </div>
@@ -1171,6 +1120,7 @@ const Group = () => {
     };
 
     const renderPaymentCards = () => {
+        console.log('classificaPaymentsForGroup ===>', classificaPaymentsForGroup);
         if (!classificaPaymentsForGroup || classificaPaymentsForGroup.length === 0) {
             return (
                 <div className={styles.emptyState}>
@@ -1208,6 +1158,109 @@ const Group = () => {
         );
     };
 
+    // 2. Aggiungi una funzione per pulire la cache quando necessario
+    const clearCache = (cacheKey) => {
+        if (cacheKey) {
+            cache.current.delete(cacheKey);
+        } else {
+            cache.current.clear();
+        }
+    };
+
+    // 3. Aggiorna le funzioni che modificano il gruppo per pulire la cache
+    const submitPayment = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setError(null);
+        setSuccessMessage('');
+
+        try {
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                setError("No token provided");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/pagamento?groupNme=${encodeURIComponent(group.groupName)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        importo: importo,
+                        descrizione: descrizione,
+                    })
+                });
+
+                if (!response.ok) {
+                    setError('Problema durante la registrazione del pagamento');
+                    return;
+                }
+
+                setSuccessMessage('Pagamento registrato con successo');
+                setImporto('')
+                setDescrizione('')
+
+                // Fetch the latest group data after payment
+                const groupResponse = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${user}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({username: user})
+                });
+
+                if (groupResponse.ok) {
+                    const allGroups = await groupResponse.json();
+                    const currentGroupName = group.groupName;
+
+                    // Find the current group in the list of groups
+                    const currentGroup = allGroups.find(g =>
+                        g.name === currentGroupName ||
+                        g.groupName === currentGroupName
+                    );
+
+                    if (currentGroup) {
+                        const updatedGroup = {
+                            id: currentGroup.id,
+                            groupName: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                            name: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
+                            ...currentGroup
+                        };
+
+                        setGroup(updatedGroup);
+                        setGroups(updatedGroup);
+                        localStorage.setItem('group', JSON.stringify(updatedGroup));
+                    }
+                }
+
+                setTimeout(() => {
+                    setShowRegisterPaymentModal(false);
+                }, 2000);
+
+                const cacheKey = `classifica_${group.id || group.groupName || group.name}`;
+                clearCache(cacheKey);
+
+                await getClassificaPaymentsForGroup(group);
+
+            } catch (err) {
+                setError(`Problema durante la registrazione del pagamento`);
+            }
+        } catch (err) {
+            setError('Problema durante la registrazione del pagamento');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className={styles.groupPage}>
             <div className={styles.container}>
@@ -1216,7 +1269,7 @@ const Group = () => {
 
                 {/* Main */}
                 <main className={styles.main}>
-                    <button onClick={goBack} className={styles.groupButton} style={{marginBottom: '2rem'}}>
+                    <button onClick={goBack} className={sharedStyles.groupButton} style={{marginBottom: '2rem'}}>
                         <i className="fa-solid fa-arrow-left"></i> <i className="fa-solid fa-house"></i>
                     </button>
 
@@ -1228,14 +1281,14 @@ const Group = () => {
                         {isAdmin && (<div className={styles.groupAdminButtons}>
                             <button
                                 onClick={deleteGroup}
-                                className={`${styles.groupButton} ${styles.deleteButton}`}
+                                className={`${sharedStyles.groupButton} ${styles.deleteButton}`}
                             >
                                 <i className="fa-solid fa-trash"></i> Elimina Gruppo
                             </button>
 
                             <button
                                 onClick={inviteMember}
-                                className={`${styles.groupButton} ${styles.inviteButton}`}
+                                className={`${sharedStyles.groupButton} ${styles.inviteButton}`}
                             >
                                 <i className="fa-solid fa-user-plus"></i> Invita Membro
                             </button>
@@ -1250,15 +1303,15 @@ const Group = () => {
                             <section className={styles.groupSection} style={{marginTop: '2rem'}}>
                                 <div className={styles.actionButtons}>
                                     <button onClick={registerPayment}
-                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                            className={`${sharedStyles.groupButton} ${styles.actionButton}`}>
                                         Registra Pagamento
                                     </button>
                                     <button onClick={skipPayment}
-                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                            className={`${sharedStyles.groupButton} ${styles.actionButton}`}>
                                         Salta Pagamento
                                     </button>
                                     <button onClick={payForFriend}
-                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                            className={`${sharedStyles.groupButton} ${styles.actionButton}`}>
                                         Paga per un amico
                                     </button>
                                 </div>
@@ -1272,15 +1325,15 @@ const Group = () => {
                             <section className={styles.groupSection} style={{marginTop: '2rem'}}>
                                 <div className={styles.actionButtons}>
                                     <button disabled={true} onClick={registerPayment}
-                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                            className={`${sharedStyles.groupButton} ${styles.actionButton}`}>
                                         Registra Pagamento
                                     </button>
                                     <button disabled={true} onClick={skipPayment}
-                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                            className={`${sharedStyles.groupButton} ${styles.actionButton}`}>
                                         Salta Pagamento
                                     </button>
                                     <button onClick={payForFriend}
-                                            className={`${styles.groupButton} ${styles.actionButton}`}>
+                                            className={`${sharedStyles.groupButton} ${styles.actionButton}`}>
                                         Paga per un amico
                                     </button>
                                 </div>
@@ -1311,7 +1364,7 @@ const Group = () => {
                 </main>
 
                 {showInviteForm && (
-                    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeInviteForm)}>
+                    <div className={sharedStyles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeInviteForm)}>
                         <InviteUserModal
                             closeInviteForm={closeInviteForm}
                             submitInvite={submitInvite}
@@ -1325,7 +1378,8 @@ const Group = () => {
                 )}
 
                 {showPayForFriendModal && (
-                    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closePayForFriendModal)}>
+                    <div className={sharedStyles.modalOverlay}
+                         onClick={(e) => handleModalOverlayClick(e, closePayForFriendModal)}>
                         <PayForFriendModal
                             closePayForFriendModal={closePayForFriendModal}
                             handleInputChangeImporto={handleInputChangeImporto}
@@ -1342,7 +1396,8 @@ const Group = () => {
                 )}
 
                 {showRegisterPaymentModal && (
-                    <div className={styles.modalOverlay} onClick={(e) => handleModalOverlayClick(e, closeRegisterPaymentModal)}>
+                    <div className={sharedStyles.modalOverlay}
+                         onClick={(e) => handleModalOverlayClick(e, closeRegisterPaymentModal)}>
                         <RegisterPaymentModal
                             closeRegisterPaymentModal={closeRegisterPaymentModal}
                             handleInputChangeImporto={handleInputChangeImporto}
@@ -1380,6 +1435,7 @@ const Group = () => {
             </div>
         </div>
     );
-};
+
+}
 
 export default Group;

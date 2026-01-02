@@ -1,0 +1,153 @@
+/* shared.module.css */
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+    padding: 1rem;
+}
+
+.modalContent {
+    background: linear-gradient(135deg, var(--coffee-0) 0%, var(--coffee-50) 100%);
+    padding: 3rem;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow:
+            0 20px 40px rgba(0, 0, 0, 0.15),
+            0 0 0 1px var(--coffee-600);
+    border: 3px solid var(--coffee-600);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* Bottoni base riusabili */
+.groupButton {
+    background-color: var(--coffee-600);
+    color: #fff;
+    border: none;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.groupButton:hover {
+    background-color: var(--coffee-700);
+    transform: translateY(-2px);
+}
+
+/* Input base riusabili */
+.formInput {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--coffee-300);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: var(--coffee-500);
+    box-shadow: 0 0 0 2px rgba(139, 92, 60, 0.2);
+}
+
+/* Messaggi di errore/successo */
+.errorMessageModal {
+    background: linear-gradient(to right, #fff5f5, #ffe6e6);
+    color: #dc3545;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border-left: 4px solid #dc3545;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.successMessage {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border-left: 3px solid #28a745;
+}
+
+/* Spinner */
+.loadingSpinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    gap: 1rem;
+    margin: auto;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--coffee-400);
+    border-top: 4px solid var(--coffee-600);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.spinnerText {
+    color: var(--coffee-600);
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* Animazioni */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px) scale(0.95); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive semplice */
+@media (max-width: 768px) {
+    .modalContent {
+        padding: 2rem;
+        border-radius: 12px;
+    }
+
+    .groupButton {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modalOverlay {
+        padding: 0.5rem;
+    }
+
+    .modalContent {
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+}

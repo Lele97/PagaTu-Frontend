@@ -9,12 +9,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.23",
     "bootstrap": "^5.3.7",
     "bootstrap-icons": "^1.13.1",
+    "cssnano": "^7.1.2",
     "dotenv": "^17.0.1",
     "isbot": "^5.1.27",
     "jsonpath": "^1.1.1",
