@@ -13,6 +13,25 @@ const LoginForm = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const authToken = localStorage.getItem('authToken');
+        const pendingInvitation = localStorage.getItem('pendingInvitation');
+
+        if (authToken) {
+            if (pendingInvitation) {
+                try {
+                    const {username, groupName} = JSON.parse(pendingInvitation);
+                    navigate(`/invitation?username=${encodeURIComponent(username)}&groupName=${encodeURIComponent(groupName)}`);
+                } catch (error) {
+                    localStorage.removeItem('pendingInvitation');
+                    navigate('/home');
+                }
+            } else {
+                navigate('/home');
+            }
+        }
+    }, [navigate]);
+
+    useEffect(() => {
         if (!error) return;
 
         const timer = setTimeout(() => setError(''), 1000);
