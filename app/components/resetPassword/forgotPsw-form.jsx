@@ -65,50 +65,52 @@ const ForgotPswForm = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles['header-container']}>
-                <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
-                <div className={logostyle.appTitle}>
-                    <h1 className={logostyle.appTitlecolor}>P</h1>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <h1 className={logostyle.appTitlecolor}>g</h1>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <br></br>
-                    <h1 className={logostyle.appTitlecolor}>T</h1>
-                    <h1 className={logostyle.appTitlecolor2}>u</h1>
+        <div className={styles.forgotPswPage}>
+            <div className={styles.container}>
+                <div className={styles['header-container']}>
+                    <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
+                    <div className={logostyle.appTitle}>
+                        <h1 className={logostyle.appTitlecolor}>P</h1>
+                        <h1 className={logostyle.appTitlecolor2}>a</h1>
+                        <h1 className={logostyle.appTitlecolor}>g</h1>
+                        <h1 className={logostyle.appTitlecolor2}>a</h1>
+                        <br></br>
+                        <h1 className={logostyle.appTitlecolor}>T</h1>
+                        <h1 className={logostyle.appTitlecolor2}>u</h1>
+                    </div>
                 </div>
-            </div>
 
-            <div className={styles.forgotPswForm}>
-                <h2 className={styles.title}>Hai dimenticato la password?</h2>
-                <p className={styles.text}>Inserisci qui sotto l'indirizzo email che hai utilizzato per registrarti,
-                    riceverai una mail con
-                    il link per reimpostare la tua password in modo sicuro.</p>
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="email" className={styles.label}>Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            className={styles.inputField}
-                            placeholder="Inserisci la tua email"
-                            value={email}
-                            onChange={event => setEmail(event.target.value)}
-                            required
-                        />
-                    </div>
+                <div className={styles.forgotPswForm}>
+                    <h2 className={styles.title}>Hai dimenticato la password?</h2>
+                    <p className={styles.text}>Inserisci qui sotto l'indirizzo email che hai utilizzato per registrarti,
+                        riceverai una mail con
+                        il link per reimpostare la tua password in modo sicuro.</p>
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="email" className={styles.label}>Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                className={styles.inputField}
+                                placeholder="Inserisci la tua email"
+                                value={email}
+                                onChange={event => setEmail(event.target.value)}
+                                required
+                            />
+                        </div>
 
-                    {error && <div className={styles.errorMessageModal}>{error}</div>}
-                    {success && <div className={styles.successMessage}>{success}</div>}
+                        {error && <div className={styles.errorMessageModal}>{error}</div>}
+                        {success && <div className={styles.successMessage}>{success}</div>}
 
-                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                        {isLoading ? 'Invio in corso...' : 'Invia'}
-                    </button>
-                    <div className={styles.signupLink}>
-                        Hai già un account?
-                        <Link to="/" className={styles.link}>Accedi</Link>
-                    </div>
-                </form>
+                        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                            {isLoading ? 'Invio in corso...' : 'Invia'}
+                        </button>
+                        <div className={styles.signupLink}>
+                            Hai già un account?
+                            <Link to="/" className={styles.link}>Accedi</Link>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )

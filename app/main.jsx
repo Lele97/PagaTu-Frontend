@@ -2,17 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Root from './routes/root';
-import Login from './routes/auth/login';
-import ErrorPage from './routes/error/error-page.jsx';
+import Login from './components/login/login-form.jsx';
+import ErrorPage from './components/error/error-page.jsx';
+import Signup from "~/components/signup/signup-form.jsx";
+import Home from "~/components/home/home.jsx";
+import ForgotPswForm from "~/components/resetPassword/forgotPsw-form.jsx";
+import Group from "~/components/group/group.jsx";
+import Invitation from "~/components/invitation/invitation.jsx";
+import ResetPswForm from "~/components/resetPassword/resetPsw-form.jsx";
 import './styles/app.css';
-import Signup from "~/routes/register/signup";
-import Home from "~/routes/home/home.jsx";
-import ForgotPswForm from "~/routes/resetPassword/forgotPsw-form.jsx";
-import Group from "~/routes/group/group.jsx";
-import Invitation from "~/routes/invitation/invitation.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import ResetPswForm from "~/routes/resetPassword/resetPsw-form.jsx";
 
 const router = createBrowserRouter([
     {

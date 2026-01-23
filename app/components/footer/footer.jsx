@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "~/styles/footer.module.css";
-import BuyMeACoffeeIconButton from "~/components/BuyMeACoffeeIconButton.jsx";
-import GithubPersonalProfileIconButton from "~/components/GithubPersonalProfileIconButton.jsx";
-import LinkedinPersonalProfileIconButton from "~/components/LinkedinPersonalProfileIconButton.jsx";
+import BuyMeACoffeeIconButton from "~/components/buttons/BuyMeACoffeeIconButton.jsx";
+import GithubPersonalProfileIconButton from "~/components/buttons/GithubPersonalProfileIconButton.jsx";
+import LinkedinPersonalProfileIconButton from "~/components/buttons/LinkedinPersonalProfileIconButton.jsx";
 
 const Footer = () => {
     return (

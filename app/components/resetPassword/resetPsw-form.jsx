@@ -169,69 +169,71 @@ const ResetPswForm = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles["header-container"]}>
-                <img src="/pagaTu.png" alt="Logo" className={styles.logo}/>
-                <div className={styles.appTitle}>
-                    <h1 className={styles.appTitlecolor}>P</h1>
-                    <h1 className={styles.appTitlecolor2}>a</h1>
-                    <h1 className={styles.appTitlecolor}>g</h1>
-                    <h1 className={styles.appTitlecolor2}>a</h1>
-                    <br/>
-                    <h1 className={styles.appTitlecolor}>T</h1>
-                    <h1 className={styles.appTitlecolor2}>u</h1>
-                </div>
-            </div>
-
-            <div className={styles.resetPswForm}>
-                <h2 className={styles.title}>Esegui il reset della password</h2>
-
-                <div className={styles.rules}>
-                    <p className={styles.rule_p}>La password deve:</p>
-                    <ul className={styles.rule_ul}>
-                        <li>essere di almeno 6 caratteri</li>
-                        <li>contenere almeno una lettera minuscola</li>
-                        <li>contenere almeno una lettera maiuscola</li>
-                        <li>contenere almeno un numero</li>
-                        <li>contenere almeno un carattere speciale</li>
-                    </ul>
+        <div className={styles.resetPswPage}>
+            <div className={styles.container}>
+                <div className={styles["header-container"]}>
+                    <img src="/pagaTu.png" alt="Logo" className={styles.logo}/>
+                    <div className={styles.appTitle}>
+                        <h1 className={styles.appTitlecolor}>P</h1>
+                        <h1 className={styles.appTitlecolor2}>a</h1>
+                        <h1 className={styles.appTitlecolor}>g</h1>
+                        <h1 className={styles.appTitlecolor2}>a</h1>
+                        <br/>
+                        <h1 className={styles.appTitlecolor}>T</h1>
+                        <h1 className={styles.appTitlecolor2}>u</h1>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="password" className={styles.label}>
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            className={styles.inputField}
-                            placeholder="Inserisci la tua nuova password"
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            required
-                        />
-                        <label htmlFor="repetpassword" className={styles.label}>
-                            Reinserisci Password
-                        </label>
-                        <input
-                            type="password"
-                            id="repetpassword"
-                            className={styles.inputField}
-                            placeholder="Reinserisci la tua nuova password"
-                            value={repetpassword}
-                            onChange={(event) => setRepetpassword(event.target.value)}
-                            required
-                        />
+                <div className={styles.resetPswForm}>
+                    <h2 className={styles.title}>Esegui il reset della password</h2>
+
+                    <div className={styles.rules}>
+                        <p className={styles.rule_p}>La password deve:</p>
+                        <ul className={styles.rule_ul}>
+                            <li>essere di almeno 6 caratteri</li>
+                            <li>contenere almeno una lettera minuscola</li>
+                            <li>contenere almeno una lettera maiuscola</li>
+                            <li>contenere almeno un numero</li>
+                            <li>contenere almeno un carattere speciale</li>
+                        </ul>
                     </div>
 
-                    {error && <div className={styles.errorMessageModal}>{error}</div>}
-                    {success && <div className={styles.successMessage}>{success}</div>}
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="password" className={styles.label}>
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                className={styles.inputField}
+                                placeholder="Inserisci la tua nuova password"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
+                                required
+                            />
+                            <label htmlFor="repetpassword" className={styles.label}>
+                                Reinserisci Password
+                            </label>
+                            <input
+                                type="password"
+                                id="repetpassword"
+                                className={styles.inputField}
+                                placeholder="Reinserisci la tua nuova password"
+                                value={repetpassword}
+                                onChange={(event) => setRepetpassword(event.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                        {isLoading ? "Reset in corso..." : "Reset"}
-                    </button>
-                </form>
+                        {error && <div className={styles.errorMessageModal}>{error}</div>}
+                        {success && <div className={styles.successMessage}>{success}</div>}
+
+                        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                            {isLoading ? "Reset in corso..." : "Reset"}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );

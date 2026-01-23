@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "~/styles/header.module.css";
-import BuyMeACoffeeButton from "~/components/BuyMeACoffeeButton";
+import BuyMeACoffeeButton from "~/components/buttons/BuyMeACoffeeButton.jsx";
 
 const Header = ({user, logout}) => {
     return (
@@ -54,6 +54,7 @@ const Header = ({user, logout}) => {
                             <div className={styles.doorknob_inner}></div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </header>

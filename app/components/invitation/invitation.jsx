@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from 'react-router-dom';
 import styles from '~/styles/invitation.module.css';
-import Header from '../../components/header.jsx';
+import Header from '../header/header.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 

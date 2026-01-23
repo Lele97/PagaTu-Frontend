@@ -1,10 +1,25 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 import sharedStyles from '~/styles/shared.module.css';
-import Header from '../../components/header.jsx';
+import Header from '../header/header.jsx';
+import HomeHeader from "~/components/home/homeHeader.jsx";
+import HomeGroups from "~/components/home/homeGroups.jsx";
+import HomePayments from "~/components/home/homePayments.jsx";
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+
+const normalizeError = (err) => {
+    if (!err) return '';
+    if (typeof err === 'string') return err;
+    if (typeof err === 'number') return String(err);
+    if (err?.message && typeof err.message === 'string') return err.message;
+    try {
+        return JSON.stringify(err);
+    } catch {
+        return 'Errore sconosciuto';
+    }
+};
 
 const AddGroupModal = React.memo(({
                                       payload,
@@ -15,8 +30,8 @@ const AddGroupModal = React.memo(({
                                       error,
                                       success,
                                       isSubmitting
-                                  })=> {
-    return(
+                                  }) => {
+    return (
         <div className={sharedStyles.modalOverlay}>
             <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <h2>Crea un nuovo gruppo</h2>
@@ -92,6 +107,38 @@ const Home = () => {
     const [success, setSuccess] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+    const requestCacheRef = useRef(new Map());
+
+    const clearCache = useCallback((cacheKey) => {
+        if (!cacheKey) {
+            requestCacheRef.current.clear();
+            return;
+        }
+        requestCacheRef.current.delete(cacheKey);
+    }, []);
+
+    const cachedFetchJson = useCallback(async (url, options = {}, cacheKey, ttl = 30000) => {
+        const now = Date.now();
+        const cached = requestCacheRef.current.get(cacheKey);
+
+        if (cached && now - cached.timestamp < ttl) {
+            return cached.data;
+        }
+
+        const response = await fetch(url, options);
+
+        let body = null;
+        try {
+            body = await response.json();
+        } catch {
+            body = null;
+        }
+
+        const data = {status: response.status, body};
+
+        requestCacheRef.current.set(cacheKey, {data, timestamp: now});
+        return data;
+    }, []);
 
     useEffect(() => {
         const initializeData = async () => {
@@ -149,23 +196,24 @@ const Home = () => {
         if (error) setError(null);
     }, [error]);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
         navigate('/login');
-    };
+    }, [navigate]);
 
-    const confirmCreateGroup = async (e) => {
+    const confirmCreateGroup = useCallback(async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setError(null);
         setSuccess('');
+
         try {
             const token = localStorage.getItem('authToken');
-            if (!token) {
-                setError("No token provided");
-                return;
-            }
+
+            if (!token)
+                new Error("Sessione scaduta");
+
             if (!payload.name.trim()) {
                 setError("Il nome del gruppo non può essere vuoto");
                 return;
@@ -193,29 +241,40 @@ const Home = () => {
                     description: payload.description.trim(),
                 })
             });
-            if (!response.ok) {
-                setError(response.status === 400 ? "Gruppo già esistente" : "Problema durante la creazione del gruppo");
-                return;
+
+            switch (response.status) {
+                case 200:
+                    setSuccess("Gruppo creato con successo");
+                    setPayload(initialPayload);
+                    break;
+                case 400:
+                    setError("Gruppo già esistente");
+                    break;
+                default:
+                    new Error("Problema durante la creazione del gruppo")
             }
-            setSuccess("Gruppo creato con successo");
-            setPayload(initialPayload);
+
+            clearCache(`gruppi_by_Id_${username || 'unknown'}`)
 
             setTimeout(() => {
                 setShowAddGroupModal(false);
             }, 3000);
+
             await getGroupsByUser(user);
+
         } catch (err) {
-            setError(err.message || "Errore durante la creazione");
+            navigate('/error', { state: { errorMessage: err.message || "Errore di connessione" } });
         } finally {
             setIsSubmitting(false);
         }
-    };
 
-    const addGroup = () => {
+    }, [payload, user, navigate, initialPayload, clearCache]);
+
+    const addGroup = useCallback(() => {
         setShowAddGroupModal(true);
         setError(null);
         setSuccess('');
-    };
+    }, []);
 
     const closeAddGroupModal = useCallback(() => {
         setShowAddGroupModal(false);
@@ -224,9 +283,7 @@ const Home = () => {
         setPayload(initialPayload);
     }, [initialPayload]);
 
-    const handleGroupSelect = (groupName) => {
-
-        // More robust group finding
+    const handleGroupSelect = useCallback((groupName) => {
         const gruppo = groups.find(g =>
             g.name === groupName ||
             g.groupName === groupName ||
@@ -240,64 +297,72 @@ const Home = () => {
                 groupName: gruppo.name || gruppo.groupName,
                 ...gruppo
             };
-
-            try {
-                localStorage.setItem('group', JSON.stringify(normalizedGroup));
-                setSelectedGroup(groupName);
-                navigate('/group');
-            } catch (error) {
-                console.error('Failed to save group data:', error);
-                // Handle localStorage failure
-            }
-        } else {
-            console.error('Group not found:', groupName);
-            // Show user-friendly error message
+            localStorage.setItem('group', JSON.stringify(normalizedGroup));
+            setSelectedGroup(groupName);
+            navigate('/group');
         }
-    };
+    }, [groups, navigate]);
 
-    const getGroupsByUser = async (username) => {
+    const getGroupsByUser = useCallback(async (username = user) => {
         const token = localStorage.getItem('authToken');
         if (!token) return logout();
+
+
+        const cacheKey = `gruppi_by_Id_${username || 'unknown'}`;
+
         try {
             setGroupsLoading(true);
             setGroupsError(null);
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
+
+            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
+                body: JSON.stringify({username}),
                 credentials: 'include',
-                body: JSON.stringify({username})
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setGroups(Array.isArray(data) ? data : []);
-                setCurrentGroupPage(1);
-            } else if (response.status === 401) {
-                logout();
-            } else if (response.status === 404) {
-                setGroups([]);
-            } else {
-                setGroups([]);
-                setGroupsError("Errore nel recupero dei gruppi");
+            }, cacheKey);
+
+            const errorMessage = normalizeError(data?.body?.message || data?.body);
+
+            switch (data.status) {
+                case 200:
+                    const groupsList = Array.isArray(data.body) ? data.body : [];
+                    setGroups(groupsList);
+                    setCurrentGroupPage(1);
+                    break;
+                case 401:
+                    logout()
+                    break;
+                case 404:
+                    setGroups([]);
+                    break;
+                default:
+                    setGroups([]);
+                    setGroupsError(errorMessage);
             }
+
         } catch {
             setGroups([]);
             setGroupsError("Errore nel recupero dei gruppi");
         } finally {
             setGroupsLoading(false);
         }
-    };
+    }, [cachedFetchJson, user]);
 
-    const getHistoryPayments = async (username) => {
+    const getHistoryPayments = useCallback(async (username) => {
         const token = localStorage.getItem('authToken');
         if (!token) return logout();
+
+        const cacheKey = `payments_by_Id_${username || 'unknown'}`;
+
         try {
             setPaymentsLoading(true);
             setPaymentsError(null);
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
+
+            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -305,72 +370,45 @@ const Home = () => {
                     'Authorization': `Bearer ${token}`,
                 },
                 credentials: 'include',
-                body: JSON.stringify({})
-            });
-            if (response.status === 204) {
-                setPagamentis([]);
-                return;
+                body: JSON.stringify({username}),
+            }, cacheKey);
+
+            const errorMessage = normalizeError(data?.body?.message || data?.body);
+
+            switch (data.status) {
+                case 200:
+                    setPagamentis(Array.isArray(data.body) ? data : []);
+                    break;
+                case 204:
+                    setPagamentis([]);
+                    break;
+                default:
+                    setPaymentsError(errorMessage);
             }
-            if (!response.ok) {
-                setPaymentsError("Errore nel recupero dei pagamenti");
-                return;
-            }
-            const data = await response.json();
-            setPagamentis(Array.isArray(data) ? data : []);
         } catch {
             setPaymentsError("Errore nel recupero dei pagamenti");
         } finally {
             setPaymentsLoading(false);
         }
-    };
+    }, [cachedFetchJson, user]);
 
-    const getPaginatedGroups = () => {
+    const getPaginatedGroups = useMemo(() => {
         const startIndex = (currentGroupPage - 1) * GROUPS_PER_PAGE;
         return groups.slice(startIndex, startIndex + GROUPS_PER_PAGE);
-    };
+    }, [currentGroupPage, groups]);
 
-    const getPaginatedPayments = () => {
+    const getPaginatedPayments = useMemo(() => {
         const startIndex = (currentPaymentPage - 1) * PAYMENTS_PER_PAGE;
         return pagamentis.slice(startIndex, startIndex + PAYMENTS_PER_PAGE);
-    };
+    }, [currentPaymentPage, pagamentis]);
 
     const getTotalGroupPages = () => Math.ceil(groups.length / GROUPS_PER_PAGE);
 
     const getTotalPaymentPages = () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE);
 
-    const PaginationControls = ({currentPage, totalPages, onPageChange, className}) => {
-        if (totalPages <= 1) return null;
-        return (
-            <div className={`${styles.paginationControls} ${className}`}>
-                <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}
-                        className={styles.paginationButton}><i className="bi bi-arrow-left"></i></button>
-                {Array.from({length: totalPages}, (_, i) => i + 1).map(page => (
-                    <button key={page} onClick={() => onPageChange(page)}
-                            className={`${styles.paginationButton} ${currentPage === page ? styles.paginationButtonActive : ''}`}>
-                        {page}
-                    </button>
-                ))}
-                <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}
-                        className={styles.paginationButton}><i className="bi bi-arrow-right"></i>
-                </button>
-            </div>
-        );
-    };
-
-    const LoadingSpinner = ({message}) => (
-        <div className={sharedStyles.loadingSpinner}>
-            <div className={styles.spinner}></div>
-            <span className={styles.spinnerText}>{message}</span>
-        </div>
-    );
-
-    const ErrorMessage = ({message, onRetry}) => (
-        <div className={styles.errorMessage}>
-            <div className={styles.errorText}>{message}</div>
-            <button onClick={onRetry} className={styles.retryButton}>Riprova <i className="fa-solid fa-repeat"></i>
-            </button>
-        </div>
-    );
+    const onRetry = useCallback(async () => {
+        if (user) await getGroupsByUser(user);
+    }, [getGroupsByUser, user])
 
     return (
         <div className={styles.homePage}>
@@ -380,126 +418,33 @@ const Home = () => {
 
                 <main className={styles.main}>
 
-                    <section className={styles.heroSection}>
-                        <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
-                        <p className={styles.heroSubtitle}>Crea gruppi e controlla i pagamenti in modo semplice veloce
-                            e divertente</p>
-                    </section>
+                    <HomeHeader/>
 
-                    <section className={styles.groupSection}>
-                        <div className={styles.sectionHeader}>
-                            <h2 className={styles.sectionTitle}>
-                                <i className="bi bi-people-fill"></i> I tuoi gruppi
-                            </h2>
-
-                            { groups.length > 0 ?(  <button onClick={addGroup} className={styles.createGroupButton}>
-                                <i className="bi bi-plus-lg"></i>
-                                Crea nuovo gruppo
-                            </button>):( <button onClick={addGroup} className={styles.createGroupButton}>
-                                <i className="bi bi-plus-lg"></i>
-                                Crea il tuo primo gruppo
-                            </button>)}
-
-                        </div>
-
-                        {groupsLoading ? (
-                            <LoadingSpinner message="Caricamento gruppi..."/>
-                        ) : groupsError ? (
-                            <ErrorMessage message={groupsError} onRetry={() => getGroupsByUser(user)}/>
-                        ) : groups.length > 0 ? (
-                            <>
-                                <div className={styles.groupGrid}>
-                                    {getPaginatedGroups().map((group, index) => (
-                                        <div
-                                            key={index}
-                                            className={`${styles.groupCard} ${
-                                                selectedGroup === group.name ? styles.groupCardSelected : ''
-                                            }`}
-                                            onClick={() => handleGroupSelect(group.name)}
-                                        >
-                                            <div className={styles.groupIcon}>
-                                                <i className="fa-solid fa-user-group"></i>
-                                            </div>
-                                            <div className={styles.groupInfo}>
-                                                <h3 className={styles.groupName}>{group.name}</h3>
-                                                {group.description && (
-                                                    <p className={styles.groupDescription}>{group.description}</p>
-                                                )}
-                                            </div>
-                                            <div className={styles.groupAction}>
-                                                <i className="bi bi-arrow-right"></i>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <PaginationControls currentPage={currentGroupPage} totalPages={getTotalGroupPages()}
-                                                    onPageChange={setCurrentGroupPage}/>
-                            </>
-                        ) : (
-                            <div className={styles.emptyState}>
-                                <div className={styles.emptyIcon}>
-                                    <i className="bi bi-people"></i>
-                                </div>
-                                <h3>Non fai parte di nessun gruppo</h3>
-                                <p>Inizia creando il tuo primo gruppo per gestire i pagamenti del caffè</p>
-                            </div>
-                        )}
-                    </section>
+                    <HomeGroups groups={getPaginatedGroups}
+                                groupsLoading={groupsLoading}
+                                groupsError={groupsError}
+                                onRetry={onRetry}
+                                addGroup={addGroup}
+                                selectedGroup={selectedGroup}
+                                handleGroupSelect={handleGroupSelect}
+                                currentGroupPage={currentGroupPage}
+                                getTotalGroupPages={getTotalGroupPages()}
+                                setCurrentGroupPage={setCurrentGroupPage}
+                    />
 
                     <div className={styles.separator}>
-                                        <div className={styles.separatorLeft}></div>
+                        <div className={styles.separatorLeft}></div>
                         <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
                         <div className={styles.separatorRight}></div>
                     </div>
 
-                    <section className={styles.recentSection}>
-                        <div className={styles.sectionHeader}>
-                            <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi
-                                pagamenti</h2>
-                        </div>
-                        {paymentsLoading ? (
-                            <LoadingSpinner message="Caricamento pagamenti..."/>
-                        ) : paymentsError ? (
-                            <ErrorMessage message={paymentsError} onRetry={() => getHistoryPayments(user)}/>
-                        ) : pagamentis.length > 0 ? (
-                            <>
-                                <div className={styles.paymentCardsContainer}>
-                                    {getPaginatedPayments().map((payment, index) => (
-                                        <div key={index} className={styles.paymentCard}>
-                                            <div className={styles.paymentCardHeader}>
-                                                <i className="bi bi-ticket-perforated-fill"></i>
-                                                <span className={styles.paymentGroup}>{payment.groupName}</span>
-                                            </div>
-                                            <div className={styles.paymentCardBody}>
-                                                <div className={styles.paymentInfo}>
-                                                    <span className={styles.paymentLabel}>Descrizione:</span>
-                                                    <span
-                                                        className={styles.paymentDescription}>{payment.descrizione}</span>
-                                                </div>
-                                                <div className={styles.paymentInfo}>
-                                                    <span className={styles.paymentLabel}>Data:</span>
-                                                    <span className={styles.paymentData}>{payment.dataPagamento}</span>
-                                                </div>
-                                            </div>
-                                            <div className={styles.paymentCardFooter}>
-                                                <span className={styles.paymentAmount}>€{payment.importo}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                <PaginationControls currentPage={currentPaymentPage} totalPages={getTotalPaymentPages()}
-                                                    onPageChange={setCurrentPaymentPage}/>
-                            </>
-                        ) : (
-                            <div className={styles.emptyState}>
-                        <div className={styles.emptyIcon}>
-                            <i className="bi bi-credit-card"></i>
-                        </div>
-                        <h3>Non hai effettuato ancora un pagamento</h3>
-                        <p>Registra i pagamenti per i gruppi di cui fai parte</p>
-                            </div>
-                        )}
-                    </section>
+                    <HomePayments onRetry={onRetry}
+                                  payments={getPaginatedPayments}
+                                  paymentsError={paymentsError}
+                                  currentPaymentPage={currentPaymentPage}
+                                  paymentsLoading={paymentsLoading}
+                                  getTotalPaymentPages={getTotalPaymentPages()}
+                                  setCurrentPaymentPage={setCurrentPaymentPage}/>
 
                 </main>
             </div>
