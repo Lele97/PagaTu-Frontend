@@ -5,17 +5,17 @@ import LoadingSpinner from "~/components/shared/loadingSpinner.jsx";
 import PaginationControls from "~/components/shared/paginationControls.jsx";
 
 const HomePayments = React.memo(function HomePayments({
-                                                          paymentsLoading,
-                                                          paymentsError,
-                                                          payments,
-                                                          currentPaymentPage,
-                                                          getTotalPaymentPages,
-                                                          setCurrentPaymentPage,
-                                                          onRetry
-                                                      }) {
+    paymentsLoading,
+    paymentsError,
+    payments,
+    currentPaymentPage,
+    getTotalPaymentPages,
+    setCurrentPaymentPage,
+    onRetry
+}) {
 
     if (paymentsLoading) {
-        return <LoadingSpinner message="Caricamento pagamenti..."/>
+        return <LoadingSpinner message="Caricamento pagamenti..." />
     }
 
     if (paymentsError) {
@@ -25,7 +25,7 @@ const HomePayments = React.memo(function HomePayments({
                 ? paymentsError
                 : paymentsError?.message || JSON.stringify(paymentsError);
 
-        return <ErrorMessage message={error} onRetry={onRetry}/>
+        return <ErrorMessage message={error} onRetry={onRetry} />
 
     }
 
@@ -48,8 +48,8 @@ const HomePayments = React.memo(function HomePayments({
                     pagamenti</h2>
             </div>
             <div className={styles.paymentCardsContainer}>
-                {payments.map((payment, index) => (
-                    <div key={index} className={styles.paymentCard}>
+                {payments.map((payment) => (
+                    <div key={payment.id} className={styles.paymentCard}>
                         <div className={styles.paymentCardHeader}>
                             <i className="bi bi-ticket-perforated-fill"></i>
                             <span className={styles.paymentGroup}>{payment.groupName}</span>
@@ -72,7 +72,7 @@ const HomePayments = React.memo(function HomePayments({
                 ))}
             </div>
             <PaginationControls currentPage={currentPaymentPage} totalPages={getTotalPaymentPages}
-                                onPageChange={setCurrentPaymentPage}/>
+                onPageChange={setCurrentPaymentPage} />
         </section>
     )
 })

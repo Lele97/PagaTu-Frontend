@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 import Header from '../header/header.jsx';
@@ -22,15 +22,15 @@ const normalizeError = (err) => {
 };
 
 const AddGroupModal = React.memo(({
-                                      payload,
-                                      handleChangeName,
-                                      handleChangeDescription,
-                                      confirmCreateGroup,
-                                      closeAddGroupModal,
-                                      error,
-                                      success,
-                                      isSubmitting
-                                  }) => {
+    payload,
+    handleChangeName,
+    handleChangeDescription,
+    confirmCreateGroup,
+    closeAddGroupModal,
+    error,
+    success,
+    isSubmitting
+}) => {
     return (
         <div className={sharedStyles.modalOverlay}>
             <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -88,7 +88,7 @@ const AddGroupModal = React.memo(({
 
 const Home = () => {
 
-    const initialPayload = {name: '', description: ''};
+    const initialPayload = { name: '', description: '' };
     const [payload, setPayload] = useState(initialPayload);
     const GROUPS_PER_PAGE = 6;
     const PAYMENTS_PER_PAGE = 4;
@@ -134,9 +134,9 @@ const Home = () => {
             body = null;
         }
 
-        const data = {status: response.status, body};
+        const data = { status: response.status, body };
 
-        requestCacheRef.current.set(cacheKey, {data, timestamp: now});
+        requestCacheRef.current.set(cacheKey, { data, timestamp: now });
         return data;
     }, []);
 
@@ -187,12 +187,12 @@ const Home = () => {
     }, [showAddGroupModal]);
 
     const handleChangeName = useCallback((e) => {
-        setPayload(prev => ({...prev, name: e.target.value}));
+        setPayload(prev => ({ ...prev, name: e.target.value }));
         if (error) setError(null);
     }, [error]);
 
     const handleChangeDescription = useCallback((e) => {
-        setPayload(prev => ({...prev, description: e.target.value}));
+        setPayload(prev => ({ ...prev, description: e.target.value }));
         if (error) setError(null);
     }, [error]);
 
@@ -321,7 +321,7 @@ const Home = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({username}),
+                body: JSON.stringify({ username }),
                 credentials: 'include',
             }, cacheKey);
 
@@ -370,14 +370,14 @@ const Home = () => {
                     'Authorization': `Bearer ${token}`,
                 },
                 credentials: 'include',
-                body: JSON.stringify({username}),
+                body: JSON.stringify({ username }),
             }, cacheKey);
 
             const errorMessage = normalizeError(data?.body?.message || data?.body);
 
             switch (data.status) {
                 case 200:
-                    setPagamentis(Array.isArray(data.body) ? data : []);
+                    setPagamentis(Array.isArray(data.body) ? data.body : []);
                     break;
                 case 204:
                     setPagamentis([]);
@@ -414,37 +414,37 @@ const Home = () => {
         <div className={styles.homePage}>
             <div className={`${styles.container} ${showAddGroupModal ? styles.modalActive : ''}`}>
 
-                <Header user={user} logout={logout}/>
+                <Header user={user} logout={logout} />
 
                 <main className={styles.main}>
 
-                    <HomeHeader/>
+                    <HomeHeader />
 
                     <HomeGroups groups={getPaginatedGroups}
-                                groupsLoading={groupsLoading}
-                                groupsError={groupsError}
-                                onRetry={onRetry}
-                                addGroup={addGroup}
-                                selectedGroup={selectedGroup}
-                                handleGroupSelect={handleGroupSelect}
-                                currentGroupPage={currentGroupPage}
-                                getTotalGroupPages={getTotalGroupPages()}
-                                setCurrentGroupPage={setCurrentGroupPage}
+                        groupsLoading={groupsLoading}
+                        groupsError={groupsError}
+                        onRetry={onRetry}
+                        addGroup={addGroup}
+                        selectedGroup={selectedGroup}
+                        handleGroupSelect={handleGroupSelect}
+                        currentGroupPage={currentGroupPage}
+                        getTotalGroupPages={getTotalGroupPages()}
+                        setCurrentGroupPage={setCurrentGroupPage}
                     />
 
                     <div className={styles.separator}>
                         <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
+                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator" />
                         <div className={styles.separatorRight}></div>
                     </div>
 
                     <HomePayments onRetry={onRetry}
-                                  payments={getPaginatedPayments}
-                                  paymentsError={paymentsError}
-                                  currentPaymentPage={currentPaymentPage}
-                                  paymentsLoading={paymentsLoading}
-                                  getTotalPaymentPages={getTotalPaymentPages()}
-                                  setCurrentPaymentPage={setCurrentPaymentPage}/>
+                        payments={getPaginatedPayments}
+                        paymentsError={paymentsError}
+                        currentPaymentPage={currentPaymentPage}
+                        paymentsLoading={paymentsLoading}
+                        getTotalPaymentPages={getTotalPaymentPages()}
+                        setCurrentPaymentPage={setCurrentPaymentPage} />
 
                 </main>
             </div>
