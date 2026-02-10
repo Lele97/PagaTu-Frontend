@@ -46,14 +46,14 @@ const PaymentCards = React.memo(function PaymentCards({
                         <div className={styles.paymentInfo}>
                             <span className={styles.paymentLabel}>Totale pagamenti</span>
                             <span className={styles.paymentDescription}>
-                {payment.totalePagamenti}
+                {payment.totalPayments}
               </span>
                         </div>
                     </div>
 
                     <div className={styles.paymentCardFooter}>
                         <span className={styles.paymentLabel}>Totale speso</span>
-                        <span className={styles.paymentAmount}>{payment.totaleImporto}</span>
+                        <span className={styles.paymentAmount}>€{payment.totalAmount}</span>
                     </div>
                 </div>
             ))}

@@ -58,15 +58,15 @@ const HomePayments = React.memo(function HomePayments({
                             <div className={styles.paymentInfo}>
                                 <span className={styles.paymentLabel}>Descrizione:</span>
                                 <span
-                                    className={styles.paymentDescription}>{payment.descrizione}</span>
+                                    className={styles.paymentDescription}>{payment.description}</span>
                             </div>
                             <div className={styles.paymentInfo}>
                                 <span className={styles.paymentLabel}>Data:</span>
-                                <span className={styles.paymentData}>{payment.dataPagamento}</span>
+                                <span className={styles.paymentData}>{payment.paymentDate}</span>
                             </div>
                         </div>
                         <div className={styles.paymentCardFooter}>
-                            <span className={styles.paymentAmount}>€{payment.importo}</span>
+                            <span className={styles.paymentAmount}>€{payment.amount}</span>
                         </div>
                     </div>
                 ))}
