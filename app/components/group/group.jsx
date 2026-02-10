@@ -7,6 +7,7 @@ import GroupHeader from '../group/groupHeader.jsx';
 import PaymentActions from '../group/paymentActions.jsx';
 import PaymentCards from '../group/paymentCards.jsx';
 import jp from 'jsonpath';
+import RegisterPaymentModal from '../group/modals/RegisterPaymentModal.jsx'
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -86,7 +87,7 @@ const InviteUserModal = React.memo(
     }
 );
 
-const RegisterPaymentModal = React.memo(
+/*const RegisterPaymentModal = React.memo(
     ({
          submitPayment,
          importo,
@@ -183,7 +184,7 @@ const RegisterPaymentModal = React.memo(
             </div>
         );
     }
-);
+);*/
 
 const PayForFriendModal = React.memo(
     ({
@@ -1115,15 +1116,15 @@ const Group = () => {
 
                 {showRegisterPaymentModal && (
                     <RegisterPaymentModal
-                        closeRegisterPaymentModal={closeRegisterPaymentModal}
-                        handleInputChangeImporto={handleInputChangeImporto}
                         submitPayment={submitPayment}
                         importo={importo}
                         descrizione={descrizione}
-                        handleInputChangeDescrizione={handleInputChangeDescrizione}
-                        isSubmitting={isSubmitting}
                         error={error}
                         successMessage={successMessage}
+                        isSubmitting={isSubmitting}
+                        closeRegisterPaymentModal={closeRegisterPaymentModal}
+                        handleInputChangeImporto={handleInputChangeImporto}
+                        handleInputChangeDescrizione={handleInputChangeDescrizione}
                     />
                 )}
 
