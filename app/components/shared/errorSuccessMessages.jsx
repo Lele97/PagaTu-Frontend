@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from '~/styles/group.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 
 const normalizeError = (err) => {

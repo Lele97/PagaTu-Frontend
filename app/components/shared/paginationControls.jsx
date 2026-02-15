@@ -4,7 +4,6 @@ import React from "react";
 const PaginationControls = React.memo(function PaginationControls({
                                                                       totalPages, onPageChange, currentPage
                                                                   }) {
-
     if (totalPages <= 1) return null;
 
     return (

@@ -22,15 +22,15 @@ const normalizeError = (err) => {
 };
 
 const AddGroupModal = React.memo(({
-    payload,
-    handleChangeName,
-    handleChangeDescription,
-    confirmCreateGroup,
-    closeAddGroupModal,
-    error,
-    success,
-    isSubmitting
-}) => {
+                                      payload,
+                                      handleChangeName,
+                                      handleChangeDescription,
+                                      confirmCreateGroup,
+                                      closeAddGroupModal,
+                                      error,
+                                      success,
+                                      isSubmitting
+                                  }) => {
     return (
         <div className={sharedStyles.modalOverlay}>
             <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -215,7 +215,7 @@ const Home = () => {
                 new Error("Sessione scaduta");
 
             if (!payload.name.trim()) {
-                setError("Il nome del gruppo non può essere vuoto");
+                setError("Il nome del gruppo non puÃ² essere vuoto");
                 return;
             }
             if (payload.name.trim().length < 6) {
@@ -224,7 +224,7 @@ const Home = () => {
             }
 
             if (!/^[a-zA-Z0-9_]+$/.test(payload.name.trim())) {
-                setError("il nome del gruppo può contenere solo lettere , numeri, e underscore");
+                setError("il nome del gruppo puÃ² contenere solo lettere , numeri, e underscore");
                 return;
             }
 
@@ -248,7 +248,7 @@ const Home = () => {
                     setPayload(initialPayload);
                     break;
                 case 400:
-                    setError("Gruppo già esistente");
+                    setError("Gruppo giÃ  esistente");
                     break;
                 default:
                     new Error("Problema durante la creazione del gruppo")
@@ -421,15 +421,15 @@ const Home = () => {
                     <HomeHeader />
 
                     <HomeGroups groups={getPaginatedGroups}
-                        groupsLoading={groupsLoading}
-                        groupsError={groupsError}
-                        onRetry={onRetry}
-                        addGroup={addGroup}
-                        selectedGroup={selectedGroup}
-                        handleGroupSelect={handleGroupSelect}
-                        currentGroupPage={currentGroupPage}
-                        getTotalGroupPages={getTotalGroupPages()}
-                        setCurrentGroupPage={setCurrentGroupPage}
+                                groupsLoading={groupsLoading}
+                                groupsError={groupsError}
+                                onRetry={onRetry}
+                                addGroup={addGroup}
+                                selectedGroup={selectedGroup}
+                                handleGroupSelect={handleGroupSelect}
+                                currentGroupPage={currentGroupPage}
+                                getTotalGroupPages={getTotalGroupPages()}
+                                setCurrentGroupPage={setCurrentGroupPage}
                     />
 
                     <div className={styles.separator}>
@@ -439,12 +439,12 @@ const Home = () => {
                     </div>
 
                     <HomePayments onRetry={onRetry}
-                        payments={getPaginatedPayments}
-                        paymentsError={paymentsError}
-                        currentPaymentPage={currentPaymentPage}
-                        paymentsLoading={paymentsLoading}
-                        getTotalPaymentPages={getTotalPaymentPages()}
-                        setCurrentPaymentPage={setCurrentPaymentPage} />
+                                  payments={getPaginatedPayments}
+                                  paymentsError={paymentsError}
+                                  currentPaymentPage={currentPaymentPage}
+                                  paymentsLoading={paymentsLoading}
+                                  getTotalPaymentPages={getTotalPaymentPages()}
+                                  setCurrentPaymentPage={setCurrentPaymentPage} />
 
                 </main>
             </div>

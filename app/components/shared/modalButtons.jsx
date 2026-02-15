@@ -3,6 +3,8 @@ import styles from '~/styles/group.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 
 const ModalButtons = React.memo(({
+                                     modalHaveForm,
+                                     onClick,
                                      onCancel,
                                      isSubmitting,
                                      cancelText = 'Annulla',
@@ -20,13 +22,23 @@ const ModalButtons = React.memo(({
             >
                 {cancelText}
             </button>
-            <button
+
+            {modalHaveForm ? <button
                 type="submit"
                 className={`${sharedStyles.groupButton} ${isDelete ? styles.deleteButton : styles.submitButton}`}
                 disabled={isSubmitting}
             >
                 {isSubmitting ? submitLoadingText : submitText}
-            </button>
+            </button> : <button
+                type="button"
+                onClick={onClick}
+                className={`${sharedStyles.groupButton} ${isDelete ? styles.deleteButton : styles.submitButton}`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? submitLoadingText : submitText}
+            </button>}
+
+
         </div>
     );
 });

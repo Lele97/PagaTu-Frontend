@@ -6,7 +6,6 @@ import ErrorSuccessMessages from "~/components/shared/errorSuccessMessages.jsx";
 import styles from '~/styles/group.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 
-
 const PAYMENT_INFO_ITEMS = [
     'Il tuo stato verrà marcato come "pagato" per questo turno',
     'Il pagamento verrà registrato con importo, descrizione e data corrente',
@@ -73,6 +72,7 @@ const RegisterPaymentModal = React.memo(({
                     isSubmitting={isSubmitting}
                     submitText="Registra Pagamento"
                     submitLoadingText="Registrazione in corso..."
+                    modalHaveForm={true}
                 />
             </form>
         </ModalWrapper>
@@ -80,5 +80,4 @@ const RegisterPaymentModal = React.memo(({
 });
 
 RegisterPaymentModal.displayName = 'RegisterPaymentModal';
-
 export default RegisterPaymentModal;
