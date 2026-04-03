@@ -1,5 +1,5 @@
 import React from "react";
-import {Link, useLocation, useRouteError} from "react-router-dom";
+import { Link, useLocation, useRouteError } from "react-router-dom";
 import styles from '~/styles/error.module.css';
 
 export default function ErrorPage() {
@@ -10,8 +10,8 @@ export default function ErrorPage() {
 
     const getErrorInfo = () => {
         if (invitationError) {
-            return{
-                title:"Oops! Qualcosa è andato storto",
+            return {
+                title: "Oops! Qualcosa è andato storto",
                 message: invitationError
             }
         }
@@ -45,7 +45,7 @@ export default function ErrorPage() {
         <div className={styles.errorPage}>
             <div className={styles.errorContainer}>
                 <div className={styles.errorContent}>
-                    <img src="/pagaTu.png" alt="PagaTu Logo" className={styles.logo}/>
+                    <img src="/pagaTu.png" alt="PagaTu Logo" className={styles.logo} />
 
                     <h1 className={styles.errorTitle}>{errorInfo.title}</h1>
                     <p className={styles.errorMessage}>{errorInfo.message}</p>
@@ -67,10 +67,16 @@ export default function ErrorPage() {
                         </button>
                     </div>
 
+                    <div className={styles.separator}>
+                        <div className={styles.separatorLeft}></div>
+                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator" />
+                        <div className={styles.separatorRight}></div>
+                    </div>
+
                     <div className={styles.helpMessage}>
                         <p>Se il problema persiste, contatta il <a className={styles.support}
-                                                                   href="mailto:someone@example.com">supporto tecnico <i
-                            className="bi bi-envelope-at-fill"></i></a></p>
+                            href="mailto:someone@example.com">supporto tecnico <i
+                                className="bi bi-envelope-at-fill"></i></a></p>
                         <p className={styles.coffeeMessage}>
                             Nel frattempo, che ne dici di un caffè? <i className="bi bi-cup-hot-fill"></i>
                         </p>

@@ -2,8 +2,8 @@ import React from 'react';
 import ModalWrapper from "~/components/shared/modalWrapper.jsx";
 import ModalButtons from "~/components/shared/modalButtons.jsx";
 import ErrorSuccessMessages from "~/components/shared/errorSuccessMessages.jsx";
-import styles from '~/styles/group.module.css';
 import sharedStyles from '~/styles/shared.module.css';
+import styles from "~/styles/group.module.css";
 
 const AddGroupModal = React.memo(({
                                       payload,
@@ -17,29 +17,35 @@ const AddGroupModal = React.memo(({
                                   }) => {
     return (
         <ModalWrapper onClose={closeAddGroupModal}
-                      title="">
+                      title="Crea un gruppo">
 
 
             <form onSubmit={confirmCreateGroup}>
-                <input
-                    type="text"
-                    placeholder="Nome gruppo"
-                    value={payload.name}
-                    onChange={handleChangeName}
-                    className={sharedStyles.input}
-                    required
-                />
-                <textarea
-                    placeholder="Descrizione (opzionale)"
-                    value={payload.description}
-                    onChange={handleChangeDescription}
-                    className={sharedStyles.textarea}
-                    rows="3"
-                />
+                <div className={styles.formGroup}>
+                    <label htmlFor="nome">Nome:</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        placeholder="Inserisci il nome del gruppo"
+                        value={payload.name}
+                        onChange={handleChangeName}
+                        className={sharedStyles.formInput}
+                        required
+                    />
+
+                    <label htmlFor="descrizione">Descrizione:</label>
+                    <input
+                        type="text"
+                        id="descrizione"
+                        placeholder="Inserisci la descrizione del gruppo"
+                        value={payload.description}
+                        onChange={handleChangeDescription}
+                        className={sharedStyles.formInput}
+                    />
+                </div>
 
                 <ErrorSuccessMessages error={error}
                                       successMessage={success}/>
-
 
                 <ModalButtons modalHaveForm={true}
                               isSubmitting={isSubmitting}
@@ -49,7 +55,6 @@ const AddGroupModal = React.memo(({
             </form>
 
         </ModalWrapper>
-
     );
 });
 

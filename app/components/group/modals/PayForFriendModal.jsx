@@ -29,7 +29,7 @@ const PayForFriendModal = React.memo(
 
 
         return (
-            <ModalWrapper title=""
+            <ModalWrapper title="Paga per un amico"
                           onClose={closePayForFriendModal}>
 
                 <h6>

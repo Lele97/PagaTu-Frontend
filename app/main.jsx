@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Root from './routes/root';
 import Login from './components/login/login-form.jsx';
 import ErrorPage from './components/error/error-page.jsx';
@@ -14,47 +14,60 @@ import './styles/app.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
+// Register service worker
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js")
+            .then((registration) => {
+                console.log("SW registered: ", registration);
+            })
+            .catch((registrationError) => {
+                console.log("SW registration failed: ", registrationError);
+            });
+    });
+}
+
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Root/>,
-        errorElement: <ErrorPage/>,
+        element: <Root />,
+        errorElement: <ErrorPage />,
         children: [
             {
                 index: true,
-                element: <Home/>,
+                element: <Home />,
             },
             {
                 path: "/login",
-                element: <Login/>,
+                element: <Login />,
             },
             {
                 path: "/home",
-                element: <Home/>,
+                element: <Home />,
             },
             {
                 path: "/signup",
-                element: <Signup/>,
+                element: <Signup />,
             },
             {
                 path: "/forgotPassword",
-                element: <ForgotPswForm/>,
+                element: <ForgotPswForm />,
             },
             {
                 path: "/group",
-                element: <Group/>,
+                element: <Group />,
             },
             {
                 path: "/invitation",
-                element: <Invitation/>,
+                element: <Invitation />,
             },
             {
                 path: "/resetPassword",
-                element: <ResetPswForm/>
+                element: <ResetPswForm />
             },
             {
                 path: "/errore-token",
-                element: <ErrorPage/>,
+                element: <ErrorPage />,
             }
         ],
     },
@@ -62,6 +75,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <RouterProvider router={router}/>
+        <RouterProvider router={router} />
     </React.StrictMode>
 );

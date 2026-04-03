@@ -9,7 +9,11 @@
   "background_color": "#ffffff",
   "theme_color": "#ffc107",
   "lang": "it",
-  "categories": ["business", "productivity", "social"],
+  "categories": [
+    "business",
+    "productivity",
+    "social"
+  ],
   "icons": [
     {
       "src": "/pagaTu.png",
@@ -22,5 +26,6 @@
       "sizes": "32x32",
       "type": "image/x-icon"
     }
-  ]
+  ],
+  "offline_enabled": true
 }

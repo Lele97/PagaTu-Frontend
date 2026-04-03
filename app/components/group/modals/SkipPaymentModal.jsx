@@ -20,7 +20,7 @@ const SkipPaymentModal = React.memo(
      }) => {
 
         return (
-            <ModalWrapper title="Salta Pagamento"
+            <ModalWrapper title="Salta un pagamento"
                           onClose={closeSaltaPaymentForm}>
 
 
@@ -34,7 +34,7 @@ const SkipPaymentModal = React.memo(
                 </p>
 
                 <ErrorSuccessMessages error={error}
-                                      successMessage={successMessage} />
+                                      successMessage={successMessage}/>
 
 
                 <ModalButtons modalHaveForm={false}

@@ -27,7 +27,7 @@ const RegisterPaymentModal = React.memo(({
     return (
         <ModalWrapper
             onClose={closeRegisterPaymentModal}
-            title="Registra il pagamento"
+            title="Registra un pagamento"
         >
             <InfoBox
                 title="Cosa succede quando registri un pagamento:"

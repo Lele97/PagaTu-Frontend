@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import styles from '~/styles/home.module.css';
-import sharedStyles from '~/styles/shared.module.css';
 import Header from '../header/header.jsx';
 import HomeHeader from "~/components/home/homeHeader.jsx";
 import HomeGroups from "~/components/home/homeGroups.jsx";
 import HomePayments from "~/components/home/homePayments.jsx";
+import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -21,74 +21,9 @@ const normalizeError = (err) => {
     }
 };
 
-const AddGroupModal = React.memo(({
-                                      payload,
-                                      handleChangeName,
-                                      handleChangeDescription,
-                                      confirmCreateGroup,
-                                      closeAddGroupModal,
-                                      error,
-                                      success,
-                                      isSubmitting
-                                  }) => {
-    return (
-        <div className={sharedStyles.modalOverlay}>
-            <div className={sharedStyles.modalContent} onClick={(e) => e.stopPropagation()}>
-                <h2>Crea un nuovo gruppo</h2>
-                <form onSubmit={confirmCreateGroup}>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="nome">Nome</label>
-                        <input
-                            type="text"
-                            id="nome"
-                            value={payload.name}
-                            onChange={handleChangeName}
-                            required
-                            className={sharedStyles.formInput}
-                            placeholder="Inserisci un nome per il gruppo..."
-                            autoFocus
-                        />
-
-                        <label htmlFor="descrizione">Descrizione</label>
-                        <input
-                            type="text"
-                            id="descrizione"
-                            value={payload.description}
-                            onChange={handleChangeDescription}
-                            className={sharedStyles.formInput}
-                            placeholder="Inserisci una breve descrizione..."
-                        />
-                    </div>
-
-                    {error && <div className={sharedStyles.errorMessageModal}>{error}</div>}
-                    {success && <div className={sharedStyles.successMessage}>{success}</div>}
-
-                    <div>
-                        <button
-                            type="button"
-                            onClick={closeAddGroupModal}
-                            className={`${sharedStyles.groupButton} ${styles.cancelButton}`}
-                            disabled={isSubmitting}
-                        >
-                            Annulla
-                        </button>
-                        <button
-                            type="submit"
-                            className={`${sharedStyles.groupButton} ${styles.submitButton}`}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? "Creando il gruppo..." : "Crea gruppo"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    )
-});
-
 const Home = () => {
 
-    const initialPayload = { name: '', description: '' };
+    const initialPayload = {name: '', description: ''};
     const [payload, setPayload] = useState(initialPayload);
     const GROUPS_PER_PAGE = 6;
     const PAYMENTS_PER_PAGE = 4;
@@ -127,16 +62,16 @@ const Home = () => {
 
         const response = await fetch(url, options);
 
-        let body = null;
+        let body;
         try {
             body = await response.json();
         } catch {
             body = null;
         }
 
-        const data = { status: response.status, body };
+        const data = {status: response.status, body};
 
-        requestCacheRef.current.set(cacheKey, { data, timestamp: now });
+        requestCacheRef.current.set(cacheKey, {data, timestamp: now});
         return data;
     }, []);
 
@@ -187,12 +122,12 @@ const Home = () => {
     }, [showAddGroupModal]);
 
     const handleChangeName = useCallback((e) => {
-        setPayload(prev => ({ ...prev, name: e.target.value }));
+        setPayload(prev => ({...prev, name: e.target.value}));
         if (error) setError(null);
     }, [error]);
 
     const handleChangeDescription = useCallback((e) => {
-        setPayload(prev => ({ ...prev, description: e.target.value }));
+        setPayload(prev => ({...prev, description: e.target.value}));
         if (error) setError(null);
     }, [error]);
 
@@ -218,8 +153,14 @@ const Home = () => {
                 setError("Il nome del gruppo non puÃ² essere vuoto");
                 return;
             }
+
             if (payload.name.trim().length < 6) {
                 setError("Il nome del gruppo deve avere minimo 6 caratteri");
+                return;
+            }
+
+            if (payload.name.trim().length > 20) {
+                setError("Il nome del gruppo deve avere massimo 20 caratteri");
                 return;
             }
 
@@ -254,7 +195,7 @@ const Home = () => {
                     new Error("Problema durante la creazione del gruppo")
             }
 
-            clearCache(`gruppi_by_Id_${username || 'unknown'}`)
+            clearCache(`gruppi_by_Id_${user || 'unknown'}`);
 
             setTimeout(() => {
                 setShowAddGroupModal(false);
@@ -263,7 +204,7 @@ const Home = () => {
             await getGroupsByUser(user);
 
         } catch (err) {
-            navigate('/error', { state: { errorMessage: err.message || "Errore di connessione" } });
+            navigate('/error', {state: {errorMessage: err.message || "Errore di connessione"}});
         } finally {
             setIsSubmitting(false);
         }
@@ -321,7 +262,7 @@ const Home = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ username }),
+                body: JSON.stringify({username}),
                 credentials: 'include',
             }, cacheKey);
 
@@ -370,7 +311,7 @@ const Home = () => {
                     'Authorization': `Bearer ${token}`,
                 },
                 credentials: 'include',
-                body: JSON.stringify({ username }),
+                body: JSON.stringify({username}),
             }, cacheKey);
 
             const errorMessage = normalizeError(data?.body?.message || data?.body);
@@ -414,11 +355,11 @@ const Home = () => {
         <div className={styles.homePage}>
             <div className={`${styles.container} ${showAddGroupModal ? styles.modalActive : ''}`}>
 
-                <Header user={user} logout={logout} />
+                <Header user={user} logout={logout}/>
 
                 <main className={styles.main}>
 
-                    <HomeHeader />
+                    <HomeHeader/>
 
                     <HomeGroups groups={getPaginatedGroups}
                                 groupsLoading={groupsLoading}
@@ -434,7 +375,7 @@ const Home = () => {
 
                     <div className={styles.separator}>
                         <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator" />
+                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
                         <div className={styles.separatorRight}></div>
                     </div>
 
@@ -444,7 +385,7 @@ const Home = () => {
                                   currentPaymentPage={currentPaymentPage}
                                   paymentsLoading={paymentsLoading}
                                   getTotalPaymentPages={getTotalPaymentPages()}
-                                  setCurrentPaymentPage={setCurrentPaymentPage} />
+                                  setCurrentPaymentPage={setCurrentPaymentPage}/>
 
                 </main>
             </div>

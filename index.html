@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" sizes="32x32" href="/pagaTu.ico" />
@@ -8,20 +9,24 @@
     <meta name="theme-color" content="#ffc107" />
 
     <title>PagaTu • Il caffè che unisce il team</title>
-    <meta name="description" content="PagaTu • Il caffè che unisce il team. La pausa con i colleghi non è mai stata cosi divertente." />
-    <meta name="keywords" content="caffè aziendale, team building, pausa caffè, app aziendale, gestione caffè, app lavoro, pagatu" />
+    <meta name="description"
+        content="PagaTu - Gestisci i pagamenti del caffè in ufficio in modo semplice e divertente. Crea gruppi, registra pagamenti e organizza turni con i tuoi colleghi." />
+    <meta name="keywords"
+        content="caffè aziendale, team building, pausa caffè, app aziendale, gestione caffè, app lavoro, pagatu" />
     <link rel="canonical" href="https://pagatu.app" />
 
     <!-- OG / Social -->
     <meta property="og:title" content="PagaTu • Il caffè che unisce il team" />
-    <meta property="og:description" content="PagaTu • Il caffè che unisce il team. La pausa con i colleghi non è mai stata cosi divertente." />
+    <meta property="og:description"
+        content="PagaTu • Il caffè che unisce il team. La pausa con i colleghi non è mai stata cosi divertente." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pagatu.app" />
     <meta property="og:image" content="https://pagatu.app/og-image.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="PagaTu • Il caffè che unisce il team" />
-    <meta name="twitter:description" content="PagaTu • Il caffè che unisce il team. La pausa con i colleghi non è mai stata cosi divertente." />
+    <meta name="twitter:description"
+        content="PagaTu • Il caffè che unisce il team. La pausa con i colleghi non è mai stata cosi divertente." />
     <meta name="twitter:image" content="https://pagatu.app/og-image.png" />
 
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
@@ -35,20 +40,53 @@
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
             "name": "PagaTu",
+            "alternateName": "PagaTu - Gestione Caffè Ufficio",
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
             "url": "https://pagatu.app",
-            "description": "PagaTu • Il caffè che unisce il team. La pausa con i colleghi non è mai stata cosi divertente.",
+            "description": "PagaTu - Gestisci i pagamenti del caffè in ufficio in modo semplice e divertente. Crea gruppi, registra pagamenti e organizza turni con i tuoi colleghi.",
             "image": "https://pagatu.app/og-image.png",
             "creator": {
                 "@type": "Organization",
                 "name": "PagaTu"
+            },
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+            }
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://pagatu.app"
+            }]
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "PagaTu",
+            "url": "https://pagatu.app",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://pagatu.app/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
             }
         }
     </script>
 </head>
+
 <body>
-<div id="root"></div>
-<script type="module" src="/app/main.jsx"></script>
+    <div id="root"></div>
+    <script type="module" src="/app/main.jsx"></script>
 </body>
+
 </html>
