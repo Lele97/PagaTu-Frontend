@@ -5,6 +5,82 @@ import {Link, useNavigate} from "react-router-dom";
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
+const CustomSelect = ({
+    value,
+    options,
+    onChange,
+    visibleItems = 8,
+    className = "",
+}) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const selectRef = useRef(null);
+    const optionsRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (selectRef.current && !selectRef.current.contains(e.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen && selectRef.current && optionsRef.current) {
+            const selectRect = selectRef.current.getBoundingClientRect();
+            let topPosition = selectRect.bottom;
+            const bottomSpace = window.innerHeight - selectRect.bottom;
+
+            if (bottomSpace < 320 && selectRect.top > 320) {
+                topPosition = selectRect.top - 320;
+            }
+
+            optionsRef.current.style.top = `${topPosition}px`;
+            optionsRef.current.style.left = `${selectRect.left}px`;
+            optionsRef.current.style.width = `${selectRect.width}px`;
+        }
+    }, [isOpen]);
+
+    const selectedOption = options.find((opt) => opt.value === value) || options[0];
+
+    return (
+        <div
+            className={`${styles.customSelectContainer} ${className}`}
+            ref={selectRef}
+        >
+            <div
+                className={styles.customSelectHeader}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span>{selectedOption?.label}</span>
+                <span className={styles.arrow}>{isOpen ? "▲" : "▼"}</span>
+            </div>
+            {isOpen && (
+                <div
+                    ref={optionsRef}
+                    className={`${styles.customSelectOptions} ${isOpen ? styles.open : ""}`}
+                >
+                    {options.map((option) => (
+                        <div
+                            key={option.value}
+                            className={`${styles.customSelectOption} ${
+                                value === option.value ? styles.selectedOption : ""
+                            }`}
+                            onClick={() => {
+                                onChange(option.value);
+                                setIsOpen(false);
+                            }}
+                        >
+                            {option.label}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const SignupForm = () => {
     const [registration, setRegistration] = useState({
         username: "",
@@ -58,82 +134,6 @@ const SignupForm = () => {
         if (e.key === "Escape") {
             setIsOpen(false);
         }
-    };
-
-    const CustomSelect = ({
-                              value,
-                              options,
-                              onChange,
-                              visibleItems = 8,
-                              className = "",
-                          }) => {
-        const [isOpen, setIsOpen] = useState(false);
-        const selectRef = useRef(null);
-        const optionsRef = useRef(null);
-
-        useEffect(() => {
-            const handleClickOutside = (e) => {
-                if (selectRef.current && !selectRef.current.contains(e.target)) {
-                    setIsOpen(false);
-                }
-            };
-            document.addEventListener("mousedown", handleClickOutside);
-            return () => document.removeEventListener("mousedown", handleClickOutside);
-        }, []);
-
-        useEffect(() => {
-            if (isOpen && selectRef.current && optionsRef.current) {
-                const selectRect = selectRef.current.getBoundingClientRect();
-                let topPosition = selectRect.bottom;
-                const bottomSpace = window.innerHeight - selectRect.bottom;
-
-                if (bottomSpace < 320 && selectRect.top > 320) {
-                    topPosition = selectRect.top - 320;
-                }
-
-                optionsRef.current.style.top = `${topPosition}px`;
-                optionsRef.current.style.left = `${selectRect.left}px`;
-                optionsRef.current.style.width = `${selectRect.width}px`;
-            }
-        }, [isOpen]);
-
-        const selectedOption = options.find((opt) => opt.value === value) || options[0];
-
-        return (
-            <div
-                className={`${styles.customSelectContainer} ${className}`}
-                ref={selectRef}
-            >
-                <div
-                    className={styles.customSelectHeader}
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    <span>{selectedOption?.label}</span>
-                    <span className={styles.arrow}>{isOpen ? "▲" : "▼"}</span>
-                </div>
-                {isOpen && (
-                    <div
-                        ref={optionsRef}
-                        className={`${styles.customSelectOptions} ${isOpen ? styles.open : ""}`}
-                    >
-                        {options.map((option) => (
-                            <div
-                                key={option.value}
-                                className={`${styles.customSelectOption} ${
-                                    value === option.value ? styles.selectedOption : ""
-                                }`}
-                                onClick={() => {
-                                    onChange(option.value);
-                                    setIsOpen(false);
-                                }}
-                            >
-                                {option.label}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
     };
 
     const handleChange = (e) => {

@@ -153,7 +153,7 @@ const Group = () => {
                         setPaymentByGroupError(errorMessage || `Gruppo "${groupName || 'sconosciuto'}" non trovato`);
                         break;
                     default:
-                        setPaymentByGroupError(errorMessage || 'Errore nel recupero dei pagamenti. Riprova piÃ¹ tardi.');
+                        setPaymentByGroupError(errorMessage || 'Errore nel recupero dei pagamenti. Riprova più tardi.');
                         setClassificaPaymentsForGroup([]);
                         break;
                 }
@@ -441,7 +441,7 @@ const Group = () => {
                     }
 
                     if (groups?.userMembershipsdto?.some((m) => m.username === userInvitation)) {
-                        setError(`L'utente "${userInvitation}" Ã¨ giÃ  membro del gruppo`);
+                        setError(`L'utente "${userInvitation}" è già membro del gruppo`);
                         return;
                     }
                 } catch {
@@ -495,7 +495,7 @@ const Group = () => {
                 }
 
                 const response = await fetch(
-                    `${GETAWAY_SERVER_URL}/api/coffee/pagamento?groupNme=${encodeURIComponent(group.groupName)}`,
+                    `${GETAWAY_SERVER_URL}/api/coffee/pagamento?groupName=${encodeURIComponent(group.groupName)}`,
                     {
                         method: 'POST',
                         headers: {
@@ -545,7 +545,7 @@ const Group = () => {
                 }
 
                 const response = await fetch(
-                    `${GETAWAY_SERVER_URL}/api/coffee/salta/pagamento?groupNme=${encodeURIComponent(group.groupName)}`,
+                    `${GETAWAY_SERVER_URL}/api/coffee/salta/pagamento?groupName=${encodeURIComponent(group.groupName)}`,
                     {
                         method: 'POST',
                         headers: {
@@ -560,7 +560,7 @@ const Group = () => {
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    setError(`Si Ã¨ verificato un problema: ${errorText || 'Errore sconosciuto'}`);
+                    setError(`Si è verificato un problema: ${errorText || 'Errore sconosciuto'}`);
                     return;
                 }
 
@@ -571,7 +571,7 @@ const Group = () => {
                 setTimeout(() => setShowSaltaPaymentModal(false), 2000);
                 await getClassificaPaymentsForGroup(group);
             } catch {
-                setError('Errore di rete. Riprova piÃ¹ tardi.');
+                setError('Errore di rete. Riprova più tardi.');
             } finally {
                 setIsSkipping(false);
             }
@@ -603,7 +603,7 @@ const Group = () => {
                 });
 
                 if (!response.ok) {
-                    setError('Il gruppo Ã¨ composto da due o piÃ¹ persone');
+                    setError('Non è possibile eliminare un gruppo con due o più persone');
                     return;
                 }
 
@@ -635,7 +635,7 @@ const Group = () => {
                 }
 
                 const response = await fetch(
-                    `${GETAWAY_SERVER_URL}/api/coffee/pagamento/pagaPer?groupNme=${encodeURIComponent(group.groupName)}`,
+                    `${GETAWAY_SERVER_URL}/api/coffee/pagamento/pagaPer?groupName=${encodeURIComponent(group.groupName)}`,
                     {
                         method: 'POST',
                         headers: {

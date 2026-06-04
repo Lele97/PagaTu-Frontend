@@ -65,7 +65,7 @@ const HomeGroups = React.memo(function HomeGroups({
             <div className={styles.groupGrid}>
                 {groups.map((group, index) => (
                     <div
-                        key={index}
+                        key={group.id || group.name || index}
                         className={`${styles.groupCard} ${
                             selectedGroup === group.name ? styles.groupCardSelected : ''
                         }`}

@@ -146,12 +146,14 @@ const InvitationHandler = () => {
         );
     }
 
-    const Error = ({error}) => {
-        navigate("/errore-token", {
-            replace: true,
-            state: {errorInvitation: error}
-        });
-    }
+    useEffect(() => {
+        if (error) {
+            navigate("/errore-token", {
+                replace: true,
+                state: {errorInvitation: error}
+            });
+        }
+    }, [error, navigate]);
 
     if (success) {
         return (
@@ -176,8 +178,7 @@ const InvitationHandler = () => {
 
                 <Header user={user} logout={logout}/>
 
-                {error ? (<Error error={error}/>)
-                    : (
+                {error ? null : (
                         <>
                             <div className={styles.invitationCard}>
                                 <h2 className={styles.title}>Invito al Gruppo</h2>

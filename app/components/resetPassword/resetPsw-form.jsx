@@ -126,12 +126,14 @@ const ResetPswForm = () => {
 
         if (password !== repetpassword) {
             setError("Le password non corrispondono");
+            setIsLoading(false);
             return;
         }
 
         const validationError = validatePassword(password);
         if (validationError) {
             setError(validationError);
+            setIsLoading(false);
             return;
         }
 

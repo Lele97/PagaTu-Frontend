@@ -29,14 +29,14 @@ export default defineConfig(({ mode }) => {
         },
         build: {
             cssMinify: true,
-            cssCodeSplit: false,
+            cssCodeSplit: true,
+            chunkSizeWarningLimit: 300,
             rollupOptions: {
                 output: {
                     manualChunks: {
                         vendor: ['react', 'react-dom', 'react-router-dom'],
                         utils: ['jsonpath'],
                     },
-                    chunkSizeWarningLimit: 300,
                 },
             },
         },

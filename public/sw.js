@@ -21,6 +21,21 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve cached content when offline
 self.addEventListener('fetch', (event) => {
+    // Skip cross-origin requests
+    if (!event.request.url.startsWith(self.location.origin)) {
+        return;
+    }
+
+    // Skip API requests
+    if (event.request.url.includes('/api/')) {
+        return;
+    }
+
+    // Only cache GET requests
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {

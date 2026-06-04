@@ -21,12 +21,13 @@ const normalizeError = (err) => {
     }
 };
 
+const GROUPS_PER_PAGE = 6;
+const PAYMENTS_PER_PAGE = 4;
+const initialPayload = {name: '', description: ''};
+
 const Home = () => {
 
-    const initialPayload = {name: '', description: ''};
     const [payload, setPayload] = useState(initialPayload);
-    const GROUPS_PER_PAGE = 6;
-    const PAYMENTS_PER_PAGE = 4;
     const [user, setUser] = useState(null);
     const [groups, setGroups] = useState([]);
     const [pagamentis, setPagamentis] = useState([]);
@@ -147,10 +148,10 @@ const Home = () => {
             const token = localStorage.getItem('authToken');
 
             if (!token)
-                new Error("Sessione scaduta");
+                throw new Error("Sessione scaduta");
 
             if (!payload.name.trim()) {
-                setError("Il nome del gruppo non puÃ² essere vuoto");
+                setError("Il nome del gruppo non può essere vuoto");
                 return;
             }
 
@@ -165,7 +166,7 @@ const Home = () => {
             }
 
             if (!/^[a-zA-Z0-9_]+$/.test(payload.name.trim())) {
-                setError("il nome del gruppo puÃ² contenere solo lettere , numeri, e underscore");
+                setError("Il nome del gruppo può contenere solo lettere, numeri e underscore");
                 return;
             }
 
@@ -189,10 +190,10 @@ const Home = () => {
                     setPayload(initialPayload);
                     break;
                 case 400:
-                    setError("Gruppo giÃ  esistente");
+                    setError("Gruppo già esistente");
                     break;
                 default:
-                    new Error("Problema durante la creazione del gruppo")
+                    throw new Error("Problema durante la creazione del gruppo")
             }
 
             clearCache(`gruppi_by_Id_${user || 'unknown'}`);
@@ -209,7 +210,7 @@ const Home = () => {
             setIsSubmitting(false);
         }
 
-    }, [payload, user, navigate, initialPayload, clearCache]);
+    }, [payload, user, navigate, clearCache]);
 
     const addGroup = useCallback(() => {
         setShowAddGroupModal(true);
