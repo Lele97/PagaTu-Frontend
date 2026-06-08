@@ -15,20 +15,22 @@ const InvitationHandler = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
+    const [response_invitation, setResponseInvitation] = useState('')
 
     useEffect(() => {
         const handleInvitation = async () => {
             // Get invitation parameters from URL
             const username = searchParams.get('username');
             const groupName = searchParams.get('groupName');
+            const invitationId = searchParams.get('invitationId');
 
-            if (!username || !groupName) {
+            if (!username || !groupName || !invitationId) {
                 setError('Link di invito non valido');
                 setLoading(false);
                 return;
             }
 
-            setInvitationData({username, groupName});
+            setInvitationData({username, groupName, invitationId});
 
             // Check if user is authenticated
             const authToken = localStorage.getItem('authToken');
@@ -36,7 +38,7 @@ const InvitationHandler = () => {
 
             if (!authToken || !userData) {
                 // Store invitation data in localStorage for after login
-                localStorage.setItem('pendingInvitation', JSON.stringify({username, groupName}));
+                localStorage.setItem('pendingInvitation', JSON.stringify({username, groupName, invitationId}));
                 // Redirect to login
                 navigate('/login');
                 return;
@@ -86,7 +88,7 @@ const InvitationHandler = () => {
             }
 
             const response = await fetch(
-                `${GETAWAY_SERVER_URL}/api/coffee/group/update/addtogroup?username=${encodeURIComponent(invitationData.username)}&groupName=${encodeURIComponent(invitationData.groupName)}`,
+                `${GETAWAY_SERVER_URL}/api/coffee/group/update/addtogroup?username=${encodeURIComponent(invitationData.username)}&groupName=${encodeURIComponent(invitationData.groupName)}&invitationId=${encodeURIComponent(invitationData.invitationId)}`,
                 {
                     method: 'PUT',
                     headers: {
@@ -102,9 +104,9 @@ const InvitationHandler = () => {
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
-            const responseMessage = await response.text();
-
+            await response.text();
             setSuccess(true);
+            setResponseInvitation('Accept')
             // Clear pending invitation
             localStorage.removeItem('pendingInvitation');
 
@@ -122,6 +124,9 @@ const InvitationHandler = () => {
 
     const declineInvitation = () => {
         setNotAccepting(true);
+
+
+        setResponseInvitation('Reject')
         localStorage.removeItem('pendingInvitation');
         navigate('/home');
         setNotAccepting(false);

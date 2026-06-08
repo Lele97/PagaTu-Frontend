@@ -1,153 +1,171 @@
-/* shared.module.css */
+/* ===============================================================================
+   SHARED UI STYLES
+   Reusable styles for buttons, inputs, modals, feedback and loaders
+   ================================================================================ */
 
 .modalOverlay {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(2px);
+    background: rgba(42, 30, 22, 0.42);
+    backdrop-filter: blur(10px);
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-out;
-    padding: 1rem;
+    justify-content: center;
+    padding: 24px;
+    z-index: 999;
+    animation: fadeIn 0.28s ease;
 }
 
 .modalContent {
-    background: linear-gradient(135deg, var(--coffee-0) 0%, var(--coffee-50) 100%);
-    padding: 3rem;
-    border-radius: 25px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow:
-            0 20px 40px rgba(0, 0, 0, 0.15),
-            0 0 0 1px var(--coffee-600);
-    border: 3px solid var(--coffee-600);
-    position: relative;
-    animation: slideIn 0.3s ease-out;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-sizing: border-box;
+    width: min(100%, 560px);
+    background: var(--surface-main);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 28px;
+    color: var(--text-primary);
+    backdrop-filter: blur(18px);
+    animation: slideUp 0.32s ease;
 }
 
-/* Bottoni base riusabili */
-.groupButton {
-    background-color: var(--coffee-600);
-    color: #fff;
-    border: none;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.modalContent h2 {
+    margin: 0 0 20px 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--coffee-800);
+    line-height: 1.2;
 }
 
-.groupButton:hover {
-    background-color: var(--coffee-700);
-    transform: translateY(-2px);
-}
-
-/* Input base riusabili */
 .formInput {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--coffee-300);
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    transition: border-color 0.2s ease;
-    box-sizing: border-box;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid rgba(111, 78, 55, 0.18);
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--text-primary);
+    font-size: 0.98rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .formInput:focus {
     outline: none;
     border-color: var(--coffee-500);
-    box-shadow: 0 0 0 2px rgba(139, 92, 60, 0.2);
+    box-shadow: 0 0 0 4px rgba(111, 78, 55, 0.08);
+    background: rgba(255, 255, 255, 0.96);
 }
 
-/* Messaggi di errore/successo */
-.errorMessageModal {
-    background: linear-gradient(to right, #fff5f5, #ffe6e6);
-    color: #dc3545;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-    border-left: 4px solid #dc3545;
+.formInput::placeholder {
+    color: var(--text-soft);
+}
+
+.groupButton {
+    min-height: 46px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.96rem;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), background var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.groupButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.groupButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.errorMessageModal,
+.successMessage {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-size: 0.95rem;
     font-weight: 600;
-    font-size: 1rem;
+    line-height: 1.45;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: fadeIn 0.2s ease;
+}
+
+.errorMessageModal {
+    background: var(--error-bg);
+    color: #a53228;
+    border: 1px solid rgba(217, 75, 61, 0.2);
 }
 
 .successMessage {
-    font-weight: 600;
-    font-size: 1rem;
-    color: #28a745;
-    background-color: rgba(40, 167, 69, 0.1);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-    border-left: 3px solid #28a745;
+    background: var(--success-bg);
+    color: #256b2c;
+    border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
-/* Spinner */
 .loadingSpinner {
+    min-height: 220px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    gap: 1rem;
-    margin: auto;
+    padding: 24px;
 }
 
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--coffee-400);
-    border-top: 4px solid var(--coffee-600);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+/* ===============================================================================
+   OPTIONAL SHARED HELPERS
+   ================================================================================ */
+
+.sharedCard {
+    background: var(--surface-main);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(14px);
 }
 
-.spinnerText {
-    color: var(--coffee-600);
-    font-weight: 500;
-    font-size: 1rem;
+.secondaryButton {
+    background: var(--coffee-100);
+    color: var(--coffee-800);
+    border: 1px solid var(--border-soft);
 }
 
-/* Animazioni */
+.primaryButton {
+    background: linear-gradient(135deg, var(--coffee-600), var(--coffee-700));
+    color: var(--text-white);
+    box-shadow: var(--shadow-sm);
+}
+
+.dangerButton {
+    background: linear-gradient(135deg, #bb5b4d, #9f3e32);
+    color: #fffaf7;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ===============================================================================
+   ANIMATIONS
+   ================================================================================ */
+
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(-20px) scale(0.95); opacity: 0; }
-    to   { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Responsive semplice */
-@media (max-width: 768px) {
-    .modalContent {
-        padding: 2rem;
-        border-radius: 12px;
+    from {
+        opacity: 0;
     }
-
-    .groupButton {
-        padding: 0.875rem;
-        font-size: 0.95rem;
+    to {
+        opacity: 1;
     }
 }
 
-@media (max-width: 480px) {
-    .modalOverlay {
-        padding: 0.5rem;
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
     }
-
-    .modalContent {
-        padding: 1.5rem;
-        border-radius: 8px;
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }

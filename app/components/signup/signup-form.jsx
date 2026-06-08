@@ -476,123 +476,196 @@ const SignupForm = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles["header-container"]}>
-                <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
-                <div className={logostyle.appTitle}>
-                    <h1 className={logostyle.appTitlecolor}>P</h1>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <h1 className={logostyle.appTitlecolor}>g</h1>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <br/>
-                    <h1 className={logostyle.appTitlecolor}>T</h1>
-                    <h1 className={logostyle.appTitlecolor2}>u</h1>
+            <section className={styles.heroSection}>
+                <div className={styles.heroOverlay}></div>
+
+                <div className={styles.heroContent}>
+                    <div className={styles.brandBlock}>
+                        <img src="pagaTu.png" alt="Logo PagaTu" className={logostyle.logo} />
+                        <div className={logostyle.appTitle}>
+                            <h1 className={logostyle.appTitlecolorP}>P</h1>
+                            <h1 className={logostyle.appTitlecolor2a}>a</h1>
+                            <h1 className={logostyle.appTitlecolorg}>g</h1>
+                            <h1 className={logostyle.appTitlecolor2a}>a</h1>
+                            <br />
+                            <h1 className={logostyle.appTitlecolorT}>T</h1>
+                            <h1 className={logostyle.appTitlecolor2u}>u</h1>
+                        </div>
+                    </div>
+
+                    <div className={styles.heroText}>
+                        <span className={styles.eyebrow}>La pausa caffè, finalmente in ordine</span>
+                        <h2 className={styles.heroTitle}>Il caffè di oggi non si dimentica più.</h2>
+                        <p className={styles.heroSubtitle}>
+                            PagaTu organizza gruppi, turni e pagamenti della colazione in modo semplice,
+                            leggero e divertente.
+                        </p>
+
+                        <div className={styles.heroFeatures}>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-user-group"></i>
+                                <span>Crea il tuo gruppo</span>
+                            </div>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-mug-hot"></i>
+                                <span>Scopri a chi tocca offrire</span>
+                            </div>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-receipt"></i>
+                                <span>Registra ogni pagamento</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`${styles.authPanel} ${styles.signupForm}`}>
+                        <div className={styles.authPanelHeader}>
+                            <h3 className={styles.title}>Crea un account</h3>
+                            <p className={styles.authSubtitle}>
+                                Entra in PagaTu e inizia a gestire i momenti caffè del tuo gruppo.
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className={styles.inputGrid}>
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="username" className={styles.label}>Username</label>
+                                    <input
+                                        type="text"
+                                        id="username"
+                                        className={styles.inputField}
+                                        value={registration.username}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="email" className={styles.label}>Email</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        className={styles.inputField}
+                                        value={registration.email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className={styles.inputGrid}>
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="password" className={styles.label}>Password</label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        className={styles.inputField}
+                                        value={registration.password}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="dateOfBirth" className={styles.label}>Data di nascita</label>
+                                    <button
+                                        type="button"
+                                        id="dateOfBirth"
+                                        className={`${styles.inputField} ${styles.buttonInputField}`}
+                                        onClick={datePickerOpenModal}
+                                    >
+                                        {formatDate(registration.dateOfBirth)}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className={styles.inputGrid}>
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="firstName" className={styles.label}>Nome</label>
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        className={styles.inputField}
+                                        value={registration.firstName}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="lastName" className={styles.label}>Cognome</label>
+                                    <input
+                                        type="text"
+                                        id="lastName"
+                                        className={styles.inputField}
+                                        value={registration.lastName}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {error && <div className={styles.errorMessage}>{error}</div>}
+                            {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+
+                            <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                                {isLoading ? 'Registrazione in corso...' : 'Registrati'}
+                            </button>
+
+                            <div className={styles.loginLink}>
+                                Hai già un account? <Link to="/login">Accedi</Link>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <div className={styles.signupForm}>
-                <h2 className={styles.title}>Crea un Account</h2>
+            <section className={styles.infoSection}>
+                <div className={styles.infoCard}>
+                    <i className="fa-solid fa-user-group"></i>
+                    <h3>Crea il tuo gruppo</h3>
+                    <p>Organizza amici o colleghi e prepara il prossimo giro di caffè.</p>
+                </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="username" className={styles.label}>
-                            Username*
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            className={styles.inputField}
-                            value={registration.username}
-                            onChange={handleChange}
-                            required
-                        />
+                <div className={styles.infoCard}>
+                    <i className="fa-solid fa-arrows-rotate"></i>
+                    <h3>Segui il turno</h3>
+                    <p>Scopri in un attimo chi offre oggi, senza più confusione.</p>
+                </div>
+
+                <div className={styles.infoCard}>
+                    <i className="fa-solid fa-wallet"></i>
+                    <h3>Registra i pagamenti</h3>
+                    <p>Tieni tutto ordinato e chiaro, dalla colazione al caffè del pomeriggio.</p>
+                </div>
+            </section>
+
+            <section className={styles.storySection}>
+                <div className={styles.storyText}>
+                    <span className={styles.eyebrow}>Perché PagaTu</span>
+                    <h3>Un’app semplice per un momento che capita ogni giorno.</h3>
+                    <p>
+                        PagaTu nasce per evitare dimenticanze, giri infiniti di messaggi e quella classica domanda:
+                        “Chi offre oggi?”.
+                    </p>
+                </div>
+
+                <div className={styles.storyHighlights}>
+                    <div className={styles.storyHighlight}>
+                        <strong>Meno confusione</strong>
+                        <span>Tutto il gruppo sa sempre com’è la situazione.</span>
                     </div>
-
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="password" className={styles.label}>
-                            Password*
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            className={styles.inputField}
-                            value={registration.password}
-                            onChange={handleChange}
-                            required
-                        />
+                    <div className={styles.storyHighlight}>
+                        <strong>Più leggerezza</strong>
+                        <span>La gestione dei turni diventa veloce e naturale.</span>
                     </div>
-
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="email" className={styles.label}>
-                            Email*
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            className={styles.inputField}
-                            value={registration.email}
-                            onChange={handleChange}
-                            required
-                        />
+                    <div className={styles.storyHighlight}>
+                        <strong>Più condivisione</strong>
+                        <span>Il momento caffè resta piacevole, senza discussioni inutili.</span>
                     </div>
+                </div>
+            </section>
 
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="dateOfBirth" className={styles.label}>
-                            Data di nascita*
-                        </label>
-                        <button
-                            type="button"
-                            id="dateOfBirth"
-                            className={`${styles.inputField} ${styles.buttonInputField}`}
-                            onClick={datePickerOpenModal}
-                        >
-                            {formatDate(registration.dateOfBirth)}
-                        </button>
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="firstName" className={styles.label}>
-                            Nome*
-                        </label>
-                        <input
-                            type="text"
-                            id="firstName"
-                            className={styles.inputField}
-                            value={registration.firstName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="lastName" className={styles.label}>
-                            Cognome*
-                        </label>
-                        <input
-                            type="text"
-                            id="lastName"
-                            className={styles.inputField}
-                            value={registration.lastName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    {error && <div className={styles.errorMessage}>{error}</div>}
-                    {successMessage && (
-                        <div className={styles.successMessage}>{successMessage}</div>
-                    )}
-
-                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                        {isLoading ? "Registrazione in corso..." : "Registrati"}
-                    </button>
-
-                    <div className={styles.loginLink}>
-                        Hai già un account? <Link to="/login">Accedi</Link>
-                    </div>
-                </form>
-            </div>
-
-            {showDatePickerModal && <DatePickerModal/>}
+            {showDatePickerModal && <DatePickerModal />}
         </div>
     );
 };
