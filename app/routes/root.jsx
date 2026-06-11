@@ -1,13 +1,16 @@
 import React from 'react';
-import {Outlet} from 'react-router-dom';
+import {Outlet, useLocation} from 'react-router-dom';
 import Footer from '../components/footer/footer.jsx';
 import '../styles/app.css';
 
 const Root = () => {
+    const location = useLocation();
+    const isSplash = location.pathname === '/';
+
     return (
         <div className={"appWrapper"}>
             <Outlet/>
-            <Footer/>
+            {!isSplash && <Footer/>}
         </div>
     );
 }

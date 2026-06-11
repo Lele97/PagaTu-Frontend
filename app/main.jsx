@@ -10,6 +10,7 @@ import ForgotPswForm from "~/components/resetPassword/forgotPsw-form.jsx";
 import Group from "~/components/group/group.jsx";
 import Invitation from "~/components/invitation/invitation.jsx";
 import ResetPswForm from "~/components/resetPassword/resetPsw-form.jsx";
+import SplashScreen from "~/components/splash/splash-screen.jsx";
 import './styles/app.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Home/>,
+                element: <SplashScreen/>,
             },
             {
                 path: "/login",
