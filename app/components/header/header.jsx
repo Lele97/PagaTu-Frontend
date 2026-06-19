@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import styles from "~/styles/header.module.css";
 import BuyMeACoffeeButton from "~/components/buttons/BuyMeACoffeeButton.jsx";
 
@@ -34,6 +35,10 @@ const Header = ({ user, logout }) => {
                             {user?.charAt(0).toUpperCase()}
                         </span>
                     </div>
+
+                    <Link to="/profile/payment-links" className={styles.profileLink} title="Link rimborsi">
+                        <i className="bi bi-wallet2"></i>
+                    </Link>
 
                     <div onClick={logout} className={styles.door_container}>
                         <div className={styles.top_bar}></div>

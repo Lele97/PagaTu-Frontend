@@ -211,6 +211,19 @@
     align-items: center;
 }
 
+.profileLink {
+    color: var(--coffee-600);
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    margin-right: 0.25rem;
+}
+
+.profileLink:hover {
+    color: var(--coffee-800);
+}
+
 .doorknob_inner {
     width: 2px;
     height: 2px;

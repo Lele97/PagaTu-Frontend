@@ -448,6 +448,89 @@
     }
 }
 
+.oauthSection {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.oauthDivider {
+    width: 100%;
+    text-align: center;
+    color: var(--coffee-600);
+    font-size: 0.9rem;
+    position: relative;
+    margin: 0.5rem 0;
+}
+
+.oauthDivider span {
+    background: white;
+    padding: 0 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.oauthDivider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--coffee-300);
+}
+
+.oauthButtonWrap {
+    display: flex;
+    justify-content: center;
+}
+
+.microsoftButton {
+    width: 280px;
+    padding: 0.65rem 1rem;
+    border: 1px solid #8c8c8c;
+    border-radius: 4px;
+    background: white;
+    color: #5e5e5e;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.resendBox {
+    background: var(--coffee-50);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--coffee-600);
+}
+
+.secondaryButton {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--coffee-100);
+    border: 1px solid var(--coffee-400);
+    border-radius: 0.35rem;
+    cursor: pointer;
+    color: var(--coffee-800);
+}
+
+.resendStatus {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    color: var(--coffee-700);
+}
+
+.verifySuccess {
+    color: #198754;
+    background: #d1e7dd;
+    padding: 0.75rem;
+    border-radius: 0.35rem;
+    margin-bottom: 1rem;
+}
+
 /* Tablet Landscape: specific adjustments */
 @media only screen and (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
     .container {

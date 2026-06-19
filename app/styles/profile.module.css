@@ -1,0 +1,72 @@
+.page {
+    min-height: 100vh;
+    background-color: var(--coffee-200);
+}
+
+.main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.backBtn {
+    background: var(--coffee-600);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+}
+
+.main h1 {
+    color: var(--coffee-800);
+    font-size: 1.5rem;
+}
+
+.subtitle {
+    color: var(--coffee-700);
+    margin-bottom: 1.5rem;
+}
+
+.form {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    color: var(--coffee-800);
+    font-weight: 500;
+}
+
+.input {
+    padding: 0.65rem;
+    border: 1px solid var(--coffee-300);
+    border-radius: 0.35rem;
+}
+
+.submitBtn {
+    background: var(--coffee-600);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.error {
+    color: #dc3545;
+}
+
+.success {
+    color: #198754;
+}

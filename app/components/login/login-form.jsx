@@ -1,15 +1,19 @@
 import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
+import OAuthButtons from '~/components/OAuthButtons.jsx';
 import styles from '~/styles/auth.module.css';
-import sharedStyles from '~/styles/shared.module.css';
-import logostyle from '~/styles/logo.module.css'
+import logostyle from '~/styles/logo.module.css';
+import { GATEWAY_URL, parseErrorMessage } from '~/utils/api';
 
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+const GETAWAY_SERVER_URL = GATEWAY_URL;
 
 const LoginForm = () => {
     const [credentials, setCredentials] = useState({username: '', password: ''});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showResend, setShowResend] = useState(false);
+    const [resendEmail, setResendEmail] = useState('');
+    const [resendStatus, setResendStatus] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -84,19 +88,38 @@ const LoginForm = () => {
             });
 
             if (!response.ok) {
-                const errorMsg = response.status === 401 || response.status === 404
-                    ? 'Login non riuscito. Controlla le credenziali.'
-                    : 'Errore di connessione al server.';
+                const errorMsg = await parseErrorMessage(response, 'Login non riuscito. Controlla le credenziali.');
+                if (errorMsg.toLowerCase().includes('verifica')) {
+                    setShowResend(true);
+                }
                 throw new Error(errorMsg);
             }
 
             const {token, username, email} = await response.json();
+            setShowResend(false);
             handleLoginSuccess({username, email}, token);
         } catch (err) {
             // Extract the error message instead of the whole error object
             setError(err.message || 'Si è verificato un errore durante il login');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const resendVerification = async () => {
+        if (!resendEmail.trim()) {
+            setResendStatus('Inserisci la tua email');
+            return;
+        }
+        try {
+            const response = await fetch(
+                `${GETAWAY_SERVER_URL}/api/auth/resend-verification?email=${encodeURIComponent(resendEmail.trim())}`,
+                { method: 'POST', credentials: 'include' }
+            );
+            const text = await response.text();
+            setResendStatus(response.ok ? (text || 'Email inviata!') : text);
+        } catch {
+            setResendStatus('Errore di connessione');
         }
     };
 
@@ -160,6 +183,23 @@ const LoginForm = () => {
 
                     {error && <div className={styles.error}>{error}</div>}
 
+                    {showResend && (
+                        <div className={styles.resendBox}>
+                            <p>Non hai ricevuto l&apos;email di verifica?</p>
+                            <input
+                                type="email"
+                                className={styles.input}
+                                placeholder="La tua email"
+                                value={resendEmail}
+                                onChange={(e) => setResendEmail(e.target.value)}
+                            />
+                            <button type="button" className={styles.secondaryButton} onClick={resendVerification}>
+                                Reinvia verifica
+                            </button>
+                            {resendStatus && <p className={styles.resendStatus}>{resendStatus}</p>}
+                        </div>
+                    )}
+
                     <button
                         type="submit"
                         className={styles.primaryButton}
@@ -175,6 +215,8 @@ const LoginForm = () => {
                         </Link>
                     </div>
                 </form>
+
+                <OAuthButtons onLoginSuccess={handleLoginSuccess} />
             </div>
         </div>
     );

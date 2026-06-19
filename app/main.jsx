@@ -10,6 +10,8 @@ import ForgotPswForm from "~/components/resetPassword/forgotPsw-form.jsx";
 import Group from "~/components/group/group.jsx";
 import Invitation from "~/components/invitation/invitation.jsx";
 import ResetPswForm from "~/components/resetPassword/resetPsw-form.jsx";
+import VerifyEmail from "~/components/verify-email/verify-email.jsx";
+import PaymentLinks from "~/components/profile/payment-links.jsx";
 import './styles/app.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -64,6 +66,14 @@ const router = createBrowserRouter([
             {
                 path: "/resetPassword",
                 element: <ResetPswForm />
+            },
+            {
+                path: "/verify-email",
+                element: <VerifyEmail />
+            },
+            {
+                path: "/profile/payment-links",
+                element: <PaymentLinks />
             },
             {
                 path: "/errore-token",

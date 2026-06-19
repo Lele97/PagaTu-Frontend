@@ -12,6 +12,7 @@ import DeleteGroupModal from "~/components/group/modals/DeleteGroupModal.jsx";
 import InviteUserModal from "~/components/group/modals/InviteUserModal.jsx";
 import SkipPaymentModal from "~/components/group/modals/SkipPaymentModal.jsx";
 import PayForFriendModal from "~/components/group/modals/PayForFriendModal.jsx";
+import GroupExpansionSections from '~/components/group/GroupExpansionSections.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -51,7 +52,11 @@ const Group = () => {
     const [isSkipping, setIsSkipping] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [friend, setFriend] = useState('');
+    const [groupRules, setGroupRules] = useState({ payForEnabled: true, payForAdminOnly: false, maxSkipPerRound: null });
     const isAnyModalOpen = showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal;
+
+    const canPayFor = groupRules.payForEnabled !== false
+        && (!groupRules.payForAdminOnly || isAdmin);
     const requestCacheRef = useRef(new Map());
 
     const clearCache = useCallback((cacheKey) => {
@@ -251,6 +256,15 @@ const Group = () => {
                 // Fix: condizione corretta (prima era sempre true per via di "||")
                 if (groupObject?.id && groupObject?.groupName && groupObject.groupName !== 'Unnamed Group') {
                     await getClassificaPaymentsForGroup(groupObject);
+                    try {
+                        const rulesRes = await fetch(
+                            `${GETAWAY_SERVER_URL}/api/coffee/regole/gruppo?groupName=${encodeURIComponent(groupObject.groupName)}`,
+                            { headers: { Authorization: `Bearer ${authToken}`, Accept: 'application/json' }, credentials: 'include' }
+                        );
+                        if (rulesRes.ok) {
+                            setGroupRules(await rulesRes.json());
+                        }
+                    } catch { /* keep defaults */ }
                 }
             } catch {
                 navigate('/login');
@@ -688,9 +702,11 @@ const Group = () => {
 
                     <PaymentActions
                         myTurn={myTurn}
+                        canPayFor={canPayFor}
+                        maxSkipPerRound={groupRules.maxSkipPerRound}
                         onRegisterPayment={registerPayment}
                         onSkipPayment={skipPayment}
-                        onPayForFriend={payForFriend}/>
+                        onPayForFriend={payForFriend} />
 
                     <div className={styles.separator}>
                         <div className={styles.separatorLeft}></div>
@@ -702,7 +718,9 @@ const Group = () => {
                         loading={paymentLoading}
                         error={paymentByGroupError}
                         payments={classificaPaymentsForGroup}
-                        onRetry={onRetry}/>
+                        onRetry={onRetry} />
+
+                    <GroupExpansionSections groupName={group?.groupName} isAdmin={isAdmin} />
 
                 </main>
 

@@ -350,11 +350,11 @@ const SignupForm = () => {
                 return;
             }
 
-            setSuccessMessage("Registrazione Effettuata");
+            setSuccessMessage("Registrazione completata! Controlla la tua email per verificare l'account prima di accedere.");
 
             setTimeout(() => {
-                navigate("/");
-            }, 3000);
+                navigate("/login");
+            }, 4000);
         } catch (err) {
             setError("Errore di registrazione. " + err.message);
         } finally {
