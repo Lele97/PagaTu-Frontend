@@ -1,843 +1,643 @@
-/**
- * SIGNUP/REGISTRATION PAGE STYLES
- * Styling for user registration form with custom date picker
- */
-
 /* ===============================================================================
-   CUSTOM FONTS
+   SIGNUP / INTRO PAGE STYLES
    ================================================================================ */
 
-@font-face {
-    font-family: 'CustomFont';
-    src: url('/public/Oatlander.ttf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; /* Ensures text remains visible during font load */
-}
-
 .container {
+    position: relative;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--coffee-200);
-}
-
-/* Logo and text container */
-.header-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 2rem;
-    width: 100%;
-}
-
-
-.logo {
-    max-width: 200px;
-    width: 50vmin;
-    height: auto;
-    margin-bottom: 1rem;
-    transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.logo:hover {
-    transform: scale(1.1);
-}
-
-/* Text container */
-.appTitle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    margin-top: -4rem;
-    margin-bottom: 3rem;
-}
-
-/* Individual letters */
-.appTitle h1 {
-    margin: 0;
-    line-height: 1;
-    font-size: 5rem; /* Reduced from 6rem */
-    transition: transform 0.3s ease, color 0.3s ease;
-    cursor: default;
-}
-
-.appTitle h1:hover {
-    transform: translateY(-2px); /* Reduced from -3px */
-    text-shadow: 0 2px 4px rgba(81, 54, 27, 0.2); /* Added subtle shadow instead of just moving */
-}
-
-/* Color classes */
-.appTitlecolor {
-    font-family: 'CustomFont', sans-serif;
-    font-weight: 300;
-    color: #51361b;
-}
-
-.appTitlecolor2 {
-    font-family: 'CustomFont', sans-serif;
-    font-weight: 300;
-    color: #c29159;
-}
-
-/* ===== Custom Select Styles ===== */
-.customSelectContainer {
-    position: relative;
-    width: 100%;
-    z-index: 1001;
-}
-
-.customSelectHeader {
-    padding: 0.75rem 1.125rem;
-    border: 2px solid var(--coffee-300);
-    border-radius: 0.75rem;
-    background-color: #FFFCFA;
-    color: var(--coffee-800);
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-}
-
-.customSelectOptions.open {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.customSelectHeader:hover {
-    border-color: var(--coffee-600);
-    background-color: #FFF9F6;
-}
-
-.customSelectOptions {
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    opacity: 0;
-    right: 0;
-    background-color: white;
-    border: 2px solid var(--coffee-300);
-    border-radius: 0.75rem;
-    margin-top: 0.25rem;
-    overflow-y: auto;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    position: fixed; /* Changed from absolute to fixed */
-    top: auto !important; /* Remove default positioning */
-    left: auto !important;
-    transform: none !important;
-    z-index: 1100;
-    max-height: 320px;
-}
-
-.customSelectOption {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    background-color: #FFFCFA;
-    color: var(--coffee-800);
-    font-weight: 500;
-}
-
-.customSelectOption:hover {
-    background-color: #F3EAE5;
-}
-
-.customSelectOption.selectedOption {
-    background-color: var(--coffee-100);
-    font-weight: 600;
-}
-
-.arrow {
-    margin-left: 0.5rem;
-    font-size: 0.8em;
-    color: var(--coffee-600);
-}
-
-/* Ensure custom selects match the existing style */
-.daySelect .customSelectContainer,
-.monthSelect .customSelectContainer,
-.yearSelect .customSelectContainer {
-    margin-bottom: 0;
-}
-
-/* Modal z-index adjustment */
-.modalContainer {
-    z-index: 1000;
-    overflow: visible !important;
-}
-
-.customSelectContainer {
-    z-index: 1001;
-}
-
-
-.modalContent {
-    background-color: white;
-    border-radius: 1rem;
-    border: 3px solid var(--coffee-600);
-    padding: 2rem;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    margin: auto;
-    position: relative;
-    max-height: 90vh;
-    overflow: visible !important; /* Allow overflow */
-    contain: none !important; /* Disable containment */
-
-}
-
-.customSelectOptions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: white;
-    border: 2px solid var(--coffee-300);
-    border-radius: 0.75rem;
-    margin-top: 0.25rem;
-    overflow-y: auto;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    z-index: 1100; /* Higher than modal z-index */
-    max-height: 320px; /* 8 items * 40px */
-    transform: none !important; /* Remove transform that might be hiding it */
-    opacity: 1 !important; /* Force visibility */
-    display: block !important; /* Ensure it's displayed */
-}
-
-/* Ensure modal container doesn't clip content */
-.modalContainer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 1rem;
-    overflow: visible; /* Allow dropdown to overflow */
-}
-
-.modalContent {
-    overflow: visible;
-    background-color: white;
-    border-radius: 1rem;
-    border: 3px solid var(--coffee-600);
-    padding: 2rem;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    /* Add these to ensure modal stays centered */
-    margin: auto;
-    position: relative;
-    max-height: 90vh; /* Prevent modal from being too tall */
-    overflow-y: auto; /* Add scroll if content is too long */
-}
-
-.selectStyle {
-    overflow-y: auto; /* Add scroll when needed */
-    width: 100%;
-    padding: 0.75rem 1.125rem;
-    border: 2px solid var(--coffee-300);
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    background-color: #FFFCFA;
-    color: var(--coffee-800);
-    font-weight: 600;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%236B4C3B' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 1rem;
-    max-height: 50px;
-    -webkit-appearance: none;
-}
-
-.selectStyle:hover {
-    border-color: var(--coffee-600);
-    background-color: #FFF9F6;
-    border-radius: 0.75rem; /* Maintain border radius on hover */
-}
-
-.selectStyle option {
-    padding: 0.5rem 1rem; /* Slightly reduce option padding */
-}
-
-select.selectStyle option {
-    padding: 0.75rem;
-    background-color: #FFF9F6;
-    color: var(--coffee-800);
-    font-weight: 500;
-    border-radius: 0.5rem;
-    transition: background 0.2s ease;
-    max-height: 40px;
+    background:
+            radial-gradient(circle at top left, rgba(216, 197, 179, 0.22), transparent 28%),
+            radial-gradient(circle at bottom right, rgba(191, 164, 141, 0.16), transparent 26%),
+            var(--coffee-50);
     overflow: hidden;
 }
 
-select.selectStyle option:hover {
-    background-color: #F3EAE5;
+.container::before {
+    content: "☕ 🫘 🥐 ☕ 🥄 🫘 ☕ 🥐";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    font-size: 30px;
+    line-height: 140px;
+    letter-spacing: 34px;
+    transform: rotate(-7deg) scale(1.08);
 }
 
-select.selectStyle {
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: #CBB2A0 transparent;
-    /* Add border radius to the dropdown itself */
-    border-radius: 0.75rem;
+.heroSection,
+.infoSection,
+.storySection {
+    position: relative;
+    z-index: 1;
 }
 
-/* Enhanced dropdown styling for WebKit browsers */
-select.selectStyle::-webkit-scrollbar {
-    width: 8px;
-}
-
-select.selectStyle::-webkit-scrollbar-thumb {
-    background-color: #CBB2A0;
-    border-radius: 10px;
-}
-
-select.selectStyle::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-/* Style the dropdown when it opens (WebKit browsers) */
-select.selectStyle:focus {
-    box-shadow: 0 0 0 3px rgba(139, 90, 60, 0.2);
-    border-color: var(--coffee-600);
-    background-color: #FFF6F0;
-    border-radius: 0.75rem; /* Maintain border radius on focus */
-}
-
-.buttonInputField {
-    text-align: justify;
-}
-
-.PlaceholderDiv {
-    color: #757575;
+.heroSection {
+    min-height: 100vh;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
+    padding: 48px 24px 32px;
 }
 
-.PlaceholderText {
-    font-size: 0.75rem;
-    margin-bottom: 0 !important;
-    font-weight: 500;
+.heroOverlay {
+    position: absolute;
+    inset: 0;
+    background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
+            radial-gradient(circle at center top, rgba(255, 255, 255, 0.24), transparent 34%);
+    pointer-events: none;
 }
 
-.selectContainer {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    text-align: center;
-}
-
-.daySelect {
-    flex: 1;
-}
-
-.monthSelect {
-    flex: 2;
-}
-
-.yearSelect {
-    flex: 1.5;
-}
-
-.labelStyle {
-    display: block;
-    text-align: justify;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--coffee-800);
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.buttonContainer {
-    display: flex;
-    gap: 0.75rem;
-}
-
-.buttonStyle {
-    flex: 1;
-    padding: 0.875rem;
-    border: none;
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.cancelButton {
-    background-color: #DCDCDC;
-    color: #6B7280;
-}
-
-.cancelButton:hover {
-    background-color: #D3D3D3;
-    transform: translateY(-2px);
-}
-
-.confirmButton {
-    background-color: var(--coffee-600);
-    color: white;
-}
-
-.confirmButton:hover {
-    background-color: var(--coffee-800);
-    transform: translateY(-2px);
-}
-
-.datePickerButton {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #D4B5A0;
-    background-color: #FBF8F6;
-    font-size: 1rem;
-    box-sizing: border-box;
-    line-height: 1.5;
-    cursor: pointer;
-    text-align: left;
-    color: #6F4E37;
-    transition: box-shadow 0.2s, border-color 0.2s;
-}
-
-.signupForm {
-    background-color: white;
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-    width: 100%;
-    max-width: 40rem;
-    animation: fadeIn 0.6s ease;
-}
-
-.signupForm > form {
+.heroContent {
+    position: relative;
+    z-index: 1;
+    width: min(1280px, 100%);
+    margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 40px;
+    align-items: center;
 }
 
-.signupForm > form > *:not(.inputGroup) {
-    grid-column: span 2;
-}
-
-.inputGroup {
-    margin-bottom: 0;
+.brandBlock {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 22px;
 }
 
-.inputField.buttonInputField {
-    min-height: 46px; /* Match input field height */
+.heroText {
+    max-width: 620px;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 253, 249, 0.7);
+    border: 1px solid rgba(111, 78, 55, 0.12);
+    color: var(--coffee-700);
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+}
+
+.heroTitle {
+    margin: 0;
+    font-size: clamp(2.6rem, 5vw, 4.8rem);
+    line-height: 0.98;
+    color: var(--coffee-900);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    max-width: 11ch;
+}
+
+.heroSubtitle {
+    margin: 22px 0 0;
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    max-width: 56ch;
+}
+
+.heroFeatures {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.heroFeature {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 253, 249, 0.72);
+    border: 1px solid rgba(111, 78, 55, 0.12);
+    color: var(--coffee-800);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+.heroFeature i {
+    color: var(--coffee-600);
+    font-size: 1rem;
+}
+
+/* ===============================================================================
+   AUTH PANEL
+   ================================================================================ */
+
+.authPanel,
+.signupForm {
+    width: 100%;
+    max-width: 560px;
+    margin-left: auto;
+    background: rgba(255, 251, 247, 0.78);
+    border: 1px solid rgba(111, 78, 55, 0.14);
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(18px);
+}
+
+.authPanelHeader {
+    margin-bottom: 22px;
 }
 
 .title {
-    font-size: 1.75rem;
-    font-weight: 700;
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 800;
     color: var(--coffee-800);
-    margin-bottom: 1.5rem;
-    text-align: center;
-    line-height: 1.3;
+    line-height: 1.1;
 }
 
+.authSubtitle {
+    margin: 10px 0 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+}
 
-.label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 600;
+.inputGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 4px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.label,
+.labelStyle {
+    font-size: 0.9rem;
+    font-weight: 700;
     color: var(--coffee-700);
-    margin-bottom: 0.4rem;
-    line-height: 1.5;
 }
 
 .inputField {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--coffee-300);
-    background-color: var(--coffee-50);
-    font-size: 1rem;
-    transition: box-shadow 0.2s, border-color 0.2s;
-    box-sizing: border-box;
-    line-height: 1.5;
+    min-height: 52px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(111, 78, 55, 0.16);
+    background: rgba(255, 255, 255, 0.84);
+    color: var(--text-primary);
+    font-size: 0.98rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .inputField:focus {
     outline: none;
-    border-color: var(--coffee-600);
-    box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.2);
+    border-color: var(--coffee-500);
+    box-shadow: 0 0 0 4px rgba(111, 78, 55, 0.08);
+}
+
+.buttonInputField {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    cursor: pointer;
+}
+
+.PlaceholderDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.PlaceholderText {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+}
+
+.errorMessage,
+.successMessage {
+    margin: 16px 0 0;
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.45;
+    animation: fadeIn 0.2s ease;
+}
+
+.errorMessage {
+    background: var(--error-bg);
+    border: 1px solid rgba(217, 75, 61, 0.2);
+    color: #a53228;
+}
+
+.successMessage {
+    background: var(--success-bg);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    color: #256b2c;
 }
 
 .submitButton {
     width: 100%;
-    padding: 0.75rem 1rem;
-    background-color: var(--coffee-600);
-    color: white;
-    font-weight: 600;
-    border-radius: 0.5rem;
+    margin-top: 20px;
+    min-height: 54px;
     border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    /* Remove previous margins */
-    margin: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--coffee-600), var(--coffee-700));
+    color: var(--text-white);
     font-size: 1rem;
-    line-height: 1.5;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
 }
 
-.submitButton:hover {
-    background-color: var(--coffee-700);
+.submitButton:hover:not(:disabled) {
+    transform: translateY(-2px);
 }
 
-.submitButton:active {
-    transform: scale(0.98);
+.submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .loginLink {
+    margin-top: 18px;
     text-align: center;
-    margin-top: 1rem;
-    color: var(--coffee-600);
-    display: flex;
-    justify-content: center;
-    gap: 0.25rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
 }
 
 .loginLink a {
-    color: var(--coffee-600);
+    color: var(--coffee-700);
+    font-weight: 700;
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
 }
 
-.loginLink a:hover {
+/* ===============================================================================
+   INFO SECTION
+   ================================================================================ */
+
+.infoSection {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    padding: 12px 24px 36px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.infoCard {
+    background: rgba(255, 251, 247, 0.72);
+    border: 1px solid rgba(111, 78, 55, 0.12);
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(14px);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.infoCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.infoCard i {
+    font-size: 1.4rem;
+    color: var(--coffee-600);
+    margin-bottom: 14px;
+}
+
+.infoCard h3 {
+    margin: 0 0 10px;
+    color: var(--coffee-800);
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.infoCard p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-size: 0.98rem;
+}
+
+/* ===============================================================================
+   STORY SECTION
+   ================================================================================ */
+
+.storySection {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    padding: 26px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.storyText {
+    background: rgba(255, 251, 247, 0.64);
+    border: 1px solid rgba(111, 78, 55, 0.1);
+    border-radius: 28px;
+    padding: 34px 30px;
+    box-shadow: var(--shadow-md);
+}
+
+.storyText h3 {
+    margin: 0;
+    font-size: clamp(1.9rem, 3vw, 3rem);
+    line-height: 1.08;
+    color: var(--coffee-900);
+    max-width: 14ch;
+}
+
+.storyText p {
+    margin: 18px 0 0;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 1rem;
+    max-width: 56ch;
+}
+
+.storyHighlights {
+    display: grid;
+    gap: 18px;
+}
+
+.storyHighlight {
+    background: rgba(255, 253, 249, 0.82);
+    border: 1px solid rgba(111, 78, 55, 0.11);
+    border-radius: 22px;
+    padding: 22px 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.storyHighlight strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--coffee-800);
+    font-size: 1rem;
+}
+
+.storyHighlight span {
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-size: 0.96rem;
+}
+
+/* ===============================================================================
+   DATE PICKER MODAL
+   ================================================================================ */
+
+.modalContainer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(42, 30, 22, 0.45);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modalContent {
+    width: min(100%, 720px);
+    background: rgba(255, 251, 247, 0.96);
+    border-radius: 28px;
+    border: 1px solid rgba(111, 78, 55, 0.12);
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+}
+
+.selectContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.daySelect,
+.monthSelect,
+.yearSelect {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.customSelectContainer {
+    position: relative;
+}
+
+.customSelectHeader {
+    min-height: 52px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(111, 78, 55, 0.16);
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.customSelectHeader:hover {
+    border-color: var(--coffee-500);
+}
+
+.customSelectHeader:focus-within,
+.customSelectHeader:active {
+    box-shadow: 0 0 0 4px rgba(111, 78, 55, 0.08);
+}
+
+.arrow {
+    color: var(--coffee-600);
+    font-size: 0.9rem;
+}
+
+.customSelectOptions {
+    position: fixed;
+    max-height: 320px;
+    overflow-y: auto;
+    background: rgba(255, 251, 247, 0.98);
+    border: 1px solid rgba(111, 78, 55, 0.14);
+    border-radius: 18px;
+    box-shadow: var(--shadow-lg);
+    padding: 8px;
+    z-index: 1200;
+}
+
+.customSelectOption {
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.customSelectOption:hover {
+    background: rgba(111, 78, 55, 0.08);
+}
+
+.selectedOption {
+    background: rgba(111, 78, 55, 0.12);
+    color: var(--coffee-800);
+    font-weight: 700;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.buttonStyle {
+    min-width: 132px;
+    min-height: 48px;
+    border: none;
+    border-radius: 14px;
+    padding: 0 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.buttonStyle:hover {
+    transform: translateY(-2px);
+}
+
+.cancelButton {
+    background: rgba(111, 78, 55, 0.08);
     color: var(--coffee-800);
 }
 
-.errorMessage {
-    background: linear-gradient(to right, #fff5f5, #ffe6e6);
-    color: #dc3545;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-    border-left: 4px solid #dc3545;
-    font-weight: 600;
-    font-size: 1rem;
+.confirmButton {
+    background: linear-gradient(135deg, var(--coffee-600), var(--coffee-700));
+    color: var(--text-white);
 }
 
-.successMessage {
-    font-weight: 600;
-    font-size: 1rem;
-    color: #28a745;
-    background-color: rgba(40, 167, 69, 0.1);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-    border-left: 3px solid #28a745;
+.labelStyle {
+    margin-bottom: 2px;
 }
 
-@-moz-document url-prefix() {
-    .selectStyle {
-        height: 2.5rem; /* Match your input height */
-        padding-right: 1.5rem; /* Space for dropdown arrow */
+/* ===============================================================================
+   RESPONSIVE
+   ================================================================================ */
+
+@media (max-width: 1080px) {
+    .heroContent,
+    .storySection {
+        grid-template-columns: 1fr;
+    }
+
+    .heroText {
+        max-width: 100%;
+    }
+
+    .authPanel,
+    .signupForm {
+        max-width: 100%;
+        margin-left: 0;
+    }
+
+    .infoSection {
+        grid-template-columns: 1fr;
     }
 }
 
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-    .selectStyle {
-        height: 2.5rem;
-        padding-right: 1.5rem;
+@media (max-width: 768px) {
+    .heroSection {
+        padding: 32px 16px 20px;
+        min-height: auto;
     }
 
-    .selectStyle option {
-        padding: 0.5rem;
+    .infoSection,
+    .storySection {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .inputGrid,
+    .selectContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .authPanel,
+    .signupForm,
+    .storyText,
+    .infoCard,
+    .modalContent {
+        padding: 22px 18px;
+        border-radius: 22px;
+    }
+
+    .heroTitle {
+        max-width: 100%;
+    }
+
+    .heroFeatures {
+        flex-direction: column;
+    }
+
+    .buttonContainer {
+        flex-direction: column;
+    }
+
+    .buttonStyle {
+        width: 100%;
     }
 }
+
+@media (max-width: 480px) {
+    .brandBlock {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .title {
+        font-size: 1.55rem;
+    }
+
+    .heroSubtitle,
+    .infoCard p,
+    .storyText p,
+    .storyHighlight span {
+        font-size: 0.95rem;
+    }
+
+    .container::before {
+        font-size: 24px;
+        line-height: 110px;
+        letter-spacing: 22px;
+    }
+}
+
+/* ===============================================================================
+   ANIMATIONS
+   ================================================================================ */
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(6px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-/* =============== MOBILE & TABLET RESPONSIVE STYLES =============== */
-/* Note: Desktop styles (1025px+) remain unchanged */
-
-/* Mobile Portrait: 320px - 480px */
-@media only screen and (max-width: 480px) and (orientation: portrait) {
-    .container {
-        padding: 0.75rem;
-        min-height: 120vh;
-    }
-    
-    .header-container {
-        margin-bottom: 1.5rem;
-    }
-    /* Logo: slight reduction for mobile */
-    .logo {
-        max-width: 140px;
-        width: 35vmin;
-        margin-bottom: 0.625rem;
-    }
-    
-    /* App Title: slight text reduction */
-    .appTitle {
-        margin-top: -3rem;
-        margin-bottom: 2rem;
-        gap: 0.2rem;
-    }
-    
-    .appTitle h1 {
-        font-size: 3rem;
-    }
-    
-    /* Signup Form: optimized for mobile */
-    .signupForm {
-        padding: 1.25rem;
-        max-width: 100%;
-        width: calc(100% - 1.5rem);
-        margin: 0 0.75rem;
-    }
-    
-    /* Always single column on mobile */
-    .signupForm > form {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .signupForm > form > *:not(.inputGroup) {
-        grid-column: span 1;
-    }
-    
-    /* Form elements: slight text reduction */
-    .title {
-        font-size: 1.375rem;
-        margin-bottom: 1rem;
-    }
-    
-    .label {
-        font-size: 0.8125rem;
-    }
-    
-    /* Inputs: touch-friendly */
-    .inputField {
-        padding: 0.8125rem 0.875rem;
-        font-size: 0.9375rem;
-        min-height: 48px;
-    }
-    
-    /* Submit Button: touch-optimized */
-    .submitButton {
-        padding: 0.875rem;
-        font-size: 0.9375rem;
-        min-height: 48px;
-    }
-    
-    /* Modal: mobile optimized */
-    .modalContent {
-        padding: 1.25rem;
-        max-width: calc(100vw - 2rem);
-        margin: 1rem;
-    }
-    
-    /* Date picker selects: mobile friendly */
-    .selectContainer {
-        gap: 0.5rem;
-        flex-direction: column;
-    }
-    
-    .daySelect, .monthSelect, .yearSelect {
-        flex: 1;
-        min-width: 100%;
-    }
-    
-    .customSelectHeader {
-        padding: 0.75rem 1rem;
-        font-size: 0.9375rem;
-        min-height: 48px;
-    }
-}
-
-/* Mobile Landscape: 480px - 768px */
-@media only screen and (min-width: 481px) and (max-width: 768px) {
-    .container {
-        padding: 1rem;
-        min-height: 130vh;
-    }
-    
-    .header-container {
-        margin-bottom: 1.75rem;
-    }
-    
-    /* Logo: slight reduction */
-    .logo {
-        max-width: 160px;
-        width: 40vmin;
-        margin-bottom: 0.75rem;
-    }
-    
-    /* App Title: moderate reduction */
-    .appTitle {
-        margin-top: -3.5rem;
-        margin-bottom: 2.5rem;
-        gap: 0.2rem;
-    }
-    
-    .appTitle h1 {
-        font-size: 3.75rem;
-    }
-    
-    /* Form: better sizing for larger mobile */
-    .signupForm {
-        padding: 1.5rem;
-        max-width: 100%;
-        width: 420px;
-    }
-    
-    /* Single column on mobile landscape */
-    .signupForm > form {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-    }
-    
-    .signupForm > form > *:not(.inputGroup) {
-        grid-column: span 1;
-    }
-    
-    .title {
-        font-size: 1.5rem;
-        margin-bottom: 1.25rem;
-    }
-    
-    .inputField {
-        padding: 0.84375rem 0.9375rem;
-        font-size: 0.96875rem;
-    }
-    
-    .submitButton {
-        padding: 0.84375rem;
-        font-size: 0.96875rem;
-    }
-    
-    /* Modal: better tablet sizing */
-    .modalContent {
-        padding: 1.5rem;
-        max-width: 90%;
-    }
-    
-    /* Date picker: landscape optimized */
-    .selectContainer {
-        flex-direction: row;
-        gap: 0.75rem;
-    }
-}
-
-/* Tablet Portrait: 768px - 1024px */
-@media only screen and (min-width: 769px) and (max-width: 1024px) {
-    .container {
-        padding: 1.25rem;
-    }
-    
-    .header-container {
-        margin-bottom: 1.875rem;
-    }
-    
-    /* Logo: minimal reduction for tablet */
-    .logo {
-        max-width: 180px;
-        width: 45vmin;
-        margin-bottom: 0.875rem;
-    }
-    
-    /* App Title: minimal reduction */
-    .appTitle {
-        margin-top: -3.75rem;
-        margin-bottom: 2.75rem;
-    }
-    
-    .appTitle h1 {
-        font-size: 4.25rem;
-    }
-    
-    /* Form: tablet-optimized */
-    .signupForm {
-        padding: 1.75rem;
-        max-width: 90%;
-        width: auto;
-    }
-    
-    /* Two columns on tablet portrait */
-    .signupForm > form {
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
-    
-    .signupForm > form > *:not(.inputGroup) {
-        grid-column: span 2;
-    }
-    
-    .title {
-        font-size: 1.625rem;
-        margin-bottom: 1.375rem;
-    }
-    
-    .inputField {
-        padding: 0.875rem 1rem;
-        font-size: 0.9875rem;
-    }
-    
-    .submitButton {
-        padding: 0.875rem;
-        font-size: 0.9875rem;
-    }
-    
-    .modalContent {
-        padding: 1.75rem;
-        max-width: 85%;
-    }
-}
-
-/* Tablet Landscape: specific adjustments */
-@media only screen and (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
-    .container {
-        justify-content: center;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    
-    .header-container {
-        margin-bottom: 1.5rem;
-    }
-    
-    .appTitle {
-        margin-top: -3rem;
-        margin-bottom: 2rem;
-    }
-    
-    .signupForm {
-        max-width: 95%;
     }
 }

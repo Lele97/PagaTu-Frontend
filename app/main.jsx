@@ -12,6 +12,7 @@ import Invitation from "~/components/invitation/invitation.jsx";
 import ResetPswForm from "~/components/resetPassword/resetPsw-form.jsx";
 import VerifyEmail from "~/components/verify-email/verify-email.jsx";
 import PaymentLinks from "~/components/profile/payment-links.jsx";
+import SplashScreen from "~/components/splash/splash-screen.jsx";
 import './styles/app.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Home />,
+                element: <SplashScreen />,
             },
             {
                 path: "/login",
