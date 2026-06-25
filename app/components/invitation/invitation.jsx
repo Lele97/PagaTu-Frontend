@@ -39,7 +39,7 @@ const InvitationHandler = () => {
                     'pendingInvitation',
                     JSON.stringify({ username, groupName, invitationId })
                 );
-                navigate('/login');
+                navigate('/welcome');
                 return;
             }
 
@@ -165,7 +165,7 @@ const InvitationHandler = () => {
     const logout = () => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        navigate('/login');
+        navigate('/welcome');
     };
 
     if (loading) {

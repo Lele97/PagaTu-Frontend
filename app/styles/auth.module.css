@@ -448,6 +448,10 @@
     }
 }
 
+.oauthEmbedded {
+    margin-top: 1rem;
+}
+
 .oauthSection {
     margin-top: 1.5rem;
     display: flex;

@@ -211,17 +211,29 @@
     align-items: center;
 }
 
-.profileLink {
-    color: var(--coffee-600);
-    font-size: 1.25rem;
+.iconBtn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(111, 78, 55, 0.08);
+    color: var(--coffee-700);
+    font-size: 1.1rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    text-decoration: none;
-    margin-right: 0.25rem;
+    justify-content: center;
+    transition: background 0.15s, transform 0.15s;
 }
 
-.profileLink:hover {
-    color: var(--coffee-800);
+.iconBtn:hover {
+    background: rgba(111, 78, 55, 0.14);
+    transform: translateY(-1px);
+}
+
+.avatarIcon {
+    font-size: 1.4rem;
+    color: var(--coffee-600);
 }
 
 .doorknob_inner {

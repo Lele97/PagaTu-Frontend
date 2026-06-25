@@ -5,7 +5,7 @@ import { GATEWAY_URL } from '~/utils/api';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const MICROSOFT_CLIENT_ID = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
 
-const OAuthButtons = ({ onLoginSuccess }) => {
+const OAuthButtons = ({ onLoginSuccess, embedded = false }) => {
     const googleRef = useRef(null);
     const [oauthError, setOauthError] = useState('');
     const [msLoading, setMsLoading] = useState(false);
@@ -87,7 +87,7 @@ const OAuthButtons = ({ onLoginSuccess }) => {
             setOauthError('Login Microsoft non configurato');
             return;
         }
-        const redirectUri = `${window.location.origin}/login`;
+        const redirectUri = `${window.location.origin}/welcome`;
         const scope = encodeURIComponent('User.Read openid profile email');
         const url = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${MICROSOFT_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_mode=fragment`;
         window.location.href = url;
@@ -95,8 +95,10 @@ const OAuthButtons = ({ onLoginSuccess }) => {
 
     if (!GOOGLE_CLIENT_ID && !MICROSOFT_CLIENT_ID) return null;
 
+    const sectionClass = embedded ? `${styles.oauthSection} ${styles.oauthEmbedded}` : styles.oauthSection;
+
     return (
-        <div className={styles.oauthSection}>
+        <div className={sectionClass}>
             <div className={styles.oauthDivider}>
                 <span>oppure</span>
             </div>

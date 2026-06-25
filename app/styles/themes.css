@@ -1,0 +1,43 @@
+[data-theme="classic"] {
+    --coffee-600: #6f4e37;
+    --coffee-700: #5a3e2d;
+    --coffee-900: #2a1e16;
+    --coffee-50: #faf7f2;
+    --surface-main: rgba(255, 253, 249, 0.82);
+    --text-primary: #2d1f17;
+    --text-secondary: #6f5a4c;
+    --theme-accent: #c8a882;
+}
+
+[data-theme="espresso"] {
+    --coffee-600: #3b2314;
+    --coffee-700: #2a1a10;
+    --coffee-900: #1a120b;
+    --coffee-50: #1f1510;
+    --surface-main: rgba(42, 31, 24, 0.92);
+    --text-primary: #f5e6d3;
+    --text-secondary: #d4a574;
+    --theme-accent: #d4a574;
+}
+
+[data-theme="latte"] {
+    --coffee-600: #a67b5b;
+    --coffee-700: #8b6549;
+    --coffee-900: #4a3728;
+    --coffee-50: #fffcf7;
+    --surface-main: rgba(255, 252, 247, 0.9);
+    --text-primary: #4a3728;
+    --text-secondary: #8b6549;
+    --theme-accent: #e8c9a0;
+}
+
+[data-theme="office"] {
+    --coffee-600: #4a5568;
+    --coffee-700: #2d3748;
+    --coffee-900: #1a202c;
+    --coffee-50: #f7fafc;
+    --surface-main: rgba(247, 250, 252, 0.9);
+    --text-primary: #1a202c;
+    --text-secondary: #718096;
+    --theme-accent: #718096;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { WELCOME_PATH } from '~/utils/routes';
 import styles from '~/styles/splash.module.css';
 
 const SPLASH_MIN_DURATION_MS = 2500;
@@ -18,7 +19,7 @@ const getRedirectPath = () => {
     const authToken = localStorage.getItem('authToken');
 
     if (!authToken) {
-        return '/login';
+        return WELCOME_PATH;
     }
 
     const pendingInvitation = localStorage.getItem('pendingInvitation');

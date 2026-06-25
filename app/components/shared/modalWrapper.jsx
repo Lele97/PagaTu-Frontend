@@ -1,7 +1,7 @@
 import React from 'react';
 import sharedStyles from '~/styles/shared.module.css';
 
-const ModalWrapper = React.memo(({ children, onClose, title }) => {
+const ModalWrapper = React.memo(({ children, onClose, title, wide = false }) => {
     return (
         <div
             className={sharedStyles.modalOverlay}
@@ -10,7 +10,7 @@ const ModalWrapper = React.memo(({ children, onClose, title }) => {
             }}
         >
             <div
-                className={sharedStyles.modalContent}
+                className={`${sharedStyles.modalContent} ${wide ? sharedStyles.modalContentWide : ''}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {title && <h2>{title}</h2>}

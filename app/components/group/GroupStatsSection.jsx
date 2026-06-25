@@ -5,23 +5,18 @@ import { authHeaders, formatCurrency, GATEWAY_URL, parseErrorMessage } from '~/u
 
 const LoadingSpinner = ({ message }) => (
     <div className={groupStyles.loadingSpinner}>
-        <div className={groupStyles.spinner}></div>
+        <div className={groupStyles.spinner} />
         <span className={groupStyles.spinnerText}>{message}</span>
     </div>
 );
 
-const GroupExpansionSections = ({ groupName, isAdmin }) => {
+const GroupStatsSection = ({ groupName }) => {
     const [balance, setBalance] = useState(null);
     const [gamification, setGamification] = useState(null);
-    const [rulesDraft, setRulesDraft] = useState(null);
     const [balanceLoading, setBalanceLoading] = useState(false);
     const [gamificationLoading, setGamificationLoading] = useState(false);
-    const [rulesLoading, setRulesLoading] = useState(false);
-    const [rulesSaving, setRulesSaving] = useState(false);
     const [balanceError, setBalanceError] = useState(null);
     const [gamificationError, setGamificationError] = useState(null);
-    const [rulesError, setRulesError] = useState(null);
-    const [rulesSuccess, setRulesSuccess] = useState('');
 
     const fetchBalance = useCallback(async () => {
         if (!groupName) return;
@@ -74,79 +69,16 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
         }
     }, [groupName]);
 
-    const fetchRules = useCallback(async () => {
-        if (!groupName) return;
-        setRulesLoading(true);
-        setRulesError(null);
-        try {
-            const response = await fetch(
-                `${GATEWAY_URL}/api/coffee/regole/gruppo?groupName=${encodeURIComponent(groupName)}`,
-                { headers: authHeaders(), credentials: 'include' }
-            );
-            if (!response.ok) {
-                setRulesError(await parseErrorMessage(response, 'Errore nel recupero delle regole'));
-                return;
-            }
-            const data = await response.json();
-            setRulesDraft({
-                maxSkipPerRound: data.maxSkipPerRound ?? '',
-                payForEnabled: data.payForEnabled !== false,
-                payForAdminOnly: data.payForAdminOnly === true,
-            });
-        } catch {
-            setRulesError('Errore di connessione');
-        } finally {
-            setRulesLoading(false);
-        }
-    }, [groupName]);
-
     useEffect(() => {
         fetchBalance();
         fetchGamification();
-        fetchRules();
-    }, [fetchBalance, fetchGamification, fetchRules]);
-
-    const saveRules = async (e) => {
-        e.preventDefault();
-        setRulesSaving(true);
-        setRulesError(null);
-        setRulesSuccess('');
-        try {
-            const body = {
-                groupName,
-                payForEnabled: rulesDraft.payForEnabled,
-                payForAdminOnly: rulesDraft.payForAdminOnly,
-            };
-            if (rulesDraft.maxSkipPerRound !== '') {
-                body.maxSkipPerRound = parseInt(rulesDraft.maxSkipPerRound, 10);
-            } else {
-                body.maxSkipPerRound = null;
-            }
-
-            const response = await fetch(`${GATEWAY_URL}/api/coffee/regole/gruppo`, {
-                method: 'PUT',
-                headers: authHeaders(),
-                credentials: 'include',
-                body: JSON.stringify(body),
-            });
-            if (!response.ok) {
-                setRulesError(await parseErrorMessage(response, 'Errore nel salvataggio delle regole'));
-                return;
-            }
-            setRulesSuccess('Regole aggiornate con successo');
-            setTimeout(() => setRulesSuccess(''), 3000);
-        } catch {
-            setRulesError('Errore di connessione');
-        } finally {
-            setRulesSaving(false);
-        }
-    };
+    }, [fetchBalance, fetchGamification]);
 
     return (
         <>
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-scales"></i> Bilancio — chi deve a chi
+                    <i className="bi bi-scales" /> Bilancio — chi deve a chi
                 </h2>
                 {balanceLoading ? (
                     <LoadingSpinner message="Calcolo bilancio..." />
@@ -169,8 +101,16 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
                                     </p>
                                     {(m.satispayLink || m.revolutLink) && (
                                         <div className={expansionStyles.payLinks}>
-                                            {m.satispayLink && <a href={m.satispayLink} target="_blank" rel="noreferrer">Satispay</a>}
-                                            {m.revolutLink && <a href={m.revolutLink} target="_blank" rel="noreferrer">Revolut</a>}
+                                            {m.satispayLink && (
+                                                <a href={m.satispayLink} target="_blank" rel="noreferrer" className={expansionStyles.payLinkBtn}>
+                                                    <i className="bi bi-phone" /> Satispay
+                                                </a>
+                                            )}
+                                            {m.revolutLink && (
+                                                <a href={m.revolutLink} target="_blank" rel="noreferrer" className={expansionStyles.payLinkBtn}>
+                                                    <i className="bi bi-bank" /> Revolut
+                                                </a>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -185,8 +125,16 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
                                             <strong>{d.debtorUsername}</strong> deve a <strong>{d.creditorUsername}</strong>: {formatCurrency(d.amount)}
                                         </span>
                                         <div className={expansionStyles.payLinks}>
-                                            {d.creditorSatispayLink && <a href={d.creditorSatispayLink} target="_blank" rel="noreferrer">Satispay</a>}
-                                            {d.creditorRevolutLink && <a href={d.creditorRevolutLink} target="_blank" rel="noreferrer">Revolut</a>}
+                                            {d.creditorSatispayLink && (
+                                                <a href={d.creditorSatispayLink} target="_blank" rel="noreferrer" className={expansionStyles.payLinkBtn}>
+                                                    Satispay
+                                                </a>
+                                            )}
+                                            {d.creditorRevolutLink && (
+                                                <a href={d.creditorRevolutLink} target="_blank" rel="noreferrer" className={expansionStyles.payLinkBtn}>
+                                                    Revolut
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -197,14 +145,14 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
             </section>
 
             <div className={groupStyles.separator}>
-                <div className={groupStyles.separatorLeft}></div>
+                <div className={groupStyles.separatorLeft} />
                 <img src="/coffee-medium-svgrepo-com.svg" alt="" />
-                <div className={groupStyles.separatorRight}></div>
+                <div className={groupStyles.separatorRight} />
             </div>
 
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-trophy-fill"></i> Award
+                    <i className="bi bi-trophy-fill" /> Award
                 </h2>
                 {gamificationLoading ? (
                     <LoadingSpinner message="Caricamento statistiche..." />
@@ -214,7 +162,7 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
                     <>
                         {gamification.coffeeKingOfMonth && (
                             <div className={expansionStyles.kingBanner}>
-                                <i className="bi bi-cup-hot-fill"></i> Caffè-king del mese: <strong>{gamification.coffeeKingOfMonth}</strong>
+                                <i className="bi bi-cup-hot-fill" /> Caffè-king del mese: <strong>{gamification.coffeeKingOfMonth}</strong>
                             </div>
                         )}
                         <div className={expansionStyles.cardGrid}>
@@ -240,56 +188,8 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
                     </>
                 ) : null}
             </section>
-
-            {isAdmin && (
-                <section className={expansionStyles.section}>
-                    <h2 className={groupStyles.sectionTitle}>
-                        <i className="bi bi-sliders"></i> Regole del gruppo
-                    </h2>
-                    {rulesLoading ? (
-                        <LoadingSpinner message="Caricamento regole..." />
-                    ) : rulesDraft ? (
-                        <form onSubmit={saveRules} className={expansionStyles.rulesForm}>
-                            <label>
-                                Max skip per giro (vuoto = illimitato)
-                                <input
-                                    type="number"
-                                    min="0"
-                                    value={rulesDraft.maxSkipPerRound}
-                                    onChange={(e) => setRulesDraft({ ...rulesDraft, maxSkipPerRound: e.target.value })}
-                                    className={expansionStyles.input}
-                                />
-                            </label>
-                            <label className={expansionStyles.checkbox}>
-                                <input
-                                    type="checkbox"
-                                    checked={rulesDraft.payForEnabled}
-                                    onChange={(e) => setRulesDraft({ ...rulesDraft, payForEnabled: e.target.checked })}
-                                />
-                                Abilita &quot;paga per&quot;
-                            </label>
-                            <label className={expansionStyles.checkbox}>
-                                <input
-                                    type="checkbox"
-                                    checked={rulesDraft.payForAdminOnly}
-                                    onChange={(e) => setRulesDraft({ ...rulesDraft, payForAdminOnly: e.target.checked })}
-                                    disabled={!rulesDraft.payForEnabled}
-                                />
-                                Solo admin può usare &quot;paga per&quot;
-                            </label>
-                            {rulesError && <p className={expansionStyles.error}>{rulesError}</p>}
-                            {rulesSuccess && <p className={expansionStyles.success}>{rulesSuccess}</p>}
-                            <button type="submit" className={groupStyles.groupButton} disabled={rulesSaving}>
-                                {rulesSaving ? 'Salvataggio...' : 'Salva regole'}
-                            </button>
-                        </form>
-                    ) : rulesError ? (
-                        <p className={expansionStyles.muted}>{rulesError}</p>
-                    ) : null}
-                </section>
-            )}
         </>
     );
 };
 
-export default GroupExpansionSections;
+export default GroupStatsSection;

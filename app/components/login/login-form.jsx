@@ -1,20 +1,23 @@
-import {useEffect, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import OAuthButtons from '~/components/OAuthButtons.jsx';
-import styles from '~/styles/auth.module.css';
+import authStyles from '~/styles/auth.module.css';
+import signupStyles from '~/styles/signup.module.css';
 import logostyle from '~/styles/logo.module.css';
 import { GATEWAY_URL, parseErrorMessage } from '~/utils/api';
 
 const GETAWAY_SERVER_URL = GATEWAY_URL;
 
-const LoginForm = () => {
-    const [credentials, setCredentials] = useState({username: '', password: ''});
+const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
+    const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [showResend, setShowResend] = useState(false);
     const [resendEmail, setResendEmail] = useState('');
     const [resendStatus, setResendStatus] = useState('');
     const navigate = useNavigate();
+
+    const styles = embedded ? signupStyles : authStyles;
 
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');
@@ -23,9 +26,9 @@ const LoginForm = () => {
         if (authToken) {
             if (pendingInvitation) {
                 try {
-                    const {username, groupName} = JSON.parse(pendingInvitation);
+                    const { username, groupName } = JSON.parse(pendingInvitation);
                     navigate(`/invitation?username=${encodeURIComponent(username)}&groupName=${encodeURIComponent(groupName)}`);
-                } catch (error) {
+                } catch {
                     localStorage.removeItem('pendingInvitation');
                     navigate('/home');
                 }
@@ -37,14 +40,13 @@ const LoginForm = () => {
 
     useEffect(() => {
         if (!error) return;
-
-        const timer = setTimeout(() => setError(''), 1000);
+        const timer = setTimeout(() => setError(''), 3000);
         return () => clearTimeout(timer);
     }, [error]);
 
     const handleChange = (e) => {
-        const {id, value} = e.target;
-        setCredentials(prev => ({...prev, [id]: value}));
+        const { id, value } = e.target;
+        setCredentials((prev) => ({ ...prev, [id]: value }));
         if (error) setError('');
     };
 
@@ -59,7 +61,7 @@ const LoginForm = () => {
         }
 
         try {
-            const {username: invitedUser, groupName} = JSON.parse(pendingInvitation);
+            const { username: invitedUser, groupName } = JSON.parse(pendingInvitation);
             const currentUsername = userData.username;
 
             if (currentUsername === invitedUser) {
@@ -82,7 +84,7 @@ const LoginForm = () => {
         try {
             const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/login`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials),
                 credentials: 'include',
             });
@@ -95,11 +97,10 @@ const LoginForm = () => {
                 throw new Error(errorMsg);
             }
 
-            const {token, username, email} = await response.json();
+            const { token, username, email } = await response.json();
             setShowResend(false);
-            handleLoginSuccess({username, email}, token);
+            handleLoginSuccess({ username, email }, token);
         } catch (err) {
-            // Extract the error message instead of the whole error object
             setError(err.message || 'Si è verificato un errore durante il login');
         } finally {
             setIsLoading(false);
@@ -123,101 +124,120 @@ const LoginForm = () => {
         }
     };
 
-    return (
-        <div className={styles.container}>
+    const formContent = (
+        <>
+            {!embedded && <h2 className={authStyles.title}>Accedi al tuo account</h2>}
 
-            <div className={styles['header-container']}>
-                <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
+            <form onSubmit={handleSubmit} className={embedded ? undefined : authStyles.form}>
+                <div className={embedded ? signupStyles.inputGroup : authStyles.inputGroup}>
+                    <label htmlFor="username" className={styles.label}>
+                        Username*
+                    </label>
+                    <input
+                        type="text"
+                        id="username"
+                        className={embedded ? signupStyles.inputField : authStyles.input}
+                        placeholder="Il tuo username"
+                        value={credentials.username}
+                        onChange={handleChange}
+                        required
+                        disabled={isLoading}
+                    />
+                </div>
+
+                <div className={embedded ? signupStyles.inputGroup : authStyles.inputGroup}>
+                    <div
+                        className={embedded ? undefined : authStyles.passwordHeader}
+                        style={embedded ? { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' } : undefined}
+                    >
+                        <label htmlFor="password" className={styles.label}>
+                            Password*
+                        </label>
+                        <Link
+                            to="/forgotPassword"
+                            className={embedded ? undefined : authStyles.link}
+                            style={embedded ? { fontSize: '0.85rem', fontWeight: 700, color: 'var(--coffee-700)', textDecoration: 'none' } : undefined}
+                        >
+                            Password dimenticata?
+                        </Link>
+                    </div>
+                    <input
+                        type="password"
+                        id="password"
+                        className={embedded ? signupStyles.inputField : authStyles.input}
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        value={credentials.password}
+                        onChange={handleChange}
+                        required
+                        disabled={isLoading}
+                    />
+                </div>
+
+                {error && (
+                    <div className={embedded ? signupStyles.errorMessage : authStyles.error}>
+                        {error}
+                    </div>
+                )}
+
+                {showResend && (
+                    <div className={authStyles.resendBox}>
+                        <p>Non hai ricevuto l&apos;email di verifica?</p>
+                        <input
+                            type="email"
+                            className={embedded ? signupStyles.inputField : authStyles.input}
+                            placeholder="La tua email"
+                            value={resendEmail}
+                            onChange={(e) => setResendEmail(e.target.value)}
+                        />
+                        <button type="button" className={authStyles.secondaryButton} onClick={resendVerification}>
+                            Reinvia verifica
+                        </button>
+                        {resendStatus && <p className={authStyles.resendStatus}>{resendStatus}</p>}
+                    </div>
+                )}
+
+                <button
+                    type="submit"
+                    className={embedded ? signupStyles.submitButton : authStyles.primaryButton}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Accesso...' : 'Accedi'}
+                </button>
+
+                {!embedded && (
+                    <div className={authStyles.footer}>
+                        Non hai un account?
+                        <Link to="/welcome?tab=signup" className={authStyles.link}>
+                            Registrati
+                        </Link>
+                    </div>
+                )}
+            </form>
+
+            <OAuthButtons onLoginSuccess={handleLoginSuccess} embedded={embedded} />
+        </>
+    );
+
+    if (embedded) {
+        return <div>{formContent}</div>;
+    }
+
+    return (
+        <div className={authStyles.container}>
+            <div className={authStyles['header-container']}>
+                <img src="/pagaTu.png" alt="Logo" className={logostyle.logo} />
                 <div className={logostyle.appTitle}>
                     <h1 className={logostyle.appTitlecolor}>P</h1>
                     <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <><h1 className={logostyle.appTitlecolor}>g</h1></>
+                    <h1 className={logostyle.appTitlecolor}>g</h1>
                     <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <br></br>
+                    <br />
                     <h1 className={logostyle.appTitlecolor}>T</h1>
                     <h1 className={logostyle.appTitlecolor2}>u</h1>
                 </div>
             </div>
-
-            <div className={styles.formContainer}>
-                <h2 className={styles.title}>Accedi al tuo account</h2>
-
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="username" className={styles.label}>
-                            Username*
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            className={styles.input}
-                            placeholder="Il tuo username"
-                            value={credentials.username}
-                            onChange={handleChange}
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <div className={styles.passwordHeader}>
-                            <label htmlFor="password" className={styles.label}>
-                                Password*
-                            </label>
-                            <Link to="/forgotPassword" className={styles.link}>
-                                Password dimenticata?
-                            </Link>
-                        </div>
-                        <input
-                            type="password"
-                            id="password"
-                            className={styles.input}
-                            placeholder="••••••••"
-                            autoComplete={"current-password"}
-                            value={credentials.password}
-                            onChange={handleChange}
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    {error && <div className={styles.error}>{error}</div>}
-
-                    {showResend && (
-                        <div className={styles.resendBox}>
-                            <p>Non hai ricevuto l&apos;email di verifica?</p>
-                            <input
-                                type="email"
-                                className={styles.input}
-                                placeholder="La tua email"
-                                value={resendEmail}
-                                onChange={(e) => setResendEmail(e.target.value)}
-                            />
-                            <button type="button" className={styles.secondaryButton} onClick={resendVerification}>
-                                Reinvia verifica
-                            </button>
-                            {resendStatus && <p className={styles.resendStatus}>{resendStatus}</p>}
-                        </div>
-                    )}
-
-                    <button
-                        type="submit"
-                        className={styles.primaryButton}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Accesso...' : 'Accedi'}
-                    </button>
-
-                    <div className={styles.footer}>
-                        Non hai un account?
-                        <Link to="/signup" className={styles.link}>
-                            Registrati
-                        </Link>
-                    </div>
-                </form>
-
-                <OAuthButtons onLoginSuccess={handleLoginSuccess} />
-            </div>
+            <div className={authStyles.formContainer}>{formContent}</div>
         </div>
     );
 };

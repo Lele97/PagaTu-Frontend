@@ -162,7 +162,7 @@ const ResetPswForm = () => {
             }
 
             setSuccess("Password resettata con successo");
-            setTimeout(() => navigate("/login"), 2000);
+            setTimeout(() => navigate('/welcome'), 2000);
         } catch (err) {
             setError("Errore durante il reset della password, " + err.message);
         } finally {

@@ -1,9 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import styles from "~/styles/header.module.css";
-import BuyMeACoffeeButton from "~/components/buttons/BuyMeACoffeeButton.jsx";
+import React from 'react';
+import styles from '~/styles/header.module.css';
+import BuyMeACoffeeButton from '~/components/buttons/BuyMeACoffeeButton.jsx';
+import { useSettings } from '~/context/SettingsContext.jsx';
+import { AVATAR_PRESETS } from '~/services/userApi';
 
-const Header = ({ user, logout }) => {
+const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default' }) => {
+    const { openUserSettings, openGroupSettings } = useSettings();
+    const avatar = AVATAR_PRESETS.find((a) => a.key === avatarKey) || AVATAR_PRESETS[0];
+
     return (
         <header className={styles.header}>
             <div className={styles.headerContent}>
@@ -19,36 +23,44 @@ const Header = ({ user, logout }) => {
                     />
                 </div>
 
-
                 <div className={styles.userInfo}>
-                    <div
-                        className={styles.coffeeAvatar}
-                        aria-label={`Utente ${user}`}>
-                        <img
-                            src="/coffee-cup-coffee-svgrepo-com.webp"
-                            alt=""
-                            width={45}
-                            height={45}
-                            className={styles.coffeeImg}
-                        />
+                    <div className={styles.coffeeAvatar} aria-label={`Utente ${user}`}>
+                        <i className={`bi ${avatar.icon} ${styles.avatarIcon}`} />
                         <span className={styles.coffeeLetter}>
                             {user?.charAt(0).toUpperCase()}
                         </span>
                     </div>
 
-                    <Link to="/profile/payment-links" className={styles.profileLink} title="Link rimborsi">
-                        <i className="bi bi-wallet2"></i>
-                    </Link>
+                        <button
+                            type="button"
+                            className={styles.iconBtn}
+                            onClick={() => openUserSettings('profile')}
+                            title="Impostazioni"
+                            aria-label="Impostazioni utente"
+                        >
+                            <i className="bi bi-gear" />
+                        </button>
 
-                    <div onClick={logout} className={styles.door_container}>
-                        <div className={styles.top_bar}></div>
-                        <div className={styles.door_frame}></div>
-                        <div className={styles.door_panel}></div>
+                    {showGroupSettings && (
+                        <button
+                            type="button"
+                            className={styles.iconBtn}
+                            onClick={openGroupSettings}
+                            title="Impostazioni gruppo"
+                            aria-label="Impostazioni gruppo"
+                        >
+                            <i className="bi bi-sliders" />
+                        </button>
+                    )}
+
+                    <div onClick={logout} className={styles.door_container} role="button" tabIndex={0} aria-label="Esci">
+                        <div className={styles.top_bar} />
+                        <div className={styles.door_frame} />
+                        <div className={styles.door_panel} />
                         <div className={styles.doorknob}>
-                            <div className={styles.doorknob_inner}></div>
+                            <div className={styles.doorknob_inner} />
                         </div>
                     </div>
-
                 </div>
             </div>
         </header>

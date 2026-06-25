@@ -44,7 +44,7 @@ const VerifyEmail = () => {
                 {status === 'success' && (
                     <>
                         <div className={styles.verifySuccess}>{message}</div>
-                        <Link to="/login" className={styles.primaryButton} style={{ display: 'inline-block', textAlign: 'center', marginTop: '1rem' }}>
+                        <Link to="/welcome" className={styles.primaryButton} style={{ display: 'inline-block', textAlign: 'center', marginTop: '1rem' }}>
                             Vai al login
                         </Link>
                     </>
@@ -53,7 +53,7 @@ const VerifyEmail = () => {
                     <>
                         <div className={styles.error}>{message}</div>
                         <p style={{ marginTop: '1rem' }}>
-                            <Link to="/login">Torna al login</Link> per richiedere una nuova email di verifica.
+                            <Link to="/welcome">Torna al login</Link> per richiedere una nuova email di verifica.
                         </p>
                     </>
                 )}

@@ -81,7 +81,7 @@ const CustomSelect = ({
     );
 };
 
-const SignupForm = () => {
+const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
     const [registration, setRegistration] = useState({
         username: "",
         password: "",
@@ -353,7 +353,11 @@ const SignupForm = () => {
             setSuccessMessage("Registrazione completata! Controlla la tua email per verificare l'account prima di accedere.");
 
             setTimeout(() => {
-                navigate("/login");
+                if (embedded && onSwitchToLogin) {
+                    onSwitchToLogin();
+                } else {
+                    navigate('/welcome');
+                }
             }, 4000);
         } catch (err) {
             setError("Errore di registrazione. " + err.message);
@@ -474,6 +478,102 @@ const SignupForm = () => {
     };
 
 
+    const signupForm = (
+        <form onSubmit={handleSubmit}>
+            <div className={styles.inputGrid}>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="username" className={styles.label}>Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        className={styles.inputField}
+                        value={registration.username}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="email" className={styles.label}>Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        className={styles.inputField}
+                        value={registration.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+            </div>
+            <div className={styles.inputGrid}>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="password" className={styles.label}>Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        className={styles.inputField}
+                        value={registration.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="dateOfBirth" className={styles.label}>Data di nascita</label>
+                    <button
+                        type="button"
+                        id="dateOfBirth"
+                        className={`${styles.inputField} ${styles.buttonInputField}`}
+                        onClick={datePickerOpenModal}
+                    >
+                        {formatDate(registration.dateOfBirth)}
+                    </button>
+                </div>
+            </div>
+            <div className={styles.inputGrid}>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="firstName" className={styles.label}>Nome</label>
+                    <input
+                        type="text"
+                        id="firstName"
+                        className={styles.inputField}
+                        value={registration.firstName}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="lastName" className={styles.label}>Cognome</label>
+                    <input
+                        type="text"
+                        id="lastName"
+                        className={styles.inputField}
+                        value={registration.lastName}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+            </div>
+            {error && <div className={styles.errorMessage}>{error}</div>}
+            {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+            <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                {isLoading ? 'Registrazione in corso...' : 'Registrati'}
+            </button>
+            {!embedded && (
+                <div className={styles.loginLink}>
+                    Hai già un account? <Link to="/welcome">Accedi</Link>
+                </div>
+            )}
+        </form>
+    );
+
+    if (embedded) {
+        return (
+            <>
+                {signupForm}
+                {showDatePickerModal && <DatePickerModal />}
+            </>
+        );
+    }
+
     return (
         <div className={styles.container}>
             <section className={styles.heroSection}>
@@ -525,96 +625,7 @@ const SignupForm = () => {
                             </p>
                         </div>
 
-                        <form onSubmit={handleSubmit}>
-                            <div className={styles.inputGrid}>
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="username" className={styles.label}>Username</label>
-                                    <input
-                                        type="text"
-                                        id="username"
-                                        className={styles.inputField}
-                                        value={registration.username}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="email" className={styles.label}>Email</label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        className={styles.inputField}
-                                        value={registration.email}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className={styles.inputGrid}>
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="password" className={styles.label}>Password</label>
-                                    <input
-                                        type="password"
-                                        id="password"
-                                        className={styles.inputField}
-                                        value={registration.password}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="dateOfBirth" className={styles.label}>Data di nascita</label>
-                                    <button
-                                        type="button"
-                                        id="dateOfBirth"
-                                        className={`${styles.inputField} ${styles.buttonInputField}`}
-                                        onClick={datePickerOpenModal}
-                                    >
-                                        {formatDate(registration.dateOfBirth)}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className={styles.inputGrid}>
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="firstName" className={styles.label}>Nome</label>
-                                    <input
-                                        type="text"
-                                        id="firstName"
-                                        className={styles.inputField}
-                                        value={registration.firstName}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="lastName" className={styles.label}>Cognome</label>
-                                    <input
-                                        type="text"
-                                        id="lastName"
-                                        className={styles.inputField}
-                                        value={registration.lastName}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            {error && <div className={styles.errorMessage}>{error}</div>}
-                            {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
-
-                            <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                                {isLoading ? 'Registrazione in corso...' : 'Registrati'}
-                            </button>
-
-                            <div className={styles.loginLink}>
-                                Hai già un account? <Link to="/login">Accedi</Link>
-                            </div>
-                        </form>
+                        {signupForm}
                     </div>
                 </div>
             </section>

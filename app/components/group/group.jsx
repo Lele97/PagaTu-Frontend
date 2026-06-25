@@ -12,7 +12,13 @@ import DeleteGroupModal from "~/components/group/modals/DeleteGroupModal.jsx";
 import InviteUserModal from "~/components/group/modals/InviteUserModal.jsx";
 import SkipPaymentModal from "~/components/group/modals/SkipPaymentModal.jsx";
 import PayForFriendModal from "~/components/group/modals/PayForFriendModal.jsx";
-import GroupExpansionSections from '~/components/group/GroupExpansionSections.jsx';
+import GroupStatsSection from '~/components/group/GroupStatsSection.jsx';
+import GroupSettingsDrawer from '~/components/settings/GroupSettingsDrawer.jsx';
+import groupStyles from "~/styles/group.module.css";
+import { fetchCoffeeProfile, leaveGroup } from '~/services/userApi';
+import { WELCOME_PATH } from '~/utils/routes';
+import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
+import { useSettings } from '~/context/SettingsContext.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -31,6 +37,7 @@ const normalizeError = (err) => {
 const Group = () => {
 
     const navigate = useNavigate();
+    const { userSettingsOpen } = useSettings();
     const [user, setUser] = useState(null);
     const [group, setGroup] = useState({groupName: 'Unnamed Group'});
     const [groups, setGroups] = useState({});
@@ -53,7 +60,9 @@ const Group = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [friend, setFriend] = useState('');
     const [groupRules, setGroupRules] = useState({ payForEnabled: true, payForAdminOnly: false, maxSkipPerRound: null });
-    const isAnyModalOpen = showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal;
+    const [avatarKey, setAvatarKey] = useState('default');
+    const [leavingGroup, setLeavingGroup] = useState(false);
+    const isAnyModalOpen = showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal || userSettingsOpen;
 
     const canPayFor = groupRules.payForEnabled !== false
         && (!groupRules.payForAdminOnly || isAdmin);
@@ -149,7 +158,7 @@ const Group = () => {
                         break;
                     case 401:
                         setPaymentByGroupError('Sessione scaduta. Effettua nuovamente il login.');
-                        setTimeout(() => navigate('/login'), 2000);
+                        setTimeout(() => navigate(WELCOME_PATH), 2000);
                         break;
                     case 403:
                         setPaymentByGroupError(`Accesso negato. Verifica di appartenere al gruppo "${groupName || 'sconosciuto'}"`);
@@ -179,7 +188,7 @@ const Group = () => {
             const groupData = localStorage.getItem('group');
 
             if (!authToken) {
-                navigate('/login');
+                navigate(WELCOME_PATH);
                 return;
             }
 
@@ -266,8 +275,12 @@ const Group = () => {
                         }
                     } catch { /* keep defaults */ }
                 }
+                try {
+                    const profile = await fetchCoffeeProfile();
+                    setAvatarKey(profile?.avatarKey || 'default');
+                } catch { /* keep default */ }
             } catch {
-                navigate('/login');
+                navigate(WELCOME_PATH);
             }
         };
 
@@ -300,7 +313,7 @@ const Group = () => {
     const logout = useCallback(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        navigate('/login');
+        navigate(WELCOME_PATH);
     }, [navigate]);
 
     const goBack = useCallback(() => navigate('/home'), [navigate]);
@@ -684,21 +697,60 @@ const Group = () => {
         [clearCache, descrizione, getClassificaPaymentsForGroup, group, importo]
     );
 
+    const handleSettingsSaved = useCallback((updated) => {
+        if (updated?.name) {
+            const next = { ...group, groupName: updated.name, name: updated.name };
+            setGroup(next);
+            setGroups(next);
+            localStorage.setItem('group', JSON.stringify(next));
+        }
+        if (updated) {
+            setGroupRules({
+                payForEnabled: updated.payForEnabled !== false,
+                payForAdminOnly: updated.payForAdminOnly === true,
+                maxSkipPerRound: updated.maxSkipPerRound ?? null,
+            });
+        }
+    }, [group]);
+
+    const handleLeaveGroup = useCallback(async () => {
+        if (!window.confirm(`Vuoi lasciare il gruppo "${group.groupName}"?`)) return;
+        setLeavingGroup(true);
+        setError(null);
+        try {
+            await leaveGroup(group.groupName);
+            localStorage.removeItem('group');
+            navigate('/home');
+        } catch (err) {
+            setError(normalizeError(err) || 'Errore durante l\'uscita dal gruppo');
+        } finally {
+            setLeavingGroup(false);
+        }
+    }, [group.groupName, navigate]);
+
     return (
         <div className={styles.groupPage}>
             <div className={`${styles.container} ${isAnyModalOpen ? 'modal-active' : ''}`}>
-                <Header user={user} logout={logout}/>
+                <Header user={user} logout={logout} showGroupSettings={isAdmin} avatarKey={avatarKey} />
 
                 <main className={styles.main}>
                     <button onClick={goBack} className={sharedStyles.groupButton} style={{marginBottom: '2rem'}}>
                         <i className="fa-solid fa-arrow-left"></i> <i className="fa-solid fa-house"></i>
                     </button>
 
-                    <GroupHeader
-                        isAdmin={isAdmin}
-                        deleteGroup={deleteGroup}
-                        group={group}
-                        inviteMember={inviteMember}/>
+                    <GroupHeader group={group} />
+
+                    {!isAdmin && (
+                        <button
+                            type="button"
+                            onClick={handleLeaveGroup}
+                            className={sharedStyles.groupButton}
+                            disabled={leavingGroup}
+                            style={{ marginBottom: '1rem' }}
+                        >
+                            <i className="bi bi-box-arrow-right" /> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
+                        </button>
+                    )}
 
                     <PaymentActions
                         myTurn={myTurn}
@@ -720,9 +772,23 @@ const Group = () => {
                         payments={classificaPaymentsForGroup}
                         onRetry={onRetry} />
 
-                    <GroupExpansionSections groupName={group?.groupName} isAdmin={isAdmin} />
+                    <div className={groupStyles.separator}>
+                        <div className={groupStyles.separatorLeft}></div>
+                        <img src="/coffee-medium-svgrepo-com.svg" alt="" />
+                        <div className={groupStyles.separatorRight}></div>
+                    </div>
+
+                    <GroupStatsSection groupName={group?.groupName} />
 
                 </main>
+
+                <GroupSettingsDrawer
+                    groupName={group?.groupName}
+                    isAdmin={isAdmin}
+                    onInviteMember={inviteMember}
+                    onDeleteGroup={deleteGroup}
+                    onSettingsSaved={handleSettingsSaved}
+                />
 
                 {showInviteForm && (
                     <InviteUserModal
@@ -785,6 +851,8 @@ const Group = () => {
                         successMessage={successMessage}
                     />
                 )}
+
+                {userSettingsOpen && <UserSettingsModal />}
             </div>
         </div>
     );

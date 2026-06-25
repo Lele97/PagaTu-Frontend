@@ -6,6 +6,10 @@ import HomeHeader from "~/components/home/homeHeader.jsx";
 import HomeGroups from "~/components/home/homeGroups.jsx";
 import HomePayments from "~/components/home/homePayments.jsx";
 import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
+import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
+import { useSettings } from '~/context/SettingsContext.jsx';
+import { fetchCoffeeProfile } from '~/services/userApi';
+import { WELCOME_PATH } from '~/utils/routes';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -42,7 +46,9 @@ const Home = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [avatarKey, setAvatarKey] = useState('default');
     const navigate = useNavigate();
+    const { userSettingsOpen } = useSettings();
     const requestCacheRef = useRef(new Map());
 
     const clearCache = useCallback((cacheKey) => {
@@ -81,20 +87,24 @@ const Home = () => {
             const authToken = localStorage.getItem('authToken');
             const userData = localStorage.getItem('user');
             if (!authToken || !userData) {
-                navigate('/login');
+                navigate(WELCOME_PATH);
                 return;
             }
             try {
                 const parsedUser = JSON.parse(userData);
                 const username = parsedUser?.username || parsedUser?.name || parsedUser?.email;
                 if (!username) {
-                    navigate('/login');
+                    navigate(WELCOME_PATH);
                     return;
                 }
                 setUser(username);
                 await Promise.all([getGroupsByUser(username), getHistoryPayments(username)]);
+                try {
+                    const profile = await fetchCoffeeProfile();
+                    setAvatarKey(profile?.avatarKey || 'default');
+                } catch { /* keep default */ }
             } catch {
-                navigate('/login');
+                navigate(WELCOME_PATH);
             }
         };
         initializeData();
@@ -135,7 +145,7 @@ const Home = () => {
     const logout = useCallback(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        navigate('/login');
+        navigate(WELCOME_PATH);
     }, [navigate]);
 
     const confirmCreateGroup = useCallback(async (e) => {
@@ -354,9 +364,9 @@ const Home = () => {
 
     return (
         <div className={styles.homePage}>
-            <div className={`${styles.container} ${showAddGroupModal ? styles.modalActive : ''}`}>
+            <div className={`${styles.container} ${showAddGroupModal || userSettingsOpen ? styles.modalActive : ''}`}>
 
-                <Header user={user} logout={logout}/>
+                <Header user={user} logout={logout} avatarKey={avatarKey} />
 
                 <main className={styles.main}>
 
@@ -390,6 +400,8 @@ const Home = () => {
 
                 </main>
             </div>
+
+            {userSettingsOpen && <UserSettingsModal />}
 
             {showAddGroupModal && (
                 <AddGroupModal
