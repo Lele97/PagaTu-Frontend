@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PagaTu • UI Redesign Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap');
+    
+    :root {
+      --coffee-600: #6f4e37;
+      --coffee-700: #5a3e2d;
+      --coffee-900: #2a1e16;
+      --coffee-50: #faf7f2;
+      --surface-main: rgba(255, 253, 249, 0.95);
+      --text-primary: #2d1f17;
+      --text-secondary: #6f5a4c;
+    }
+
+    body {
+      font-family: 'Outfit', system_ui, sans-serif;
+    }
+
+    .coffee-bg {
+      background: #faf7f2;
+    }
+
+    .section-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(62, 44, 32, 0.08);
+    }
+
+    .group-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .group-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(62, 44, 32, 0.12);
+    }
+
+    .turn-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 18px;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .turn-avatar.active {
+      border-color: #6f4e37;
+      box-shadow: 0 0 0 4px rgba(111, 78, 55, 0.2);
+      transform: scale(1.1);
+    }
+
+    .turn-avatar.next {
+      border-color: #d8c5b3;
+    }
+
+    .coffee-button {
+      background: #6f4e37;
+      color: white;
+      font-weight: 600;
+      padding: 14px 24px;
+      border-radius: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .coffee-button:hover {
+      background: #5a3e2d;
+      transform: translateY(-1px);
+    }
+
+    .coffee-button.secondary {
+      background: #f3ece4;
+      color: #6f4e37;
+      border: 1px solid #d8c5b3;
+    }
+
+    .coffee-button.secondary:hover {
+      background: #e8ddd2;
+    }
+
+    .stat-bar {
+      height: 8px;
+      background: linear-gradient(to right, #6f4e37, #c8a882);
+      border-radius: 9999px;
+    }
+
+    .nav-tab {
+      padding: 8px 20px;
+      font-weight: 600;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tab.active {
+      background: #6f4e37;
+      color: white;
+    }
+
+    .prototype-header {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .modern-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .modern-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(62, 44, 32, 0.1);
+    }
+
+    .turn-indicator {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(111, 78, 55, 0.08);
+    }
+
+    .payment-card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #f3ece4;
+    }
+
+    .coffee-separator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .coffee-separator::before,
+    .coffee-separator::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #d8c5b3;
+    }
+  </style>
+</head>
+<body class="coffee-bg text-[#2d1f17]">
+  <!-- Top bar -->
+  <div class="border-b border-[#e8ddd2]">
+    <div class="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-[#6f4e37] rounded-2xl flex items-center justify-center">
+          <i class="bi bi-cup-hot text-white text-xl"></i>
+        </div>
+        <div>
+          <span class="font-bold text-2xl tracking-tight">PagaTu</span>
+        </div>
+      </div>
+
+      <!-- Theme switcher -->
+      <div class="flex items-center gap-2 bg-white rounded-full p-1 border border-[#e8ddd2]">
+        <button onclick="switchTheme('classic')" class="theme-btn px-3 py-1 text-xs rounded-full font-medium active-theme" data-theme="classic">Classic</button>
+        <button onclick="switchTheme('espresso')" class="theme-btn px-3 py-1 text-xs rounded-full font-medium" data-theme="espresso">Espresso</button>
+        <button onclick="switchTheme('latte')" class="theme-btn px-3 py-1 text-xs rounded-full font-medium" data-theme="latte">Latte</button>
+        <button onclick="switchTheme('office')" class="theme-btn px-3 py-1 text-xs rounded-full font-medium" data-theme="office">Office</button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-[#f3ece4] rounded-full px-3 py-1.5 text-sm">
+          <div class="w-7 h-7 bg-[#6f4e37] rounded-full flex items-center justify-center text-white text-xs font-bold">M</div>
+          <span class="font-medium">Marco</span>
+        </div>
+        <button class="p-2 hover:bg-[#f3ece4] rounded-xl transition-colors">
+          <i class="bi bi-gear text-[#6f5a4c]"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="max-w-screen-xl mx-auto px-6 pt-6">
+    <div class="flex gap-2">
+      <button onclick="showView('home')" 
+              class="nav-tab active bg-[#6f4e37] text-white px-6 py-2 text-sm font-semibold flex items-center gap-2" id="tab-home">
+        <i class="bi bi-house"></i>
+        <span>Home</span>
+      </button>
+      <button onclick="showView('group')" 
+              class="nav-tab bg-white border border-[#e8ddd2] px-6 py-2 text-sm font-semibold flex items-center gap-2" id="tab-group">
+        <i class="bi bi-people"></i>
+        <span>Gruppo “Marketing”</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================== HOME VIEW ====================== -->
+  <div id="view-home" class="max-w-screen-xl mx-auto px-6 py-8">
+    <!-- Hero -->
+    <div class="mb-10 text-center">
+      <h1 class="text-4xl font-bold tracking-tight mb-2">Il caffè che unisce il team</h1>
+      <p class="text-[#6f5a4c] text-lg">Crea gruppi e gestisci i turni in modo semplice e piacevole</p>
+    </div>
+
+    <!-- Groups Section -->
+    <div class="mb-10">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-xl font-semibold flex items-center gap-2">
+          <i class="bi bi-people-fill text-[#6f4e37]"></i> 
+          I tuoi gruppi
+        </h2>
+        <button onclick="fakeCreateGroup()"
+                class="coffee-button px-5 py-2 text-sm flex items-center gap-2">
+          <i class="bi bi-plus-lg"></i>
+          <span>Nuovo gruppo</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Group Card -->
+        <div onclick="switchToGroup()" class="modern-card group-card bg-white p-5 border border-[#f3ece4] rounded-3xl flex gap-4 items-start cursor-pointer">
+          <div class="w-12 h-12 bg-[#6f4e37] rounded-2xl flex items-center justify-center text-white shrink-0">
+            <i class="bi bi-people-fill text-2xl"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-lg">Marketing</div>
+            <div class="text-sm text-[#6f5a4c] line-clamp-2 mt-0.5">Team marketing - pausa caffè del mattino</div>
+            <div class="mt-3 flex items-center gap-2 text-xs">
+              <div class="flex -space-x-1">
+                <div class="w-6 h-6 rounded-full bg-[#c8a882] ring-2 ring-white flex items-center justify-center text-[10px] text-[#6f4e37] font-bold">A</div>
+                <div class="w-6 h-6 rounded-full bg-[#6f4e37] ring-2 ring-white flex items-center justify-center text-[10px] text-white font-bold">M</div>
+                <div class="w-6 h-6 rounded-full bg-[#bfa48d] ring-2 ring-white flex items-center justify-center text-[10px] text-[#6f4e37] font-bold">L</div>
+              </div>
+              <span class="text-[#6f5a4c]">4 membri • Il tuo turno tra 2</span>
+            </div>
+          </div>
+          <div class="text-[#6f4e37]">
+            <i class="bi bi-arrow-right text-xl"></i>
+          </div>
+        </div>
+
+        <div onclick="switchToGroup()" class="modern-card group-card bg-white p-5 border border-[#f3ece4] rounded-3xl flex gap-4 items-start cursor-pointer">
+          <div class="w-12 h-12 bg-[#c8a882] rounded-2xl flex items-center justify-center text-[#6f4e37] shrink-0">
+            <i class="bi bi-people-fill text-2xl"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-lg">Sviluppo</div>
+            <div class="text-sm text-[#6f5a4c] line-clamp-2 mt-0.5">Sviluppo prodotto - caffè pomeridiano</div>
+            <div class="mt-3 flex items-center gap-2 text-xs">
+              <div class="flex -space-x-1">
+                <div class="w-6 h-6 rounded-full bg-[#6f4e37] ring-2 ring-white flex items-center justify-center text-[10px] text-white font-bold">L</div>
+                <div class="w-6 h-6 rounded-full bg-[#bfa48d] ring-2 ring-white flex items-center justify-center text-[10px] text-[#6f4e37] font-bold">R</div>
+              </div>
+              <span class="text-[#6f5a4c]">7 membri • Turno di Luca</span>
+            </div>
+          </div>
+          <div class="text-[#6f4e37]">
+            <i class="bi bi-arrow-right text-xl"></i>
+          </div>
+        </div>
+
+        <div class="modern-card group-card bg-white p-5 border border-[#f3ece4] rounded-3xl flex gap-4 items-start cursor-pointer opacity-80" onclick="alert('Esempio: nuovo gruppo')">
+          <div class="w-12 h-12 bg-[#e8ddd2] rounded-2xl flex items-center justify-center text-[#6f5a4c] shrink-0">
+            <i class="bi bi-plus text-3xl"></i>
+          </div>
+          <div>
+            <div class="font-semibold">Crea un nuovo gruppo</div>
+            <div class="text-sm text-[#6f5a4c]">Invita colleghi e organizza i turni</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Payments -->
+    <div>
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <i class="bi bi-clock-history text-[#6f4e37]"></i>
+        Ultimi pagamenti
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="payment-card p-4 flex items-center justify-between rounded-2xl">
+          <div>
+            <div class="font-medium">Marketing</div>
+            <div class="text-sm text-[#6f5a4c]">Caffè del mattino • 12 giu</div>
+          </div>
+          <div class="text-right">
+            <div class="font-semibold text-lg">€4.50</div>
+            <div class="text-xs text-[#6f5a4c]">Luca</div>
+          </div>
+        </div>
+
+        <div class="payment-card p-4 flex items-center justify-between rounded-2xl">
+          <div>
+            <div class="font-medium">Sviluppo</div>
+            <div class="text-sm text-[#6f5a4c]">Pausa pomeriggio • 11 giu</div>
+          </div>
+          <div class="text-right">
+            <div class="font-semibold text-lg">€3.80</div>
+            <div class="text-xs text-[#6f5a4c]">Anna</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== GROUP VIEW ====================== -->
+  <div id="view-group" class="max-w-screen-xl mx-auto px-6 py-8 hidden">
+    <div class="max-w-3xl mx-auto">
+      <!-- Group Header -->
+      <div class="flex items-center gap-4 mb-6">
+        <button onclick="showView('home')" class="flex items-center text-sm text-[#6f5a4c] hover:text-[#6f4e37]">
+          <i class="bi bi-arrow-left mr-1.5"></i> Indietro
+        </button>
+        <div>
+          <h1 class="text-3xl font-bold">Marketing</h1>
+          <p class="text-[#6f5a4c]">4 membri • 12 pagamenti registrati</p>
+        </div>
+      </div>
+
+      <!-- NEW: Turn Indicator -->
+      <div class="turn-indicator mb-7">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="font-semibold text-lg">Turno attuale</div>
+            <div class="text-sm text-[#6f5a4c]">È il tuo turno di pagare il caffè</div>
+          </div>
+          <div class="text-xs px-3 py-1 rounded-full bg-[#f3ece4] text-[#6f4e37] font-medium">Giro #8</div>
+        </div>
+
+        <!-- Horizontal Avatar Queue -->
+        <div class="flex items-center gap-3 mt-3">
+          <!-- Active (you) -->
+          <div class="flex flex-col items-center">
+            <div class="turn-avatar active bg-[#6f4e37] text-white">
+              <i class="bi bi-cup-hot"></i>
+            </div>
+            <div class="mt-1.5 text-xs font-medium">Tu</div>
+          </div>
+
+          <!-- Next -->
+          <div class="flex flex-col items-center">
+            <div class="turn-avatar next bg-[#c8a882] text-[#6f4e37]">
+              L
+            </div>
+            <div class="mt-1.5 text-xs text-[#6f5a4c]">Luca</div>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="turn-avatar next bg-[#bfa48d] text-[#6f4e37]">
+              A
+            </div>
+            <div class="mt-1.5 text-xs text-[#6f5a4c]">Anna</div>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div class="turn-avatar next bg-[#e8ddd2] text-[#6f5a4c]">
+              R
+            </div>
+            <div class="mt-1.5 text-xs text-[#6f5a4c]">Roberto</div>
+          </div>
+
+          <div class="ml-auto text-right">
+            <div class="text-xs text-[#6f5a4c]">Salti rimasti</div>
+            <div class="font-semibold">2 / 3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button onclick="showModal('register')"
+                  class="coffee-button py-4 text-base flex flex-col items-center justify-center gap-1">
+            <i class="bi bi-cash-coin text-xl"></i>
+            <span class="font-semibold">Registra pagamento</span>
+          </button>
+          
+          <button onclick="showModal('skip')"
+                  class="coffee-button secondary py-4 text-base flex flex-col items-center justify-center gap-1">
+            <i class="bi bi-skip-forward text-xl"></i>
+            <span class="font-semibold">Salta questo giro</span>
+          </button>
+          
+          <button onclick="showModal('payfor')"
+                  class="coffee-button secondary py-4 text-base flex flex-col items-center justify-center gap-1">
+            <i class="bi bi-person-plus text-xl"></i>
+            <span class="font-semibold">Paga per un amico</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Standings -->
+      <div class="mb-8">
+        <h3 class="font-semibold mb-3 flex items-center gap-2">
+          <i class="bi bi-bar-chart"></i> Classifica del gruppo
+        </h3>
+        
+        <div class="space-y-2">
+          <div class="payment-card flex items-center p-4">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="turn-avatar w-9 h-9 text-sm bg-[#c8a882] text-[#6f4e37]">L</div>
+              <div>
+                <div class="font-medium">Luca Bianchi</div>
+                <div class="text-xs text-[#6f5a4c]">8 pagamenti</div>
+              </div>
+            </div>
+            <div class="font-semibold text-xl">€38.40</div>
+          </div>
+
+          <div class="payment-card flex items-center p-4">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="turn-avatar w-9 h-9 text-sm bg-[#6f4e37] text-white">M</div>
+              <div>
+                <div class="font-medium">Marco Rossi <span class="text-xs text-[#6f5a4c]">(tu)</span></div>
+                <div class="text-xs text-[#6f5a4c]">6 pagamenti</div>
+              </div>
+            </div>
+            <div class="font-semibold text-xl">€29.10</div>
+          </div>
+
+          <div class="payment-card flex items-center p-4">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="turn-avatar w-9 h-9 text-sm bg-[#bfa48d]">A</div>
+              <div>
+                <div class="font-medium">Anna Verdi</div>
+                <div class="text-xs text-[#6f5a4c]">5 pagamenti</div>
+              </div>
+            </div>
+            <div class="font-semibold text-xl">€22.50</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="section-card p-5">
+        <div class="font-medium mb-3">Statistiche gruppo</div>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <div class="text-[#6f5a4c]">Totale speso</div>
+            <div class="text-2xl font-semibold">€112.30</div>
+          </div>
+          <div>
+            <div class="text-[#6f5a4c]">Media per giro</div>
+            <div class="text-2xl font-semibold">€4.20</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fake Modals -->
+  <div id="modal" onclick="hideModal()" class="hidden fixed inset-0 bg-black/40 flex items-end lg:items-center justify-center z-50">
+    <div onclick="event.stopImmediatePropagation()" class="bg-white w-full lg:w-[420px] lg:rounded-3xl lg:m-0 rounded-t-3xl p-6">
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    function switchTheme(theme) {
+      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme', 'bg-[#6f4e37]', 'text-white'));
+      
+      const btn = document.querySelector(`[data-theme="${theme}"]`);
+      if (btn) btn.classList.add('active-theme', 'bg-[#6f4e37]', 'text-white');
+
+      const root = document.documentElement;
+      
+      if (theme === 'classic') {
+        root.style.setProperty('--coffee-600', '#6f4e37');
+        root.style.setProperty('--coffee-700', '#5a3e2d');
+        document.body.style.background = '#faf7f2';
+      } else if (theme === 'espresso') {
+        root.style.setProperty('--coffee-600', '#3b2314');
+        root.style.setProperty('--coffee-700', '#2a1a10');
+        document.body.style.background = '#1f1510';
+        document.body.style.color = '#f5e6d3';
+      } else if (theme === 'latte') {
+        root.style.setProperty('--coffee-600', '#a67b5b');
+        root.style.setProperty('--coffee-700', '#8b6549');
+        document.body.style.background = '#fffcf7';
+      } else if (theme === 'office') {
+        root.style.setProperty('--coffee-600', '#4a5568');
+        root.style.setProperty('--coffee-700', '#2d3748');
+        document.body.style.background = '#f7fafc';
+        document.body.style.color = '#1a202c';
+      }
+    }
+
+    function showView(view) {
+      const home = document.getElementById('view-home');
+      const group = document.getElementById('view-group');
+      const tabHome = document.getElementById('tab-home');
+      const tabGroup = document.getElementById('tab-group');
+
+      if (view === 'home') {
+        home.classList.remove('hidden');
+        group.classList.add('hidden');
+        tabHome.classList.add('active', 'bg-[#6f4e37]', 'text-white');
+        tabHome.classList.remove('bg-white', 'border');
+        tabGroup.classList.remove('active', 'bg-[#6f4e37]', 'text-white');
+        tabGroup.classList.add('bg-white', 'border', 'border-[#e8ddd2]');
+      } else {
+        home.classList.add('hidden');
+        group.classList.remove('hidden');
+        tabGroup.classList.add('active', 'bg-[#6f4e37]', 'text-white');
+        tabGroup.classList.remove('bg-white', 'border');
+        tabHome.classList.remove('active', 'bg-[#6f4e37]', 'text-white');
+        tabHome.classList.add('bg-white', 'border', 'border-[#e8ddd2]');
+      }
+    }
+
+    function switchToGroup() {
+      showView('group');
+    }
+
+    function showModal(type) {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modal-content');
+      
+      let html = '';
+
+      if (type === 'register') {
+        html = `
+          <div class="text-center mb-6">
+            <div class="mx-auto w-14 h-14 bg-[#6f4e37] rounded-2xl flex items-center justify-center mb-4">
+              <i class="bi bi-cash-coin text-white text-3xl"></i>
+            </div>
+            <h3 class="font-bold text-2xl">Registra pagamento</h3>
+            <p class="text-sm text-[#6f5a4c]">Marketing • Giro #8</p>
+          </div>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm font-medium text-[#6f5a4c]">Importo</label>
+              <input type="number" value="4.50" class="w-full mt-1 border border-[#e8ddd2] rounded-xl px-4 py-3 text-lg font-medium">
+            </div>
+            <div>
+              <label class="text-sm font-medium text-[#6f5a4c]">Descrizione</label>
+              <input type="text" value="Caffè del mattino" class="w-full mt-1 border border-[#e8ddd2] rounded-xl px-4 py-3">
+            </div>
+          </div>
+          
+          <div class="mt-7 flex gap-3">
+            <button onclick="hideModal()" class="flex-1 py-3 border border-[#e8ddd2] rounded-xl font-medium">Annulla</button>
+            <button onclick="confirmAction('Pagamento registrato!'); hideModal()" class="flex-1 py-3 bg-[#6f4e37] text-white rounded-xl font-medium">Registra</button>
+          </div>
+        `;
+      } else if (type === 'skip') {
+        html = `
+          <div class="text-center mb-6">
+            <i class="bi bi-skip-forward text-4xl text-[#6f4e37]"></i>
+            <h3 class="font-bold text-2xl mt-3">Salta il giro</h3>
+            <p class="text-sm text-[#6f5a4c] mt-1">Vuoi davvero saltare questo giro?</p>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="hideModal()" class="flex-1 py-3 border border-[#e8ddd2] rounded-xl font-medium">Annulla</button>
+            <button onclick="confirmAction('Hai saltato il giro.'); hideModal()" class="flex-1 py-3 bg-[#6f4e37] text-white rounded-xl font-medium">Conferma</button>
+          </div>
+        `;
+      } else if (type === 'payfor') {
+        html = `
+          <div class="text-center mb-6">
+            <h3 class="font-bold text-2xl">Paga per un amico</h3>
+          </div>
+          <div class="mb-4">
+            <label class="text-sm">Per chi stai pagando?</label>
+            <select class="w-full mt-1 border border-[#e8ddd2] rounded-xl px-4 py-3">
+              <option>Luca Bianchi</option>
+              <option>Anna Verdi</option>
+            </select>
+          </div>
+          <div class="flex gap-3 mt-5">
+            <button onclick="hideModal()" class="flex-1 py-3 border border-[#e8ddd2] rounded-xl font-medium">Annulla</button>
+            <button onclick="confirmAction('Pagamento per amico registrato!'); hideModal()" class="flex-1 py-3 bg-[#6f4e37] text-white rounded-xl font-medium">Paga</button>
+          </div>
+        `;
+      }
+
+      content.innerHTML = html;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function hideModal() {
+      const modal = document.getElementById('modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmAction(message) {
+      hideModal();
+      
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#6f4e37] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 text-sm font-medium`;
+      toast.innerHTML = `
+        <i class="bi bi-check-circle"></i>
+        <span>${message}</span>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.transition = 'all .2s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 200);
+      }, 1700);
+    }
+
+    function fakeCreateGroup() {
+      alert("Questa è una bozza. Nella versione reale si aprirebbe il modale per creare il gruppo.");
+    }
+
+    function initTailwind() {
+      // Tailwind script is already included via CDN
+      // Additional runtime styles if needed
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") {
+        const modal = document.getElementById('modal');
+        if (!modal.classList.contains('hidden')) {
+          hideModal();
+        } else {
+          showView('home');
+        }
+      }
+    });
+
+    // Boot
+    window.onload = function() {
+      initTailwind();
+      
+      // Default to classic theme
+      document.querySelector('[data-theme="classic"]').classList.add('bg-[#6f4e37]', 'text-white');
+      
+      // Show home by default
+      document.getElementById('view-home').classList.remove('hidden');
+      
+      // Optional: auto-switch to group for demo after 4s (commented)
+      // setTimeout(() => showView('group'), 4000);
+      
+      console.log('%c[PagaTu UI Prototype] Ready. Switch between Home and Group views.', 'color:#6f5a4c');
+    }
+  </script>
+</body>
+</html>

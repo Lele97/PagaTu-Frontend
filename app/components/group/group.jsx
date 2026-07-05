@@ -13,12 +13,14 @@ import InviteUserModal from "~/components/group/modals/InviteUserModal.jsx";
 import SkipPaymentModal from "~/components/group/modals/SkipPaymentModal.jsx";
 import PayForFriendModal from "~/components/group/modals/PayForFriendModal.jsx";
 import GroupStatsSection from '~/components/group/GroupStatsSection.jsx';
-import GroupSettingsDrawer from '~/components/settings/GroupSettingsDrawer.jsx';
+import GroupInfoSection from '~/components/group/GroupInfoSection.jsx';
 import groupStyles from "~/styles/group.module.css";
-import { fetchCoffeeProfile, leaveGroup } from '~/services/userApi';
-import { WELCOME_PATH } from '~/utils/routes';
+import {fetchCoffeeProfile, fetchGroupSummary, leaveGroup} from '~/services/userApi';
+import {getMemberForUser, getCurrentTurnMember, memberDisplayName} from '~/utils/groupHelpers';
+import {WELCOME_PATH} from '~/utils/routes';
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
-import { useSettings } from '~/context/SettingsContext.jsx';
+import GroupSettingsModal from '~/components/settings/modals/GroupSettingsModal.jsx';
+import {useSettings} from '~/context/SettingsContext.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -37,7 +39,7 @@ const normalizeError = (err) => {
 const Group = () => {
 
     const navigate = useNavigate();
-    const { userSettingsOpen } = useSettings();
+    const { userSettingsOpen, groupSettingsOpen } = useSettings();
     const [user, setUser] = useState(null);
     const [group, setGroup] = useState({groupName: 'Unnamed Group'});
     const [groups, setGroups] = useState({});
@@ -59,10 +61,11 @@ const Group = () => {
     const [isSkipping, setIsSkipping] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [friend, setFriend] = useState('');
-    const [groupRules, setGroupRules] = useState({ payForEnabled: true, payForAdminOnly: false, maxSkipPerRound: null });
+    const [groupRules, setGroupRules] = useState({payForEnabled: true, payForAdminOnly: false, maxSkipPerRound: null});
     const [avatarKey, setAvatarKey] = useState('default');
     const [leavingGroup, setLeavingGroup] = useState(false);
-    const isAnyModalOpen = showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal || userSettingsOpen;
+    const [groupSummaryLoading, setGroupSummaryLoading] = useState(false);
+    const isAnyModalOpen = showInviteForm || showDeleteModal || showRegisterPaymentModal || showSaltaPaymentModal || showPayForFriendModal || userSettingsOpen || groupSettingsOpen;
 
     const canPayFor = groupRules.payForEnabled !== false
         && (!groupRules.payForAdminOnly || isAdmin);
@@ -113,6 +116,43 @@ const Group = () => {
         const currentUserMembership = groups.userMembershipsdto.find((member) => member.username === user);
         return Boolean(currentUserMembership?.myTurn);
     }, [groups, user]);
+
+    const myMembership = useMemo(
+        () => (user ? getMemberForUser(groups, user) : null),
+        [groups, user]
+    );
+
+    const currentTurnMember = useMemo(() => getCurrentTurnMember(groups), [groups]);
+
+    const refreshGroupSummary = useCallback(async (groupName) => {
+        if (!groupName || groupName === 'Unnamed Group') return null;
+        setGroupSummaryLoading(true);
+        try {
+            const summary = await fetchGroupSummary(groupName);
+            if (!summary) return null;
+            const next = {
+                ...group,
+                ...summary,
+                groupName: summary.name || summary.groupName || groupName,
+                name: summary.name || summary.groupName || groupName,
+            };
+            setGroup(next);
+            setGroups(next);
+            localStorage.setItem('group', JSON.stringify(next));
+            if (summary.maxSkipPerRound !== undefined || summary.payForEnabled !== undefined) {
+                setGroupRules({
+                    payForEnabled: summary.payForEnabled !== false,
+                    payForAdminOnly: summary.payForAdminOnly === true,
+                    maxSkipPerRound: summary.maxSkipPerRound ?? null,
+                });
+            }
+            return next;
+        } catch {
+            return null;
+        } finally {
+            setGroupSummaryLoading(false);
+        }
+    }, [group]);
 
     const getClassificaPaymentsForGroup = useCallback(
         async (groupToUse = group) => {
@@ -264,21 +304,30 @@ const Group = () => {
 
                 // Fix: condizione corretta (prima era sempre true per via di "||")
                 if (groupObject?.id && groupObject?.groupName && groupObject.groupName !== 'Unnamed Group') {
+                    const summary = await fetchGroupSummary(groupObject.groupName).catch(() => null);
+                    if (summary) {
+                        groupObject = {
+                            ...groupObject,
+                            ...summary,
+                            groupName: summary.name || summary.groupName || groupObject.groupName,
+                            name: summary.name || summary.groupName || groupObject.groupName,
+                        };
+                        setGroup(groupObject);
+                        setGroups(groupObject);
+                        localStorage.setItem('group', JSON.stringify(groupObject));
+                        setGroupRules({
+                            payForEnabled: summary.payForEnabled !== false,
+                            payForAdminOnly: summary.payForAdminOnly === true,
+                            maxSkipPerRound: summary.maxSkipPerRound ?? null,
+                        });
+                    }
                     await getClassificaPaymentsForGroup(groupObject);
-                    try {
-                        const rulesRes = await fetch(
-                            `${GETAWAY_SERVER_URL}/api/coffee/regole/gruppo?groupName=${encodeURIComponent(groupObject.groupName)}`,
-                            { headers: { Authorization: `Bearer ${authToken}`, Accept: 'application/json' }, credentials: 'include' }
-                        );
-                        if (rulesRes.ok) {
-                            setGroupRules(await rulesRes.json());
-                        }
-                    } catch { /* keep defaults */ }
                 }
                 try {
                     const profile = await fetchCoffeeProfile();
                     setAvatarKey(profile?.avatarKey || 'default');
-                } catch { /* keep default */ }
+                } catch { /* keep default */
+                }
             } catch {
                 navigate(WELCOME_PATH);
             }
@@ -547,14 +596,17 @@ const Group = () => {
                 clearCache(`classifica_${group.id || group.groupName || 'unknown'}`);
 
                 setTimeout(() => setShowRegisterPaymentModal(false), 2000);
-                await getClassificaPaymentsForGroup(group);
+                await Promise.all([
+                    getClassificaPaymentsForGroup(group),
+                    refreshGroupSummary(group.groupName),
+                ]);
             } catch {
                 setError('Problema durante la registrazione del pagamento');
             } finally {
                 setIsSubmitting(false);
             }
         },
-        [clearCache, descrizione, getClassificaPaymentsForGroup, group, importo]
+        [clearCache, descrizione, getClassificaPaymentsForGroup, group, importo, refreshGroupSummary]
     );
 
     const confirmSkipPayment = useCallback(
@@ -596,14 +648,17 @@ const Group = () => {
                 clearCache(`classifica_${group.id || group.groupName || 'unknown'}`);
 
                 setTimeout(() => setShowSaltaPaymentModal(false), 2000);
-                await getClassificaPaymentsForGroup(group);
+                await Promise.all([
+                    getClassificaPaymentsForGroup(group),
+                    refreshGroupSummary(group.groupName),
+                ]);
             } catch {
                 setError('Errore di rete. Riprova più tardi.');
             } finally {
                 setIsSkipping(false);
             }
         },
-        [clearCache, getClassificaPaymentsForGroup, group]
+        [clearCache, getClassificaPaymentsForGroup, group, refreshGroupSummary]
     );
 
     const confirmDeleteGroup = useCallback(
@@ -687,19 +742,22 @@ const Group = () => {
                 clearCache(`classifica_${group.id || group.groupName || 'unknown'}`);
 
                 setTimeout(() => setShowPayForFriendModal(false), 2000);
-                await getClassificaPaymentsForGroup(group);
+                await Promise.all([
+                    getClassificaPaymentsForGroup(group),
+                    refreshGroupSummary(group.groupName),
+                ]);
             } catch {
                 setError('Problema durante la registrazione del pagamento');
             } finally {
                 setIsSubmitting(false);
             }
         },
-        [clearCache, descrizione, getClassificaPaymentsForGroup, group, importo]
+        [clearCache, descrizione, getClassificaPaymentsForGroup, group, importo, refreshGroupSummary]
     );
 
     const handleSettingsSaved = useCallback((updated) => {
         if (updated?.name) {
-            const next = { ...group, groupName: updated.name, name: updated.name };
+            const next = {...group, groupName: updated.name, name: updated.name};
             setGroup(next);
             setGroups(next);
             localStorage.setItem('group', JSON.stringify(next));
@@ -711,7 +769,10 @@ const Group = () => {
                 maxSkipPerRound: updated.maxSkipPerRound ?? null,
             });
         }
-    }, [group]);
+        if (group?.groupName) {
+            refreshGroupSummary(group.groupName);
+        }
+    }, [group, refreshGroupSummary]);
 
     const handleLeaveGroup = useCallback(async () => {
         if (!window.confirm(`Vuoi lasciare il gruppo "${group.groupName}"?`)) return;
@@ -731,14 +792,21 @@ const Group = () => {
     return (
         <div className={styles.groupPage}>
             <div className={`${styles.container} ${isAnyModalOpen ? 'modal-active' : ''}`}>
-                <Header user={user} logout={logout} showGroupSettings={isAdmin} avatarKey={avatarKey} />
+
+                <Header user={user} logout={logout} showGroupSettings={isAdmin} avatarKey={avatarKey}/>
 
                 <main className={styles.main}>
                     <button onClick={goBack} className={sharedStyles.groupButton} style={{marginBottom: '2rem'}}>
                         <i className="fa-solid fa-arrow-left"></i> <i className="fa-solid fa-house"></i>
                     </button>
 
-                    <GroupHeader group={group} />
+                    <GroupHeader group={group} currentUser={user} />
+
+                    {groupSummaryLoading ? (
+                        <p style={{color: 'var(--coffee-600)', marginBottom: '1rem'}}>Aggiornamento turno...</p>
+                    ) : (
+                        <GroupInfoSection group={groups} currentUser={user} />
+                    )}
 
                     {!isAdmin && (
                         <button
@@ -746,19 +814,23 @@ const Group = () => {
                             onClick={handleLeaveGroup}
                             className={sharedStyles.groupButton}
                             disabled={leavingGroup}
-                            style={{ marginBottom: '1rem' }}
+                            style={{marginBottom: '1rem'}}
                         >
-                            <i className="bi bi-box-arrow-right" /> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
+                            <i className="bi bi-box-arrow-right"/> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
                         </button>
                     )}
 
                     <PaymentActions
                         myTurn={myTurn}
                         canPayFor={canPayFor}
-                        maxSkipPerRound={groupRules.maxSkipPerRound}
+                        maxSkipPerMonth={groups.maxSkipPerMonth ?? 4}
+                        maxPayForPerMonth={groups.maxPayForPerMonth ?? 4}
+                        myMembership={myMembership}
+                        currentTurnUsername={groups.currentTurnUsername || currentTurnMember?.username}
+                        currentTurnDisplayName={currentTurnMember ? memberDisplayName(currentTurnMember) : null}
                         onRegisterPayment={registerPayment}
                         onSkipPayment={skipPayment}
-                        onPayForFriend={payForFriend} />
+                        onPayForFriend={payForFriend}/>
 
                     <div className={styles.separator}>
                         <div className={styles.separatorLeft}></div>
@@ -770,90 +842,95 @@ const Group = () => {
                         loading={paymentLoading}
                         error={paymentByGroupError}
                         payments={classificaPaymentsForGroup}
-                        onRetry={onRetry} />
+                        onRetry={onRetry}/>
 
                     <div className={groupStyles.separator}>
                         <div className={groupStyles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="" />
+                        <img src="/coffee-medium-svgrepo-com.svg" alt=""/>
                         <div className={groupStyles.separatorRight}></div>
                     </div>
 
-                    <GroupStatsSection groupName={group?.groupName} />
+                    <GroupStatsSection groupName={group?.groupName}/>
 
                 </main>
 
-                <GroupSettingsDrawer
+            </div>
+
+            {userSettingsOpen && <UserSettingsModal />}
+
+            {groupSettingsOpen && (
+                <GroupSettingsModal
                     groupName={group?.groupName}
                     isAdmin={isAdmin}
                     onInviteMember={inviteMember}
                     onDeleteGroup={deleteGroup}
                     onSettingsSaved={handleSettingsSaved}
                 />
+            )}
 
-                {showInviteForm && (
-                    <InviteUserModal
-                        closeInviteForm={closeInviteForm}
-                        submitInvite={submitInvite}
-                        userInvitation={userInvitation}
-                        isSubmitting={isSubmitting}
-                        error={error}
-                        successMessage={successMessage}
-                        handleInputChangeInvitation={handleInputChangeInvitation}
-                    />
-                )}
+            {showInviteForm && (
+                <InviteUserModal
+                    closeInviteForm={closeInviteForm}
+                    submitInvite={submitInvite}
+                    userInvitation={userInvitation}
+                    isSubmitting={isSubmitting}
+                    error={error}
+                    successMessage={successMessage}
+                    handleInputChangeInvitation={handleInputChangeInvitation}
+                />
+            )}
 
-                {showPayForFriendModal && (
-                    <PayForFriendModal
-                        closePayForFriendModal={closePayForFriendModal}
-                        handleInputChangeImporto={handleInputChangeImporto}
-                        confirmPayForFriend={confirmPayForFriend}
-                        importo={importo}
-                        descrizione={descrizione}
-                        handleInputChangeDescrizione={handleInputChangeDescrizione}
-                        isSubmitting={isSubmitting}
-                        error={error}
-                        friend={friend}
-                        successMessage={successMessage}
-                    />
-                )}
+            {showPayForFriendModal && (
+                <PayForFriendModal
+                    closePayForFriendModal={closePayForFriendModal}
+                    handleInputChangeImporto={handleInputChangeImporto}
+                    confirmPayForFriend={confirmPayForFriend}
+                    importo={importo}
+                    descrizione={descrizione}
+                    handleInputChangeDescrizione={handleInputChangeDescrizione}
+                    isSubmitting={isSubmitting}
+                    error={error}
+                    friend={friend}
+                    successMessage={successMessage}
+                />
+            )}
 
-                {showRegisterPaymentModal && (
-                    <RegisterPaymentModal
-                        submitPayment={submitPayment}
-                        importo={importo}
-                        descrizione={descrizione}
-                        error={error}
-                        successMessage={successMessage}
-                        isSubmitting={isSubmitting}
-                        closeRegisterPaymentModal={closeRegisterPaymentModal}
-                        handleInputChangeImporto={handleInputChangeImporto}
-                        handleInputChangeDescrizione={handleInputChangeDescrizione}
-                    />
-                )}
+            {showRegisterPaymentModal && (
+                <RegisterPaymentModal
+                    submitPayment={submitPayment}
+                    importo={importo}
+                    descrizione={descrizione}
+                    error={error}
+                    successMessage={successMessage}
+                    isSubmitting={isSubmitting}
+                    closeRegisterPaymentModal={closeRegisterPaymentModal}
+                    handleInputChangeImporto={handleInputChangeImporto}
+                    handleInputChangeDescrizione={handleInputChangeDescrizione}
+                />
+            )}
 
-                {showDeleteModal && (
-                    <DeleteGroupModal
-                        groupName={group?.groupName || 'Unnamed Group'}
-                        closeDeleteModal={closeDeleteModal}
-                        confirmDeleteGroup={confirmDeleteGroup}
-                        isDeleting={isDeleting}
-                        error={error}
-                        successMessage={successMessage}
-                    />
-                )}
+            {showDeleteModal && (
+                <DeleteGroupModal
+                    groupName={group?.groupName || 'Unnamed Group'}
+                    closeDeleteModal={closeDeleteModal}
+                    confirmDeleteGroup={confirmDeleteGroup}
+                    isDeleting={isDeleting}
+                    error={error}
+                    successMessage={successMessage}
+                />
+            )}
 
-                {showSaltaPaymentModal && (
-                    <SkipPaymentModal
-                        closeSaltaPaymentForm={closeSaltaPaymentForm}
-                        confirmSkipPayment={confirmSkipPayment}
-                        isSkipping={isSkipping}
-                        error={error}
-                        successMessage={successMessage}
-                    />
-                )}
+            {showSaltaPaymentModal && (
+                <SkipPaymentModal
+                    closeSaltaPaymentForm={closeSaltaPaymentForm}
+                    confirmSkipPayment={confirmSkipPayment}
+                    isSkipping={isSkipping}
+                    error={error}
+                    successMessage={successMessage}
+                />
+            )}
 
-                {userSettingsOpen && <UserSettingsModal />}
-            </div>
+
         </div>
     );
 };

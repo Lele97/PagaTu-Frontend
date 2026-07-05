@@ -593,9 +593,36 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
                         </div>
                     </div>
 
+
                     <div className={styles.heroText}>
+                        <h2 className={styles.heroTitle}>L'applicazione perfetta per la pausa più importante della giornata</h2>
                         <span className={styles.eyebrow}>La pausa caffè, finalmente in ordine</span>
+                        <p className={styles.heroSubtitle}>
+                            PagaTu organizza gruppi, turni e pagamenti della colazione in modo semplice,
+                            leggero e divertente.
+                        </p>
+
+                        <div className={styles.heroFeatures}>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-user-group"></i>
+                                <span>Crea il tuo gruppo</span>
+                            </div>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-mug-hot"></i>
+                                <span>Scopri a chi tocca offrire</span>
+                            </div>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-receipt"></i>
+                                <span>Registra ogni pagamento</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div className={styles.heroText}>
+
                         <h2 className={styles.heroTitle}>Il caffè di oggi non si dimentica più.</h2>
+                        <span className={styles.eyebrow}>La pausa caffè, finalmente in ordine</span>
                         <p className={styles.heroSubtitle}>
                             PagaTu organizza gruppi, turni e pagamenti della colazione in modo semplice,
                             leggero e divertente.

@@ -5,11 +5,14 @@ import Header from '../header/header.jsx';
 import HomeHeader from "~/components/home/homeHeader.jsx";
 import HomeGroups from "~/components/home/homeGroups.jsx";
 import HomePayments from "~/components/home/homePayments.jsx";
+import HomeStatistics from "~/components/home/homeStatistics.jsx";
+import HomeAwards from "~/components/home/homeAwards.jsx";
 import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
-import { fetchCoffeeProfile } from '~/services/userApi';
+import { fetchCoffeeProfile, fetchUserStatistics, fetchUserAwards } from '~/services/userApi';
 import { WELCOME_PATH } from '~/utils/routes';
+
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -47,6 +50,10 @@ const Home = () => {
     const [success, setSuccess] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [avatarKey, setAvatarKey] = useState('default');
+    const [userStatistics, setUserStatistics] = useState(null);
+    const [userAwards, setUserAwards] = useState([]);
+    const [statsLoading, setStatsLoading] = useState(true);
+    const [awardsLoading, setAwardsLoading] = useState(true);
     const navigate = useNavigate();
     const { userSettingsOpen } = useSettings();
     const requestCacheRef = useRef(new Map());
@@ -98,7 +105,12 @@ const Home = () => {
                     return;
                 }
                 setUser(username);
-                await Promise.all([getGroupsByUser(username), getHistoryPayments(username)]);
+                await Promise.all([
+                    getGroupsByUser(username), 
+                    getHistoryPayments(username),
+                    getUserStatistics(username),
+                    getUserAwards(username)
+                ]);
                 try {
                     const profile = await fetchCoffeeProfile();
                     setAvatarKey(profile?.avatarKey || 'default');
@@ -128,9 +140,14 @@ const Home = () => {
         }
     }, [error]);
 
+    const isAnyModalOpen = showAddGroupModal || userSettingsOpen;
+
     useEffect(() => {
-        document.body.style.overflow = showAddGroupModal ? "hidden" : "unset";
-    }, [showAddGroupModal]);
+        document.body.style.overflow = isAnyModalOpen ? 'hidden' : 'unset';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isAnyModalOpen]);
 
     const handleChangeName = useCallback((e) => {
         setPayload(prev => ({...prev, name: e.target.value}));
@@ -344,6 +361,102 @@ const Home = () => {
         }
     }, [cachedFetchJson, user]);
 
+    const getUserStatistics = useCallback(async (username) => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return logout();
+
+        const cacheKey = `user_stats_${username || 'unknown'}`;
+
+        try {
+            setStatsLoading(true);
+
+            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/user/statistics`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                credentials: 'include',
+            }, cacheKey);
+
+            if (data.status === 200) {
+                setUserStatistics(data.body);
+            } else {
+                // fallback mock data for now (backend to implement)
+                setUserStatistics({
+                    totalPaid: 45.50,
+                    totalCoffeesForOthers: 28,
+                    timesKing: 3,
+                    currentStreak: 5,
+                    longestStreak: 8,
+                    skippedCount: 2,
+                    coffeeKarma: 87,
+                    funTitle: "Coffee Legend",
+                    monthlySavedForFriends: 12.30,
+                    averagePayment: 4.20,
+                    mostExpensive: 12.50,
+                });
+            }
+        } catch {
+            // mock on error
+            setUserStatistics({
+                totalPaid: 45.50,
+                totalCoffeesForOthers: 28,
+                timesKing: 3,
+                currentStreak: 5,
+                longestStreak: 8,
+                skippedCount: 2,
+                coffeeKarma: 87,
+                funTitle: "Coffee Legend",
+                monthlySavedForFriends: 12.30,
+                averagePayment: 4.20,
+                mostExpensive: 12.50,
+            });
+        } finally {
+            setStatsLoading(false);
+        }
+    }, [cachedFetchJson, user]);
+
+    const getUserAwards = useCallback(async (username) => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return logout();
+
+        const cacheKey = `user_awards_${username || 'unknown'}`;
+
+        try {
+            setAwardsLoading(true);
+
+            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/user/awards`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                credentials: 'include',
+            }, cacheKey);
+
+            if (data.status === 200 && Array.isArray(data.body)) {
+                setUserAwards(data.body);
+            } else {
+                // mock awards
+                setUserAwards([
+                    { id: 1, name: "Caffè King del mese", level: "gold", icon: "bi-cup-hot-fill" },
+                    { id: 2, name: "Streak 7 giorni", level: "silver", icon: "bi-star-fill" },
+                    { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "bi-people-fill" },
+                    { id: 4, name: "Ha pagato per 5 amici", level: "gold", icon: "bi-heart-fill" },
+                ]);
+            }
+        } catch {
+            setUserAwards([
+                { id: 1, name: "Caffè King del mese", level: "gold", icon: "bi-cup-hot-fill" },
+                { id: 2, name: "Streak 7 giorni", level: "silver", icon: "bi-star-fill" },
+                { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "bi-people-fill" },
+            ]);
+        } finally {
+            setAwardsLoading(false);
+        }
+    }, [cachedFetchJson, user]);
+
     const getPaginatedGroups = useMemo(() => {
         const startIndex = (currentGroupPage - 1) * GROUPS_PER_PAGE;
         return groups.slice(startIndex, startIndex + GROUPS_PER_PAGE);
@@ -359,18 +472,27 @@ const Home = () => {
     const getTotalPaymentPages = () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE);
 
     const onRetry = useCallback(async () => {
-        if (user) await getGroupsByUser(user);
-    }, [getGroupsByUser, user])
+        if (user) {
+            await Promise.all([
+                getGroupsByUser(user),
+                getHistoryPayments(user),
+                getUserStatistics(user),
+                getUserAwards(user)
+            ]);
+        }
+    }, [getGroupsByUser, getHistoryPayments, getUserStatistics, getUserAwards, user])
 
     return (
         <div className={styles.homePage}>
-            <div className={`${styles.container} ${showAddGroupModal || userSettingsOpen ? styles.modalActive : ''}`}>
+            <div className={`${styles.container} ${isAnyModalOpen ? styles.modalActive : ''}`}>
 
                 <Header user={user} logout={logout} avatarKey={avatarKey} />
 
                 <main className={styles.main}>
 
                     <HomeHeader/>
+
+                    <HomeStatistics statistics={userStatistics} loading={statsLoading} />
 
                     <HomeGroups groups={getPaginatedGroups}
                                 groupsLoading={groupsLoading}
@@ -382,7 +504,17 @@ const Home = () => {
                                 currentGroupPage={currentGroupPage}
                                 getTotalGroupPages={getTotalGroupPages()}
                                 setCurrentGroupPage={setCurrentGroupPage}
+                                currentUsername={user}
                     />
+
+                    <div className={styles.separator}>
+                        <div className={styles.separatorLeft}></div>
+                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
+                        <div className={styles.separatorRight}></div>
+                    </div>
+
+
+                    <HomeAwards awards={userAwards} loading={awardsLoading} />
 
                     <div className={styles.separator}>
                         <div className={styles.separatorLeft}></div>

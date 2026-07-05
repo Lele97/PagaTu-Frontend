@@ -29,6 +29,7 @@
 .storySection {
     position: relative;
     z-index: 1;
+    transition: transform 0.2s ease;
 }
 
 .heroSection {

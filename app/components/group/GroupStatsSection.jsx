@@ -78,7 +78,7 @@ const GroupStatsSection = ({ groupName }) => {
         <>
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-scales" /> Bilancio — chi deve a chi
+                    <i className="bi bi-calculator" /> Bilancio — chi deve a chi
                 </h2>
                 {balanceLoading ? (
                     <LoadingSpinner message="Calcolo bilancio..." />
@@ -152,7 +152,7 @@ const GroupStatsSection = ({ groupName }) => {
 
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-trophy-fill" /> Award
+                    <i className="bi bi-trophy" /> Award
                 </h2>
                 {gamificationLoading ? (
                     <LoadingSpinner message="Caricamento statistiche..." />

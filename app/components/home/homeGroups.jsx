@@ -3,6 +3,12 @@ import React from "react";
 import ErrorMessage from "~/components/shared/errorMessage.jsx";
 import LoadingSpinner from "~/components/shared/loadingSpinner.jsx";
 import PaginationControls from "~/components/shared/paginationControls.jsx";
+import {
+    formatRoundNumber,
+    formatSkipsRemaining,
+    getMemberForUser,
+    isMyTurn,
+} from "~/utils/groupHelpers";
 
 const HomeGroups = React.memo(function HomeGroups({
                                                       onRetry,
@@ -14,7 +20,8 @@ const HomeGroups = React.memo(function HomeGroups({
                                                       getTotalGroupPages,
                                                       setCurrentGroupPage,
                                                       handleGroupSelect,
-                                                      selectedGroup
+                                                      selectedGroup,
+                                                      currentUsername,
                                                   }) {
 
     if (groupsLoading) {
@@ -63,28 +70,67 @@ const HomeGroups = React.memo(function HomeGroups({
             </div>
 
             <div className={styles.groupGrid}>
-                {groups.map((group, index) => (
-                    <div
-                        key={group.id || group.name || index}
-                        className={`${styles.groupCard} ${
-                            selectedGroup === group.name ? styles.groupCardSelected : ''
-                        }`}
-                        onClick={() => handleGroupSelect(group.name)}
-                    >
-                        <div className={styles.groupIcon}>
-                            <i className="fa-solid fa-user-group"></i>
+                {groups.map((group, index) => {
+                    const memberCount = group.memberCount ?? group.userMembershipsdto?.length ?? 0;
+                    const turnUsername = group.currentTurnUsername;
+                    const myTurn = currentUsername && isMyTurn(group, currentUsername);
+                    const me = currentUsername ? getMemberForUser(group, currentUsername) : null;
+                    const turnLabel = turnUsername
+                        ? (turnUsername === currentUsername ? 'Tocca a te' : `Turno: @${turnUsername}`)
+                        : null;
+
+                    return (
+                        <div
+                            key={group.id || group.name || index}
+                            className={`${styles.groupCard} ${
+                                selectedGroup === group.name ? styles.groupCardSelected : ''
+                            }`}
+                            onClick={() => handleGroupSelect(group.name)}
+                        >
+                            <div className={styles.groupIcon}>
+                                <i className="fa-solid fa-user-group"></i>
+                            </div>
+                            <div className={styles.groupInfo}>
+                                <h3 className={styles.groupName}>{group.name}</h3>
+                                {group.description && (
+                                    <p className={styles.groupDescription}>{group.description}</p>
+                                )}
+                                <div className={styles.groupMeta}>
+                                    {formatRoundNumber(group) && (
+                                        <span className={styles.groupMetaItem}>
+                                            <i className="bi bi-arrow-repeat" />
+                                            {formatRoundNumber(group)}
+                                        </span>
+                                    )}
+                                    <span className={styles.groupMetaItem}>
+                                        <i className="bi bi-people" />
+                                        {memberCount} {memberCount === 1 ? 'membro' : 'membri'}
+                                    </span>
+                                    {turnLabel && !myTurn && (
+                                        <span className={styles.groupMetaItem}>
+                                            <i className="bi bi-cup-hot" />
+                                            {turnLabel}
+                                        </span>
+                                    )}
+                                    {myTurn && (
+                                        <span className={styles.groupTurnBadge}>
+                                            <i className="bi bi-cup-hot-fill" />
+                                            È il tuo turno
+                                        </span>
+                                    )}
+                                </div>
+                                {me && (
+                                    <p className={styles.groupTurnHint}>
+                                        {formatSkipsRemaining(me, group.maxSkipPerMonth)}
+                                    </p>
+                                )}
+                            </div>
+                            <div className={styles.groupAction}>
+                                <i className="bi bi-arrow-right"></i>
+                            </div>
                         </div>
-                        <div className={styles.groupInfo}>
-                            <h3 className={styles.groupName}>{group.name}</h3>
-                            {group.description && (
-                                <p className={styles.groupDescription}>{group.description}</p>
-                            )}
-                        </div>
-                        <div className={styles.groupAction}>
-                            <i className="bi bi-arrow-right"></i>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
             <PaginationControls currentPage={currentGroupPage} totalPages={getTotalGroupPages}
                                 onPageChange={setCurrentGroupPage}/>

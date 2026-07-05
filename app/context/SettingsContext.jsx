@@ -5,27 +5,31 @@ const SettingsContext = createContext(null);
 export const SettingsProvider = ({ children }) => {
     const [userSettingsOpen, setUserSettingsOpen] = useState(false);
     const [userSettingsTab, setUserSettingsTab] = useState('profile');
-    const [groupDrawerOpen, setGroupDrawerOpen] = useState(false);
+    const [groupSettingsOpen, setGroupSettingsOpen] = useState(false);
 
     const openUserSettings = useCallback((tab = 'profile') => {
+        setGroupSettingsOpen(false);
         setUserSettingsTab(tab);
         setUserSettingsOpen(true);
     }, []);
 
     const closeUserSettings = useCallback(() => setUserSettingsOpen(false), []);
 
-    const openGroupSettings = useCallback(() => setGroupDrawerOpen(true), []);
-    const closeGroupSettings = useCallback(() => setGroupDrawerOpen(false), []);
+    const openGroupSettings = useCallback(() => {
+        setUserSettingsOpen(false);
+        setGroupSettingsOpen(true);
+    }, []);
+    const closeGroupSettings = useCallback(() => setGroupSettingsOpen(false), []);
 
     const value = useMemo(() => ({
         userSettingsOpen,
         userSettingsTab,
-        groupDrawerOpen,
+        groupSettingsOpen,
         openUserSettings,
         closeUserSettings,
         openGroupSettings,
         closeGroupSettings,
-    }), [userSettingsOpen, userSettingsTab, groupDrawerOpen, openUserSettings, closeUserSettings, openGroupSettings, closeGroupSettings]);
+    }), [userSettingsOpen, userSettingsTab, groupSettingsOpen, openUserSettings, closeUserSettings, openGroupSettings, closeGroupSettings]);
 
     return (
         <SettingsContext.Provider value={value}>

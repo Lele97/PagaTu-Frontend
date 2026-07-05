@@ -44,8 +44,7 @@ const HomePayments = React.memo(function HomePayments({
     return (
         <section className={styles.recentSection}>
             <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi ultimi
-                    pagamenti</h2>
+                <h2 className={styles.sectionTitle}><i className="bi bi-credit-card-fill"></i> I tuoi pagamenti</h2>
             </div>
             <div className={styles.paymentCardsContainer}>
                 {payments.map((payment) => (

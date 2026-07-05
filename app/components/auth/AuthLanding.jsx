@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 import LoginForm from '~/components/login/login-form.jsx';
 import SignupForm from '~/components/signup/signup-form.jsx';
 import styles from '~/styles/signup.module.css';
@@ -14,12 +14,12 @@ const AuthLanding = () => {
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
-            navigate('/home', { replace: true });
+            navigate('/home', {replace: true});
         }
     }, [navigate]);
 
     useEffect(() => {
-        setSearchParams(activeTab === 'signup' ? { tab: 'signup' } : {}, { replace: true });
+        setSearchParams(activeTab === 'signup' ? {tab: 'signup'} : {}, {replace: true});
     }, [activeTab, setSearchParams]);
 
     const switchTab = (tab) => setActiveTab(tab);

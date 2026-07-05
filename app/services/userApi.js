@@ -38,6 +38,9 @@ export const updatePreferences = (body) =>
 export const fetchThemePresets = () =>
     request(`${GATEWAY_URL}/api/coffee/user/theme-presets`);
 
+export const fetchGroupSummary = (groupName) =>
+    request(`${GATEWAY_URL}/api/coffee/group/summary?groupName=${encodeURIComponent(groupName)}`);
+
 export const fetchGroupSettings = (groupName) =>
     request(`${GATEWAY_URL}/api/coffee/group/settings?groupName=${encodeURIComponent(groupName)}`);
 
@@ -62,3 +65,43 @@ export const AVATAR_PRESETS = [
     { key: 'steam', label: 'Vapore', icon: 'bi-cloud-fog2' },
     { key: 'office', label: 'Ufficio', icon: 'bi-building' },
 ];
+
+// === BACKEND IMPLEMENTATION REQUIRED ===
+// Endpoints to add in the backend (GET, authenticated):
+//
+// 1. GET /api/coffee/user/statistics
+//    Returns fun + useful stats for the logged user.
+//    Example response:
+//    {
+//      "totalPaid": 52.75,
+//      "totalCoffeesForOthers": 31,
+//      "timesKing": 4,
+//      "currentStreak": 6,
+//      "skippedCount": 1,
+//      "coffeeKarma": 92,
+//      "funTitle": "Coffee Legend",
+//      "monthlySavedForFriends": 15.80
+//    }
+//
+// 2. GET /api/coffee/user/awards
+//    Returns list of earned awards/badges.
+//    Example:
+//    [
+//      { "id": 1, "name": "Caffè King del mese", "level": "gold", "icon": "bi-cup-hot-fill" },
+//      { "id": 2, "name": "Streak 7 giorni", "level": "silver", "icon": "bi-star-fill" },
+//      { "id": 3, "name": "Ha pagato per 5 amici in un giro", "level": "gold", "icon": "bi-heart-fill" }
+//    ]
+//
+// Fun stats ideas to compute server-side:
+// - totalPaid / totalCoffeesForOthers
+// - times you were the highest payer in a round (king)
+// - current consecutive rounds paid without skip
+// - total skips
+// - coffeeKarma = 100 - (skips / total_rounds * 60) or similar
+// - funTitle based on thresholds (Coffee Legend, The Reliable One, Skip Master, Coffee Newbie, etc.)
+// - monthlySavedForFriends = sum of "paga per" this month
+export const fetchUserStatistics = () =>
+    request(`${GATEWAY_URL}/api/coffee/user/statistics`);
+
+export const fetchUserAwards = () =>
+    request(`${GATEWAY_URL}/api/coffee/user/awards`);

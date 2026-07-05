@@ -21,6 +21,10 @@
 .groupPage {
     min-height: 100vh;
     background-color: var(--coffee-200);
+    background-image: var(--bg-motif);
+    background-repeat: repeat;
+    background-size: 120px 120px;
+    background-position: 10px 20px;
     box-sizing: border-box;
 }
 
@@ -57,6 +61,217 @@
     color: var(--coffee-800);
     margin-bottom: 1.5rem;
     text-align: center;
+}
+
+.groupHeaderMeta {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    color: var(--coffee-600);
+}
+
+.groupInfoSection {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid var(--coffee-100);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.groupInfoHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.groupInfoHeader .sectionTitle {
+    margin-bottom: 0;
+    text-align: left;
+    font-size: 1.2rem;
+}
+
+.roundStats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--coffee-600);
+}
+
+.turnBanner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(135deg, var(--coffee-600), var(--coffee-700));
+    color: white;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.turnQueue {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--coffee-100);
+}
+
+.turnAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--coffee-300);
+    color: var(--coffee-800);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 2px solid white;
+}
+
+.turnAvatarActive {
+    background: var(--coffee-600);
+    color: white;
+    border-color: var(--coffee-400);
+    transform: scale(1.1);
+}
+
+.membersList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.memberRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.65rem 0.75rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 0.65rem;
+}
+
+.memberMain {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.memberAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--coffee-400);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.memberAvatarActive {
+    background: var(--coffee-600);
+    box-shadow: 0 0 0 2px var(--coffee-300);
+}
+
+.memberName {
+    font-weight: 500;
+    color: var(--coffee-800);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.memberMeta {
+    font-size: 0.8rem;
+    color: var(--coffee-500);
+}
+
+.memberStats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    flex-shrink: 0;
+}
+
+.memberStatus {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+}
+
+.memberStatusTurn {
+    background: var(--coffee-600);
+    color: white;
+}
+
+.memberStatusPaid {
+    background: rgba(40, 167, 69, 0.15);
+    color: #1e7e34;
+}
+
+.memberStatusSkipped {
+    background: rgba(255, 193, 7, 0.2);
+    color: #856404;
+}
+
+.memberStatusPending {
+    background: rgba(108, 117, 125, 0.15);
+    color: var(--coffee-700);
+}
+
+.memberSkip {
+    font-size: 0.75rem;
+    color: var(--coffee-500);
+}
+
+.youBadge,
+.adminBadge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+.youBadge {
+    background: var(--coffee-200);
+    color: var(--coffee-700);
+}
+
+.adminBadge {
+    background: var(--coffee-600);
+    color: white;
+    margin-left: 0.5rem;
+}
+
+.roundBadge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--coffee-200);
+    color: var(--coffee-800);
+    vertical-align: middle;
+}
+
+.groupHeader .adminBadge {
+    font-size: 0.65rem;
+    vertical-align: middle;
 }
 
 /* =============== Button Styles =============== */
@@ -120,6 +335,8 @@
 .inviteButton:hover {
     background-color: var(--coffee-700);
 }
+
+
 
 /* =============== LOADING STYLES =============== */
 .loadingSpinner {

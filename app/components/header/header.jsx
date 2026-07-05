@@ -11,35 +11,36 @@ const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default'
     return (
         <header className={styles.header}>
             <div className={styles.headerContent}>
-                <BuyMeACoffeeButton />
+             {/*   <BuyMeACoffeeButton />*/}
 
                 <div className={styles.logoTitleContainer}>
                     <img
                         src="/pagaTu.webp"
                         alt="PagaTu - Logo applicazione caffè aziendale"
-                        width={200}
-                        height={300}
                         className={styles.pagatu_image}
                     />
                 </div>
 
-                <div className={styles.userInfo}>
-                    <div className={styles.coffeeAvatar} aria-label={`Utente ${user}`}>
-                        <i className={`bi ${avatar.icon} ${styles.avatarIcon}`} />
-                        <span className={styles.coffeeLetter}>
-                            {user?.charAt(0).toUpperCase()}
-                        </span>
+                <div className={styles.rightSection}>
+                    <div className={styles.userNameArea}>
+                        <div aria-label={`Utente ${user}`}>
+                            <i className={`bi ${avatar.icon} ${styles.avatarIcon}`} />
+                            <span className={styles.coffeeLetter}>
+                                {user?.charAt(0).toUpperCase()}
+                            </span>
+                        </div>
+                        <span className={styles.userName}>{user}</span>
                     </div>
 
-                        <button
-                            type="button"
-                            className={styles.iconBtn}
-                            onClick={() => openUserSettings('profile')}
-                            title="Impostazioni"
-                            aria-label="Impostazioni utente"
-                        >
-                            <i className="bi bi-gear" />
-                        </button>
+                    <button
+                        type="button"
+                        className={styles.iconBtn}
+                        onClick={() => openUserSettings('profile')}
+                        title="Impostazioni"
+                        aria-label="Impostazioni utente"
+                    >
+                        <i className="bi bi-gear" />
+                    </button>
 
                     {showGroupSettings && (
                         <button
@@ -53,15 +54,17 @@ const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default'
                         </button>
                     )}
 
-                    <div onClick={logout} className={styles.door_container} role="button" tabIndex={0} aria-label="Esci">
-                        <div className={styles.top_bar} />
-                        <div className={styles.door_frame} />
-                        <div className={styles.door_panel} />
-                        <div className={styles.doorknob}>
-                            <div className={styles.doorknob_inner} />
-                        </div>
-                    </div>
+                    <button
+                        type="button"
+                        className={styles.iconBtn}
+                        onClick={logout}
+                        title="Logout"
+                        aria-label="Logout"
+                    >
+                        <i className="bi bi-door-open"></i>
+                    </button>
                 </div>
+
             </div>
         </header>
     );

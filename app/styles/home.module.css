@@ -35,25 +35,22 @@
 /* =============== HERO SECTION ENHANCEMENTS =============== */
 .heroSection {
     text-align: center;
-    margin-bottom: 5rem;
-    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem 1rem;
 }
 
 .heroTitle {
-    font-size: 3rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 600;
     color: var(--coffee-800);
-    margin: 0 0 0.5rem 0;
-    background: linear-gradient(135deg, var(--coffee-700) 0%, var(--coffee-800) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    margin: 0 0 0.25rem 0;
 }
 
 .heroSubtitle {
     color: var(--coffee-600);
-    line-height: 1.5;
-    font-weight: 500;
+    line-height: 1.4;
+    font-weight: 400;
+    font-size: 0.95rem;
 }
 
 /* =============== GROUP SECTION ENHANCEMENTS =============== */
@@ -104,11 +101,12 @@
 }
 
 .groupSection {
-    margin-bottom: 5rem;
+    margin-bottom: 2.5rem;
     background-color: white;
     border-radius: 1.5rem;
-    padding: 2rem;
+    padding: 2.5rem;
     box-shadow: 0 10px 30px rgba(139, 92, 60, 0.1);
+    transition: all 0.2s ease;
 }
 
 .sectionHeader {
@@ -231,14 +229,14 @@
     background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
     border: 1px solid var(--coffee-100);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 1.75rem;
     display: flex;
     align-items: center;
     gap: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-    min-height: 120px;
+    min-height: 130px;
 }
 
 .groupIcon {
@@ -278,6 +276,44 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.groupMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--coffee-600);
+}
+
+.groupMetaItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.groupTurnBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--coffee-600);
+    color: white;
+}
+
+.groupTurnHint {
+    font-size: 0.8rem;
+    color: var(--coffee-600);
+    margin-top: 0.35rem;
+}
+
+.groupCardSelected {
+    border-color: var(--coffee-500);
+    box-shadow: 0 0 0 2px var(--coffee-300);
 }
 
 .groupAction {
@@ -379,12 +415,74 @@
 
 /* =============== PAYMENT SECTION STYLES =============== */
 .recentSection {
-    margin-bottom: 5rem;
-    margin-top: 5rem;
+    margin-bottom: 3rem;
+    margin-top: 2rem;
     background-color: white;
     border-radius: 1rem;
-    padding: 2rem;
+    padding: 2.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+/* =============== AWARD SECTION =============== */
+.awardSection {
+    margin-bottom: 3rem;
+    background-color: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(139, 92, 60, 0.1);
+    transition: all 0.2s ease;
+}
+
+.awardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--coffee-800);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.awardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.awardBanner {
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    transition: transform 0.2s ease;
+}
+
+.awardBanner:hover {
+    transform: translateY(-3px);
+}
+
+.awardBannerGold {
+    background: linear-gradient(135deg, #f6e05e 0%, #d69e2e 100%);
+    color: #744210;
+    box-shadow: 0 4px 15px rgba(214, 158, 46, 0.3);
+}
+
+.awardBannerSilver {
+    background: linear-gradient(135deg, #e2e8f0 0%, #a0aec0 100%);
+    color: #2d3748;
+    box-shadow: 0 4px 15px rgba(160, 174, 192, 0.3);
+}
+
+.awardBannerBronze {
+    background: linear-gradient(135deg, #ed8936 0%, #c05621 100%);
+    color: #fffaf0;
+    box-shadow: 0 4px 15px rgba(192, 86, 33, 0.3);
 }
 
 .paymentCardsContainer {
@@ -397,13 +495,14 @@
 .paymentCard {
     background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
     border-radius: 0.75rem;
-    padding: 1.25rem;
+    padding: 1.5rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid var(--coffee-100);
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    min-height: 110px;
 }
 
 .paymentCard:hover {
@@ -467,6 +566,45 @@
     font-weight: 700;
     font-size: 1.25rem;
 }
+
+/* =============== USER STATISTICS CARDS =============== */
+.statCard {
+    background: white;
+    border: 1px solid var(--coffee-100);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.statValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--coffee-800);
+    line-height: 1;
+}
+
+.statLabel {
+    font-size: 0.8rem;
+    color: var(--coffee-600);
+    margin-top: 4px;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.titleCard {
+    background: linear-gradient(135deg, var(--coffee-50), #fff);
+}
+
+
 
 /* =============== PAGINATION STYLES =============== */
 .paginationControls {

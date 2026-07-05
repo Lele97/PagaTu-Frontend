@@ -5,9 +5,8 @@ const HomeHeader = React.memo(function HomeHeader({
 }) {
     return (
         <section className={styles.heroSection}>
-            <h1 className={styles.heroTitle}>Il caffè che unisce il team</h1>
-            <p className={styles.heroSubtitle}>Crea gruppi e controlla i pagamenti in modo semplice veloce
-                e divertente</p>
+            <h1 className={styles.heroTitle}>La tua home</h1>
+            <p className={styles.heroSubtitle}>I tuoi gruppi e gli ultimi pagamenti</p>
         </section>
     )
 })

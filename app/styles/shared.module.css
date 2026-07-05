@@ -12,7 +12,7 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    z-index: 999;
+    z-index: 1100;
     animation: fadeIn 0.28s ease;
 }
 
