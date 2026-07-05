@@ -18,13 +18,14 @@ import {
     updatePaymentLinks,
     updatePreferences,
 } from '~/services/userApi';
+import { fa } from '~/utils/icons';
 
 const TABS = [
-    { id: 'profile', label: 'Profilo', icon: 'bi-person' },
-    { id: 'appearance', label: 'Aspetto', icon: 'bi-palette' },
-    { id: 'payments', label: 'Pagamenti', icon: 'bi-wallet2' },
-    { id: 'preferences', label: 'Preferenze', icon: 'bi-bell' },
-    { id: 'security', label: 'Sicurezza', icon: 'bi-shield-lock' },
+    { id: 'profile', label: 'Profilo', icon: 'user' },
+    { id: 'appearance', label: 'Aspetto', icon: 'palette' },
+    { id: 'payments', label: 'Pagamenti', icon: 'wallet' },
+    { id: 'preferences', label: 'Preferenze', icon: 'bell' },
+    { id: 'security', label: 'Sicurezza', icon: 'shield-halved' },
 ];
 
 const THEME_SWATCHES = {
@@ -253,7 +254,7 @@ const UserSettingsModal = () => {
                                             onClick={() => setCoffeeProfile((p) => ({ ...p, avatarKey: a.key }))}
                                             title={a.label}
                                         >
-                                            <i className={`bi ${a.icon}`} />
+                                            <i className={fa(a.icon)} />
                                         </button>
                                     ))}
                                 </div>
@@ -440,7 +441,7 @@ const UserSettingsModal = () => {
                         className={`${styles.tabBtn} ${activeTab === tab.id ? styles.tabBtnActive : ''}`}
                         onClick={() => switchTab(tab.id)}
                     >
-                        <i className={`bi ${tab.icon}`} /> {tab.label}
+                        <i className={fa(tab.icon)} /> {tab.label}
                     </button>
                 ))}
             </nav>

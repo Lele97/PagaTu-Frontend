@@ -196,7 +196,7 @@ const InvitationHandler = () => {
                     <Header user={user} logout={logout} />
                     <div className={styles.successCard}>
                         <div className={styles.successIcon}>
-                            <i className="bi bi-check-circle-fill"></i>
+                            <i className="fa-solid fa-circle-check"></i>
                         </div>
                         <h2>Invito accettato!</h2>
                         <p>Sei stato aggiunto al gruppo "{invitationData.groupName}" con successo.</p>
@@ -214,7 +214,7 @@ const InvitationHandler = () => {
                     <Header user={user} logout={logout} />
                     <div className={styles.successCard}>
                         <div className={styles.successIcon}>
-                            <i className="bi bi-x-circle-fill"></i>
+                            <i className="fa-solid fa-circle-xmark"></i>
                         </div>
                         <h2>Invito rifiutato</h2>
                         <p>Hai rifiutato l’invito al gruppo "{invitationData.groupName}".</p>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PagaTu — Preview icone FA vs BI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+
+    <style>
+        :root {
+            --coffee-100: #f3ece4;
+            --coffee-200: #e8ddd2;
+            --coffee-400: #bfa48d;
+            --coffee-500: #9b7b62;
+            --coffee-600: #6f4e37;
+            --coffee-700: #5a3e2d;
+            --coffee-800: #3e2c20;
+            --text-primary: #2d1f17;
+            --text-secondary: #6f5a4c;
+            --surface: rgba(255, 253, 249, 0.92);
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --shadow-md: 0 14px 30px rgba(62, 44, 32, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', system-ui, sans-serif;
+            color: var(--text-primary);
+            background:
+                radial-gradient(circle at 10% 10%, rgba(155, 123, 98, 0.12), transparent 35%),
+                radial-gradient(circle at 90% 0%, rgba(111, 78, 55, 0.08), transparent 30%),
+                linear-gradient(180deg, #fffdf9 0%, #faf7f2 100%);
+            min-height: 100vh;
+            padding: 2rem 1.25rem 3rem;
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-weight: 800;
+            color: var(--coffee-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.55;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--coffee-200);
+            background: white;
+        }
+
+        .badge.fa { color: #1e88e5; }
+        .badge.bi { color: #6f4e37; }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--coffee-700);
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 1.1rem;
+            border-radius: 2px;
+            background: var(--coffee-500);
+        }
+
+        /* ── Tabella confronto icone ── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            background: white;
+            border: 1px solid var(--coffee-200);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .compare-head {
+            padding: 0.85rem 1rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            background: var(--coffee-100);
+            color: var(--coffee-700);
+            border-bottom: 1px solid var(--coffee-200);
+        }
+
+        .compare-head.fa-col { color: #1565c0; }
+        .compare-head.bi-col { color: var(--coffee-600); }
+
+        .compare-row {
+            display: contents;
+        }
+
+        .compare-cell {
+            padding: 1rem 1.1rem;
+            border-bottom: 1px solid var(--coffee-100);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 72px;
+        }
+
+        .compare-cell.label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: rgba(243, 236, 228, 0.35);
+        }
+
+        .compare-cell.code {
+            font-family: ui-monospace, 'Cascadia Code', monospace;
+            font-size: 0.72rem;
+            color: var(--coffee-500);
+            display: block;
+            margin-top: 0.2rem;
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+        }
+
+        .icon-box.fa-box {
+            background: rgba(30, 136, 229, 0.1);
+            color: #1565c0;
+        }
+
+        .icon-box.bi-box {
+            background: rgba(111, 78, 55, 0.1);
+            color: var(--coffee-600);
+        }
+
+        /* ── Mockup UI affiancati ── */
+        .mockups {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 800px) {
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+            .compare-head:nth-child(2),
+            .compare-head:nth-child(3) { display: none; }
+            .compare-row .compare-cell.fa-cell::before {
+                content: 'Font Awesome';
+                display: block;
+                font-size: 0.7rem;
+                font-weight: 700;
+                color: #1565c0;
+                text-transform: uppercase;
+                margin-bottom: 0.35rem;
+            }
+            .compare-row .compare-cell.bi-cell::before {
+                content: 'Bootstrap Icons';
+                display: block;
+                font-size: 0.7rem;
+                font-weight: 700;
+                color: var(--coffee-600);
+                text-transform: uppercase;
+                margin-bottom: 0.35rem;
+            }
+            .mockups { grid-template-columns: 1fr; }
+        }
+
+        .mockup-card {
+            background: var(--surface);
+            border: 1px solid var(--coffee-200);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(12px);
+        }
+
+        .mockup-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--coffee-200);
+        }
+
+        .mockup-label.fa-label { color: #1565c0; border-color: rgba(30, 136, 229, 0.3); }
+        .mockup-label.bi-label { color: var(--coffee-600); border-color: var(--coffee-300, #d8c5b3); }
+
+        /* Header mock */
+        .mock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.75rem;
+            background: rgba(255, 253, 249, 0.95);
+            border: 1px solid var(--coffee-200);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.85rem;
+        }
+
+        .mock-logo {
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--coffee-700);
+        }
+
+        .mock-header-actions {
+            display: flex;
+            gap: 0.35rem;
+        }
+
+        .mock-icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(111, 78, 55, 0.08);
+            color: var(--coffee-700);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: default;
+        }
+
+        /* Group card mock */
+        .mock-group-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border: 1px solid var(--coffee-100);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.75rem;
+        }
+
+        .mock-group-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--coffee-600);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .mock-group-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--coffee-800);
+            margin-bottom: 0.15rem;
+        }
+
+        .mock-group-info p {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        /* Action buttons mock */
+        .mock-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .mock-action-btn {
+            padding: 0.7rem 0.5rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--coffee-600), var(--coffee-700));
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: default;
+        }
+
+        .mock-action-btn i { font-size: 1.1rem; }
+
+        /* Auth landing mock */
+        .mock-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .mock-feature {
+            text-align: center;
+            padding: 0.75rem 0.4rem;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--coffee-100);
+            border-radius: 10px;
+        }
+
+        .mock-feature i {
+            font-size: 1.4rem;
+            color: var(--coffee-600);
+            display: block;
+            margin-bottom: 0.35rem;
+        }
+
+        .mock-feature span {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        /* Back / error button */
+        .mock-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1rem;
+            border: 1px solid var(--coffee-200);
+            border-radius: 10px;
+            background: white;
+            color: var(--coffee-700);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            cursor: default;
+        }
+
+        /* Ranking card */
+        .mock-ranking {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #fff8f0, #fff);
+            border: 1px solid var(--coffee-200);
+            border-radius: 10px;
+        }
+
+        .mock-ranking i { font-size: 1.3rem; color: #c98a2e; }
+        .mock-ranking strong { font-size: 0.88rem; color: var(--coffee-800); }
+
+        .note {
+            margin-top: 2rem;
+            padding: 1rem 1.25rem;
+            background: rgba(111, 78, 55, 0.06);
+            border: 1px solid var(--coffee-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+
+        .note strong { color: var(--coffee-700); }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="hero">
+            <h1>☕ PagaTu — Confronto icone</h1>
+            <p>
+                Anteprima delle icone usate nell'app: a sinistra <strong>Font Awesome</strong> (CDN attuale),
+                a destra <strong>Bootstrap Icons</strong> (già nel progetto npm).
+                Stesse dimensioni, stesso contesto UI.
+            </p>
+            <div class="legend">
+                <span class="badge fa"><i class="fa-solid fa-icons"></i> Font Awesome 7 — CDN esterno</span>
+                <span class="badge bi"><i class="bi bi-bootstrap-fill"></i> Bootstrap Icons 1.13 — npm locale</span>
+            </div>
+        </div>
+
+        <!-- ── 1. Tabella confronto diretto ── -->
+        <h2 class="section-title">Mappa icone da migrare</h2>
+
+        <div class="compare-grid" id="compareGrid">
+            <div class="compare-head">Contesto / Uso</div>
+            <div class="compare-head fa-col">Font Awesome</div>
+            <div class="compare-head bi-col">Bootstrap Icons</div>
+            <!-- rows injected by JS -->
+        </div>
+
+        <!-- ── 2. Mockup UI in contesto ── -->
+        <h2 class="section-title">Come appaiono nell'interfaccia</h2>
+
+        <div class="mockups">
+            <!-- FA mockup -->
+            <div class="mockup-card">
+                <div class="mockup-label fa-label">Font Awesome — UI attuale (parziale)</div>
+
+                <div class="mock-header">
+                    <span class="mock-logo">PagaTu</span>
+                    <div class="mock-header-actions">
+                        <button class="mock-icon-btn" title="Impostazioni"><i class="fa-solid fa-gear"></i></button>
+                        <button class="mock-icon-btn" title="Logout"><i class="fa-solid fa-door-open"></i></button>
+                    </div>
+                </div>
+
+                <div class="mock-group-card">
+                    <div class="mock-group-icon"><i class="fa-solid fa-user-group"></i></div>
+                    <div class="mock-group-info">
+                        <h4>Team Caffè Piano 3</h4>
+                        <p>5 membri · Turno: @marco</p>
+                    </div>
+                    <i class="fa-solid fa-arrow-right" style="color:var(--coffee-500);margin-left:auto;"></i>
+                </div>
+
+                <div class="mock-actions">
+                    <button class="mock-action-btn"><i class="fa-solid fa-coins"></i>Registra</button>
+                    <button class="mock-action-btn"><i class="fa-solid fa-forward"></i>Salta</button>
+                    <button class="mock-action-btn"><i class="fa-solid fa-user-plus"></i>Paga per</button>
+                    <button class="mock-action-btn" style="opacity:0.5"><i class="fa-solid fa-repeat"></i>Riprova</button>
+                </div>
+
+                <div class="mock-features">
+                    <div class="mock-feature"><i class="fa-solid fa-user-group"></i><span>Crea gruppi</span></div>
+                    <div class="mock-feature"><i class="fa-solid fa-mug-hot"></i><span>Gestisci turni</span></div>
+                    <div class="mock-feature"><i class="fa-solid fa-receipt"></i><span>Traccia pagamenti</span></div>
+                </div>
+
+                <div style="margin-top:0.75rem;">
+                    <button class="mock-back-btn"><i class="fa-solid fa-arrow-left"></i> Torna Indietro</button>
+                </div>
+
+                <div class="mock-ranking">
+                    <i class="fa-solid fa-ranking-star"></i>
+                    <strong>Classifica pagamenti del gruppo</strong>
+                </div>
+            </div>
+
+            <!-- BI mockup -->
+            <div class="mockup-card">
+                <div class="mockup-label bi-label">Bootstrap Icons — proposta migrazione</div>
+
+                <div class="mock-header">
+                    <span class="mock-logo">PagaTu</span>
+                    <div class="mock-header-actions">
+                        <button class="mock-icon-btn" title="Impostazioni"><i class="bi bi-gear"></i></button>
+                        <button class="mock-icon-btn" title="Logout"><i class="bi bi-box-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="mock-group-card">
+                    <div class="mock-group-icon"><i class="bi bi-people-fill"></i></div>
+                    <div class="mock-group-info">
+                        <h4>Team Caffè Piano 3</h4>
+                        <p>5 membri · Turno: @marco</p>
+                    </div>
+                    <i class="bi bi-arrow-right" style="color:var(--coffee-500);margin-left:auto;"></i>
+                </div>
+
+                <div class="mock-actions">
+                    <button class="mock-action-btn"><i class="bi bi-cash-coin"></i>Registra</button>
+                    <button class="mock-action-btn"><i class="bi bi-skip-forward"></i>Salta</button>
+                    <button class="mock-action-btn"><i class="bi bi-person-plus"></i>Paga per</button>
+                    <button class="mock-action-btn" style="opacity:0.5"><i class="bi bi-arrow-clockwise"></i>Riprova</button>
+                </div>
+
+                <div class="mock-features">
+                    <div class="mock-feature"><i class="bi bi-people-fill"></i><span>Crea gruppi</span></div>
+                    <div class="mock-feature"><i class="bi bi-cup-hot-fill"></i><span>Gestisci turni</span></div>
+                    <div class="mock-feature"><i class="bi bi-receipt"></i><span>Traccia pagamenti</span></div>
+                </div>
+
+                <div style="margin-top:0.75rem;">
+                    <button class="mock-back-btn"><i class="bi bi-arrow-left"></i> Torna Indietro</button>
+                </div>
+
+                <div class="mock-ranking">
+                    <i class="bi bi-trophy-fill"></i>
+                    <strong>Classifica pagamenti del gruppo</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>Nota:</strong> Font Awesome ha tratti leggermente più "bold" e angoli arrotondati diversi.
+            Bootstrap Icons è più lineare e uniforme — già usato nel 90% dell'app.
+            Dopo la migrazione si può rimuovere la riga CDN da <code>index.html</code>
+            (<code>font-awesome/7.0.0/css/all.min.css</code>), eliminando una dipendenza esterna.
+        </div>
+    </div>
+
+    <script>
+        const icons = [
+            { label: 'Gruppi / utenti',       fa: 'fa-solid fa-user-group',    bi: 'bi bi-people-fill',      file: 'homeGroups, groupHeader, AuthLanding' },
+            { label: 'Tazza caffè',           fa: 'fa-solid fa-mug-hot',         bi: 'bi bi-cup-hot-fill',     file: 'AuthLanding, signup-form' },
+            { label: 'Ricevuta / pagamento',  fa: 'fa-solid fa-receipt',         bi: 'bi bi-receipt',          file: 'AuthLanding, signup-form, homePayments' },
+            { label: 'Turni / rotazione',     fa: 'fa-solid fa-arrows-rotate',   bi: 'bi bi-arrow-repeat',     file: 'AuthLanding, signup-form' },
+            { label: 'Portafoglio',           fa: 'fa-solid fa-wallet',          bi: 'bi bi-wallet2',          file: 'AuthLanding, signup-form' },
+            { label: 'Freccia indietro',      fa: 'fa-solid fa-arrow-left',      bi: 'bi bi-arrow-left',       file: 'error-page, payment-links, group' },
+            { label: 'Logout',                fa: 'fa-solid fa-door-open',       bi: 'bi bi-box-arrow-right',  file: 'header (già migrato)' },
+            { label: 'Riprova / refresh',     fa: 'fa-solid fa-repeat',        bi: 'bi bi-arrow-clockwise',  file: 'errorMessage' },
+            { label: 'Classifica / trofeo',   fa: 'fa-solid fa-ranking-star',    bi: 'bi bi-trophy-fill',      file: 'paymentCards' },
+            { label: 'Registra pagamento',    fa: 'fa-solid fa-coins',           bi: 'bi bi-cash-coin',        file: 'paymentActions (già migrato)' },
+            { label: 'Salta turno',           fa: 'fa-solid fa-forward',       bi: 'bi bi-skip-forward',     file: 'paymentActions (già migrato)' },
+            { label: 'Paga per amico',        fa: 'fa-solid fa-user-plus',     bi: 'bi bi-person-plus',      file: 'paymentActions (già migrato)' },
+        ];
+
+        const grid = document.getElementById('compareGrid');
+
+        icons.forEach(({ label, fa, bi, file }) => {
+            const row = document.createElement('div');
+            row.className = 'compare-row';
+            row.innerHTML = `
+                <div class="compare-cell label">
+                    ${label}
+                    <span class="code">${file}</span>
+                </div>
+                <div class="compare-cell fa-cell">
+                    <div class="icon-box fa-box"><i class="${fa}"></i></div>
+                    <div>
+                        <span class="code">${fa}</span>
+                    </div>
+                </div>
+                <div class="compare-cell bi-cell">
+                    <div class="icon-box bi-box"><i class="${bi}"></i></div>
+                    <div>
+                        <span class="code">${bi}</span>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(row);
+        });
+    </script>
+</body>
+</html>

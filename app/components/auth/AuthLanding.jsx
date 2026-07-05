@@ -26,43 +26,40 @@ const AuthLanding = () => {
 
     return (
         <div className={styles.container}>
+            <div className={styles.pageBrand}>
+                <img src="/pagaTu.png" alt="Logo PagaTu" className={logostyle.logo} />
+                <div className={logostyle.appTitle}>
+                    <h1 className={logostyle.appTitlecolorP}>P</h1>
+                    <h1 className={logostyle.appTitlecolor2a}>a</h1>
+                    <h1 className={logostyle.appTitlecolorg}>g</h1>
+                    <h1 className={logostyle.appTitlecolor2a}>a</h1>
+                    <h1 className={logostyle.appTitlecolorT}>T</h1>
+                    <h1 className={logostyle.appTitlecolor2u}>u</h1>
+                </div>
+            </div>
+
             <section className={styles.heroSection}>
                 <div className={styles.heroOverlay} />
                 <div className={styles.heroContent}>
-                    <div>
-                        <div className={styles.brandBlock}>
-                            <img src="/pagaTu.png" alt="Logo PagaTu" className={logostyle.logo} />
-                            <div className={logostyle.appTitle}>
-                                <h1 className={logostyle.appTitlecolorP}>P</h1>
-                                <h1 className={logostyle.appTitlecolor2a}>a</h1>
-                                <h1 className={logostyle.appTitlecolorg}>g</h1>
-                                <h1 className={logostyle.appTitlecolor2a}>a</h1>
-                                <br />
-                                <h1 className={logostyle.appTitlecolorT}>T</h1>
-                                <h1 className={logostyle.appTitlecolor2u}>u</h1>
+                    <div className={styles.heroText}>
+                        <span className={styles.eyebrow}>La pausa caffè, finalmente in ordine</span>
+                        <h2 className={styles.heroTitle}>Il caffè di oggi non si dimentica più.</h2>
+                        <p className={styles.heroSubtitle}>
+                            PagaTu organizza gruppi, turni e pagamenti della colazione in modo semplice,
+                            leggero e divertente.
+                        </p>
+                        <div className={styles.heroFeatures}>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-user-group" />
+                                <span>Crea il tuo gruppo</span>
                             </div>
-                        </div>
-
-                        <div className={styles.heroText}>
-                            <span className={styles.eyebrow}>La pausa caffè, finalmente in ordine</span>
-                            <h2 className={styles.heroTitle}>Il caffè di oggi non si dimentica più.</h2>
-                            <p className={styles.heroSubtitle}>
-                                PagaTu organizza gruppi, turni e pagamenti della colazione in modo semplice,
-                                leggero e divertente.
-                            </p>
-                            <div className={styles.heroFeatures}>
-                                <div className={styles.heroFeature}>
-                                    <i className="fa-solid fa-user-group" />
-                                    <span>Crea il tuo gruppo</span>
-                                </div>
-                                <div className={styles.heroFeature}>
-                                    <i className="fa-solid fa-mug-hot" />
-                                    <span>Scopri a chi tocca offrire</span>
-                                </div>
-                                <div className={styles.heroFeature}>
-                                    <i className="fa-solid fa-receipt" />
-                                    <span>Registra ogni pagamento</span>
-                                </div>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-mug-hot" />
+                                <span>Scopri a chi tocca offrire</span>
+                            </div>
+                            <div className={styles.heroFeature}>
+                                <i className="fa-solid fa-receipt" />
+                                <span>Registra ogni pagamento</span>
                             </div>
                         </div>
                     </div>
@@ -113,6 +110,50 @@ const AuthLanding = () => {
                     <i className="fa-solid fa-wallet" />
                     <h3>Registra i pagamenti</h3>
                     <p>Tieni tutto ordinato e chiaro, dalla colazione al caffè del pomeriggio.</p>
+                </div>
+            </section>
+
+            <section className={styles.zigzagSection}>
+                <div className={styles.zigzagRow}>
+                    <div className={styles.zigzagVisual}>
+                        <i className="fa-solid fa-list-ol" />
+                        <strong>Turni automatici</strong>
+                    </div>
+                    <div className={styles.zigzagText}>
+                        <h3>Chi paga oggi? Lo sa già l&apos;app</h3>
+                        <p>
+                            PagaTu gestisce la coda dei turni per il gruppo: niente più messaggi
+                            su WhatsApp o post-it sul bollitore. Ogni membro sa quando tocca a sé.
+                        </p>
+                    </div>
+                </div>
+
+                <div className={`${styles.zigzagRow} ${styles.zigzagRowReverse}`}>
+                    <div className={styles.zigzagVisual}>
+                        <i className="fa-solid fa-hand-holding-dollar" />
+                        <strong>Paga per un amico</strong>
+                    </div>
+                    <div className={styles.zigzagText}>
+                        <h3>Salta, paga o anticipa per i colleghi</h3>
+                        <p>
+                            In vacanza o in riunione? Salta il turno. Vuoi fare un gesto per il team?
+                            Registra un pagamento anche per un altro membro del gruppo.
+                        </p>
+                    </div>
+                </div>
+
+                <div className={styles.zigzagRow}>
+                    <div className={styles.zigzagVisual}>
+                        <i className="fa-solid fa-trophy" />
+                        <strong>Award e statistiche</strong>
+                    </div>
+                    <div className={styles.zigzagText}>
+                        <h3>Trasforma la pausa caffè in un gioco di squadra</h3>
+                        <p>
+                            Karma, streak, titoli divertenti e award: PagaTu rende la routine del caffè
+                            più leggera e coinvolgente per tutto l&apos;ufficio.
+                        </p>
+                    </div>
                 </div>
             </section>
         </div>

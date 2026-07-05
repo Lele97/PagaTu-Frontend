@@ -29,6 +29,7 @@
     --text-white: #fffaf5;
 
     --surface-main: rgba(255, 253, 249, 0.82);
+    --surface-card: rgba(255, 253, 249, 0.94);
     --surface-soft: rgba(243, 236, 228, 0.9);
     --surface-strong: #f4ede6;
     --border-soft: rgba(111, 78, 55, 0.14);
@@ -86,6 +87,11 @@ body {
             var(--coffee-50);
 }
 
+/* Typography scale (UX_LAST I4) */
+h1 { font-size: 2rem; font-weight: 800; line-height: 1.15; }
+h2 { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.25; }
+
 button,
 input,
 textarea,
@@ -108,18 +114,7 @@ a {
     overflow-x: hidden;
 }
 
-.appWrapper::before {
-    content: "☕ 🫘 🥐 ☕ 🥄 🫘";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.045;
-    font-size: 34px;
-    line-height: 140px;
-    letter-spacing: 42px;
-    transform: rotate(-8deg) scale(1.1);
-    z-index: 0;
-}
+/* Theme-specific pattern applied via themes.css [data-theme] .appWrapper::before */
 
 .appWrapper > * {
     position: relative;

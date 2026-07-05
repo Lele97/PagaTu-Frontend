@@ -8,6 +8,7 @@
    ================================================================================ */
 
 .header {
+    position: sticky;
     top: 0;
     z-index: 1000;
     padding: 0.5rem 2rem;
@@ -15,6 +16,15 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    background: var(--surface-main);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: box-shadow var(--transition-smooth);
+    box-shadow: 0 1px 0 rgba(111, 78, 55, 0.06);
+}
+
+.headerScrolled {
+    box-shadow: var(--shadow-md);
 }
 
 .headerContent {
@@ -51,45 +61,16 @@
 }
 
 .pagatu_image {
-    height: 150px;
+    height: 80px;
     width: auto;
     object-fit: contain;
 }
 
-.btnimg {
-    border-radius: 2rem;
-    width: 10rem;
-    height: auto;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s ease;
-}
-
-.btnimg:hover {
-    transform: translateY(-1px);
-}
-
-.headerTitle {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--coffee-800);
-    margin: 0;
-    line-height: 1;
-}
-
-
-.coffeeAvatar:hover {
-    transform: translateY(-1px) scale(1.04);
-}
-
-.coffeeImg {
-    width: 90%;
-    height: 90%;
-    object-fit: contain;
-    pointer-events: none;
-}
-
-.coffeeAvatar:hover {
-    transform: translateY(-1px) scale(1.04);
+.avatarWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .coffeeLetter {
@@ -118,62 +99,6 @@
     line-height: 1;
 }
 
-.door_container {
-    position: relative;
-    width: 40px;
-    height: 50px;
-    margin-left: 0.5rem;
-}
-
-.top_bar {
-    position: relative;
-    width: 85%;
-    height: 4px;
-    border-radius: 0.125rem;
-    border: 2px solid black;
-    background: #51361b;
-}
-
-/* Outer frame (architrave) */
-.door_frame {
-    position: absolute;
-    top: 2px;
-    width: 85%;
-    height: calc(100% - 2px);
-    border-radius: 0 0 0 0;
-    background: #51361b;
-    border: 2px solid black;
-    border-top: 0 solid #51361b;
-}
-
-/* Inner door panel */
-.door_panel {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: calc(100% - 12px);
-    height: calc(100% - 3px);
-    background: #c29159;
-    border: 2px solid #000;
-    box-sizing: border-box;
-    border-radius: 0.125rem 0.125rem 0 0;
-}
-
-/* Doorknob */
-.doorknob {
-    position: absolute;
-    left: calc(85% - 6px); /* Positioned near the right edge of the door */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 4px;
-    background: #000;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .iconBtn {
     width: 48px;
     height: 48px;
@@ -197,11 +122,4 @@
 .avatarIcon {
     font-size: 1.35rem;
     color: var(--coffee-600);
-}
-
-.doorknob_inner {
-    width: 2px;
-    height: 2px;
-    background: #BEBEBE;
-    border-radius: 50%;
 }

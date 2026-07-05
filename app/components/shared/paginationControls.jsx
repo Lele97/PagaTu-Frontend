@@ -9,7 +9,7 @@ const PaginationControls = React.memo(function PaginationControls({
     return (
         <div className={styles.paginationControls}>
             <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}
-                    className={styles.paginationButton}><i className="bi bi-arrow-left"></i></button>
+                    className={styles.paginationButton}><i className="fa-solid fa-arrow-left"></i></button>
             {Array.from({length: totalPages}, (_, i) => i + 1).map(page => (
                 <button key={page} onClick={() => onPageChange(page)}
                         className={`${styles.paginationButton} ${currentPage === page ? styles.paginationButtonActive : ''}`}>
@@ -17,7 +17,7 @@ const PaginationControls = React.memo(function PaginationControls({
                 </button>
             ))}
             <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}
-                    className={styles.paginationButton}><i className="bi bi-arrow-right"></i>
+                    className={styles.paginationButton}><i className="fa-solid fa-arrow-right"></i>
             </button>
         </div>
     )

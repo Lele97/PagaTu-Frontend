@@ -20,6 +20,7 @@ import {getMemberForUser, getCurrentTurnMember, memberDisplayName} from '~/utils
 import {WELCOME_PATH} from '~/utils/routes';
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import GroupSettingsModal from '~/components/settings/modals/GroupSettingsModal.jsx';
+import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
 import {useSettings} from '~/context/SettingsContext.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
@@ -39,7 +40,7 @@ const normalizeError = (err) => {
 const Group = () => {
 
     const navigate = useNavigate();
-    const { userSettingsOpen, groupSettingsOpen } = useSettings();
+    const { userSettingsOpen, groupSettingsOpen, openGroupSettings } = useSettings();
     const [user, setUser] = useState(null);
     const [group, setGroup] = useState({groupName: 'Unnamed Group'});
     const [groups, setGroups] = useState({});
@@ -796,14 +797,16 @@ const Group = () => {
                 <Header user={user} logout={logout} showGroupSettings={isAdmin} avatarKey={avatarKey}/>
 
                 <main className={styles.main}>
-                    <button onClick={goBack} className={sharedStyles.groupButton} style={{marginBottom: '2rem'}}>
-                        <i className="fa-solid fa-arrow-left"></i> <i className="fa-solid fa-house"></i>
-                    </button>
-
-                    <GroupHeader group={group} currentUser={user} />
+                    <GroupHeader
+                        group={group}
+                        currentUser={user}
+                        onGoBack={goBack}
+                        isAdmin={isAdmin}
+                        onOpenSettings={openGroupSettings}
+                    />
 
                     {groupSummaryLoading ? (
-                        <p style={{color: 'var(--coffee-600)', marginBottom: '1rem'}}>Aggiornamento turno...</p>
+                        <p className={sharedStyles.summaryText}>Aggiornamento turno...</p>
                     ) : (
                         <GroupInfoSection group={groups} currentUser={user} />
                     )}
@@ -812,11 +815,10 @@ const Group = () => {
                         <button
                             type="button"
                             onClick={handleLeaveGroup}
-                            className={sharedStyles.groupButton}
+                            className={`${sharedStyles.groupButton} ${sharedStyles.leaveGroupBtn}`}
                             disabled={leavingGroup}
-                            style={{marginBottom: '1rem'}}
                         >
-                            <i className="bi bi-box-arrow-right"/> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
+                            <i className="fa-solid fa-right-from-bracket"/> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
                         </button>
                     )}
 
@@ -832,11 +834,7 @@ const Group = () => {
                         onSkipPayment={skipPayment}
                         onPayForFriend={payForFriend}/>
 
-                    <div className={styles.separator}>
-                        <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
-                        <div className={styles.separatorRight}></div>
-                    </div>
+                    <CoffeeSeparator />
 
                     <PaymentCards
                         loading={paymentLoading}
@@ -844,11 +842,7 @@ const Group = () => {
                         payments={classificaPaymentsForGroup}
                         onRetry={onRetry}/>
 
-                    <div className={groupStyles.separator}>
-                        <div className={groupStyles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt=""/>
-                        <div className={groupStyles.separatorRight}></div>
-                    </div>
+                    <CoffeeSeparator />
 
                     <GroupStatsSection groupName={group?.groupName}/>
 

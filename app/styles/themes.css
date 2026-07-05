@@ -1,43 +1,88 @@
+/* ===============================================================================
+   THEME PRESETS — color tokens + decorative patterns (UX_LAST G1–G3)
+   ================================================================================ */
+
 [data-theme="classic"] {
+    --coffee-100: #f3ece4;
+    --coffee-200: #e8ddd2;
+    --coffee-300: #d8c5b3;
+    --coffee-400: #bfa48d;
     --coffee-600: #6f4e37;
     --coffee-700: #5a3e2d;
     --coffee-900: #2a1e16;
     --coffee-50: #faf7f2;
     --surface-main: rgba(255, 253, 249, 0.82);
+    --surface-card: rgba(255, 253, 249, 0.94);
     --text-primary: #2d1f17;
     --text-secondary: #6f5a4c;
     --theme-accent: #c8a882;
+    --theme-pattern-color: #6f4e37;
+    --theme-pattern-url: url("/patterns/coffee-bean.svg");
 }
 
 [data-theme="espresso"] {
-    --coffee-600: #3b2314;
-    --coffee-700: #2a1a10;
-    --coffee-900: #1a120b;
+    --coffee-100: #3d2e24;
+    --coffee-200: #4a382c;
+    --coffee-300: #5c4638;
+    --coffee-400: #7a5c48;
+    --coffee-600: #c8a882;
+    --coffee-700: #e8c9a0;
+    --coffee-900: #f5e6d3;
     --coffee-50: #1f1510;
     --surface-main: rgba(42, 31, 24, 0.92);
+    --surface-card: rgba(52, 38, 30, 0.95);
     --text-primary: #f5e6d3;
     --text-secondary: #d4a574;
     --theme-accent: #d4a574;
+    --theme-pattern-color: #d4a574;
+    --theme-pattern-url: url("/patterns/coffee-bean.svg");
 }
 
 [data-theme="latte"] {
+    --coffee-100: #f8f0e6;
+    --coffee-200: #f0e4d6;
+    --coffee-300: #e0cdb8;
+    --coffee-400: #c9a88a;
     --coffee-600: #a67b5b;
     --coffee-700: #8b6549;
     --coffee-900: #4a3728;
     --coffee-50: #fffcf7;
     --surface-main: rgba(255, 252, 247, 0.9);
+    --surface-card: rgba(255, 252, 247, 0.96);
     --text-primary: #4a3728;
     --text-secondary: #8b6549;
     --theme-accent: #e8c9a0;
+    --theme-pattern-color: #a67b5b;
+    --theme-pattern-url: url("/patterns/cup.svg");
 }
 
 [data-theme="office"] {
+    --coffee-100: #edf2f7;
+    --coffee-200: #e2e8f0;
+    --coffee-300: #cbd5e0;
+    --coffee-400: #a0aec0;
     --coffee-600: #4a5568;
     --coffee-700: #2d3748;
     --coffee-900: #1a202c;
     --coffee-50: #f7fafc;
     --surface-main: rgba(247, 250, 252, 0.9);
+    --surface-card: rgba(255, 255, 255, 0.94);
     --text-primary: #1a202c;
     --text-secondary: #718096;
     --theme-accent: #718096;
+    --theme-pattern-color: #4a5568;
+    --theme-pattern-url: url("/patterns/cup.svg");
+}
+
+[data-theme] .appWrapper::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.06;
+    background-image: var(--theme-pattern-url);
+    background-size: 72px 72px;
+    background-repeat: repeat;
+    color: var(--theme-pattern-color);
 }

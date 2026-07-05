@@ -1,14 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import expansionStyles from '~/styles/expansion.module.css';
 import groupStyles from '~/styles/group.module.css';
+import LoadingSpinner from '~/components/shared/loadingSpinner.jsx';
+import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
 import { authHeaders, formatCurrency, GATEWAY_URL, parseErrorMessage } from '~/utils/api';
-
-const LoadingSpinner = ({ message }) => (
-    <div className={groupStyles.loadingSpinner}>
-        <div className={groupStyles.spinner} />
-        <span className={groupStyles.spinnerText}>{message}</span>
-    </div>
-);
 
 const GroupStatsSection = ({ groupName }) => {
     const [balance, setBalance] = useState(null);
@@ -78,7 +73,7 @@ const GroupStatsSection = ({ groupName }) => {
         <>
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-calculator" /> Bilancio — chi deve a chi
+                    <i className="fa-solid fa-calculator" /> Bilancio — chi deve a chi
                 </h2>
                 {balanceLoading ? (
                     <LoadingSpinner message="Calcolo bilancio..." />
@@ -103,12 +98,12 @@ const GroupStatsSection = ({ groupName }) => {
                                         <div className={expansionStyles.payLinks}>
                                             {m.satispayLink && (
                                                 <a href={m.satispayLink} target="_blank" rel="noreferrer" className={expansionStyles.payLinkBtn}>
-                                                    <i className="bi bi-phone" /> Satispay
+                                                    <i className="fa-solid fa-mobile-screen" /> Satispay
                                                 </a>
                                             )}
                                             {m.revolutLink && (
                                                 <a href={m.revolutLink} target="_blank" rel="noreferrer" className={expansionStyles.payLinkBtn}>
-                                                    <i className="bi bi-bank" /> Revolut
+                                                    <i className="fa-solid fa-building-columns" /> Revolut
                                                 </a>
                                             )}
                                         </div>
@@ -144,15 +139,11 @@ const GroupStatsSection = ({ groupName }) => {
                 ) : null}
             </section>
 
-            <div className={groupStyles.separator}>
-                <div className={groupStyles.separatorLeft} />
-                <img src="/coffee-medium-svgrepo-com.svg" alt="" />
-                <div className={groupStyles.separatorRight} />
-            </div>
+            <CoffeeSeparator />
 
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-trophy" /> Award
+                    <i className="fa-solid fa-trophy" /> Award
                 </h2>
                 {gamificationLoading ? (
                     <LoadingSpinner message="Caricamento statistiche..." />
@@ -162,7 +153,7 @@ const GroupStatsSection = ({ groupName }) => {
                     <>
                         {gamification.coffeeKingOfMonth && (
                             <div className={expansionStyles.kingBanner}>
-                                <i className="bi bi-cup-hot-fill" /> Caffè-king del mese: <strong>{gamification.coffeeKingOfMonth}</strong>
+                                <i className="fa-solid fa-mug-hot" /> Caffè-king del mese: <strong>{gamification.coffeeKingOfMonth}</strong>
                             </div>
                         )}
                         <div className={expansionStyles.cardGrid}>

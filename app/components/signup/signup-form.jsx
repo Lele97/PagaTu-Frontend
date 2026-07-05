@@ -151,7 +151,7 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
             return (
                 <div className={styles.PlaceholderDiv}>
                     <p className={styles.PlaceholderText}>DD/MONTH/YYYY</p>
-                    <i className="bi bi-calendar2"></i>
+                    <i className="fa-solid fa-calendar"></i>
                 </div>
             );
         const date = new Date(dateString);

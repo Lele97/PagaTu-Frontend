@@ -42,13 +42,13 @@ const HomeGroups = React.memo(function HomeGroups({
             <section className={styles.groupSection}>
                 <div className={styles.sectionHeader}>
                     <button onClick={addGroup} className={styles.createGroupButton}>
-                        <i className="bi bi-plus-lg"></i>
+                        <i className="fa-solid fa-plus"></i>
                         Crea il tuo primo gruppo
                     </button>
                 </div>
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIcon}>
-                        <i className="bi bi-people"></i>
+                        <i className="fa-solid fa-users"></i>
                     </div>
                     <h3>Non fai parte di nessun gruppo</h3>
                     <p>Inizia creando il tuo primo gruppo per gestire i pagamenti del caffè</p>
@@ -61,10 +61,10 @@ const HomeGroups = React.memo(function HomeGroups({
         <section className={styles.groupSection}>
             <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>
-                    <i className="bi bi-people-fill"></i> I tuoi gruppi
+                    <i className="fa-solid fa-user-group"></i> I tuoi gruppi
                 </h2>
                 <button onClick={addGroup} className={styles.createGroupButton}>
-                    <i className="bi bi-plus-lg"></i>
+                    <i className="fa-solid fa-plus"></i>
                     Crea nuovo gruppo
                 </button>
             </div>
@@ -88,7 +88,7 @@ const HomeGroups = React.memo(function HomeGroups({
                             onClick={() => handleGroupSelect(group.name)}
                         >
                             <div className={styles.groupIcon}>
-                                <i className="fa-solid fa-user-group"></i>
+                                <i className="fa-solid fa-user-group" />
                             </div>
                             <div className={styles.groupInfo}>
                                 <h3 className={styles.groupName}>{group.name}</h3>
@@ -98,23 +98,23 @@ const HomeGroups = React.memo(function HomeGroups({
                                 <div className={styles.groupMeta}>
                                     {formatRoundNumber(group) && (
                                         <span className={styles.groupMetaItem}>
-                                            <i className="bi bi-arrow-repeat" />
+                                            <i className="fa-solid fa-arrows-rotate" />
                                             {formatRoundNumber(group)}
                                         </span>
                                     )}
                                     <span className={styles.groupMetaItem}>
-                                        <i className="bi bi-people" />
+                                        <i className="fa-solid fa-users" />
                                         {memberCount} {memberCount === 1 ? 'membro' : 'membri'}
                                     </span>
                                     {turnLabel && !myTurn && (
                                         <span className={styles.groupMetaItem}>
-                                            <i className="bi bi-cup-hot" />
+                                            <i className="fa-solid fa-mug-hot" />
                                             {turnLabel}
                                         </span>
                                     )}
                                     {myTurn && (
                                         <span className={styles.groupTurnBadge}>
-                                            <i className="bi bi-cup-hot-fill" />
+                                            <i className="fa-solid fa-mug-hot" />
                                             È il tuo turno
                                         </span>
                                     )}
@@ -126,7 +126,7 @@ const HomeGroups = React.memo(function HomeGroups({
                                 )}
                             </div>
                             <div className={styles.groupAction}>
-                                <i className="bi bi-arrow-right"></i>
+                                <i className="fa-solid fa-arrow-right"></i>
                             </div>
                         </div>
                     );

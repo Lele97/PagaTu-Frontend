@@ -1,14 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import expansionStyles from '~/styles/expansion.module.css';
 import groupStyles from '~/styles/group.module.css';
+import LoadingSpinner from '~/components/shared/loadingSpinner.jsx';
+import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
 import { authHeaders, formatCurrency, GATEWAY_URL, parseErrorMessage } from '~/utils/api';
-
-const LoadingSpinner = ({ message }) => (
-    <div className={groupStyles.loadingSpinner}>
-        <div className={groupStyles.spinner}></div>
-        <span className={groupStyles.spinnerText}>{message}</span>
-    </div>
-);
 
 const GroupExpansionSections = ({ groupName, isAdmin }) => {
     const [balance, setBalance] = useState(null);
@@ -146,7 +141,7 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
         <>
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-scales"></i> Bilancio — chi deve a chi
+                    <i className="fa-solid fa-scale-balanced"></i> Bilancio — chi deve a chi
                 </h2>
                 {balanceLoading ? (
                     <LoadingSpinner message="Calcolo bilancio..." />
@@ -196,15 +191,11 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
                 ) : null}
             </section>
 
-            <div className={groupStyles.separator}>
-                <div className={groupStyles.separatorLeft}></div>
-                <img src="/coffee-medium-svgrepo-com.svg" alt="" />
-                <div className={groupStyles.separatorRight}></div>
-            </div>
+            <CoffeeSeparator />
 
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-trophy-fill"></i> Award
+                    <i className="fa-solid fa-trophy"></i> Award
                 </h2>
                 {gamificationLoading ? (
                     <LoadingSpinner message="Caricamento statistiche..." />
@@ -214,7 +205,7 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
                     <>
                         {gamification.coffeeKingOfMonth && (
                             <div className={expansionStyles.kingBanner}>
-                                <i className="bi bi-cup-hot-fill"></i> Caffè-king del mese: <strong>{gamification.coffeeKingOfMonth}</strong>
+                                <i className="fa-solid fa-mug-hot"></i> Caffè-king del mese: <strong>{gamification.coffeeKingOfMonth}</strong>
                             </div>
                         )}
                         <div className={expansionStyles.cardGrid}>
@@ -244,7 +235,7 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
             {isAdmin && (
                 <section className={expansionStyles.section}>
                     <h2 className={groupStyles.sectionTitle}>
-                        <i className="bi bi-sliders"></i> Regole del gruppo
+                        <i className="fa-solid fa-sliders"></i> Regole del gruppo
                     </h2>
                     {rulesLoading ? (
                         <LoadingSpinner message="Caricamento regole..." />

@@ -2,6 +2,13 @@ import React from "react";
 import styles from "~/styles/group.module.css";
 import sharedStyles from "~/styles/shared.module.css";
 import { formatPayForRemaining, formatSkipsRemaining } from "~/utils/groupHelpers";
+import { fa } from "~/utils/icons";
+
+const ACTION_ICONS = {
+    'Registra Pagamento': 'coins',
+    'Salta Pagamento': 'forward',
+    'Paga per un amico': 'user-plus',
+};
 
 const PaymentActions = React.memo(function PaymentActions({
                                                               myTurn,
@@ -39,38 +46,39 @@ const PaymentActions = React.memo(function PaymentActions({
     const turnLabel = currentTurnDisplayName || currentTurnUsername;
 
     return (
-        <>
-            <section className={styles.groupSection}>
-                <h1>{myTurn ? 'È il tuo turno di pagare il caffè' : 'Non è il tuo turno di pagare il caffè'}</h1>
-                {myTurn ? (
-                    <p>Puoi registrare il pagamento o saltare il turno.</p>
-                ) : turnLabel ? (
-                    <p>Turno attuale: <strong>{turnLabel}</strong>. Attendi il tuo turno per pagare.</p>
-                ) : (
-                    <p>Attendi il tuo turno per effettuare un pagamento.</p>
-                )}
-                <p style={{color: 'var(--coffee-700)', fontSize: '0.9rem'}}>
-                    {formatSkipsRemaining(myMembership, maxSkipPerMonth)}
+        <section className={styles.groupSection}>
+            <h2 className={styles.turnHeading}>
+                {myTurn ? 'È il tuo turno di pagare il caffè' : 'Non è il tuo turno di pagare il caffè'}
+            </h2>
+            {myTurn ? (
+                <p>Puoi registrare il pagamento o saltare il turno.</p>
+            ) : turnLabel ? (
+                <p>Turno attuale: <strong>{turnLabel}</strong>. Attendi il tuo turno per pagare.</p>
+            ) : (
+                <p>Attendi il tuo turno per effettuare un pagamento.</p>
+            )}
+            <p className={styles.turnHint}>
+                {formatSkipsRemaining(myMembership, maxSkipPerMonth)}
+            </p>
+            {canPayFor && (
+                <p className={styles.turnHint}>
+                    {formatPayForRemaining(myMembership, maxPayForPerMonth)}
                 </p>
-                {canPayFor && (
-                    <p style={{color: 'var(--coffee-700)', fontSize: '0.9rem'}}>
-                        {formatPayForRemaining(myMembership, maxPayForPerMonth)}
-                    </p>
-                )}
-                <div className={styles.actionButtons}>
-                    {actions.map(({label, onClick, disabled}, i) => (
-                        <button
-                            key={i}
-                            onClick={onClick}
-                            disabled={disabled}
-                            className={`${sharedStyles.groupButton} ${styles.actionButton}`}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
-            </section>
-        </>
+            )}
+            <div className={styles.actionButtons}>
+                {actions.map(({label, onClick, disabled}, i) => (
+                    <button
+                        key={i}
+                        onClick={onClick}
+                        disabled={disabled}
+                        className={`${sharedStyles.groupButton} ${styles.actionButton}`}
+                    >
+                        <i className={fa(ACTION_ICONS[label])} />
+                        {label}
+                    </button>
+                ))}
+            </div>
+        </section>
     );
 });
 

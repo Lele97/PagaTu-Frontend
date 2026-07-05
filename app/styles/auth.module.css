@@ -470,7 +470,7 @@
 }
 
 .oauthDivider span {
-    background: white;
+    background: var(--surface-card, var(--surface-main));
     padding: 0 0.75rem;
     position: relative;
     z-index: 1;
@@ -496,7 +496,7 @@
     padding: 0.65rem 1rem;
     border: 1px solid #8c8c8c;
     border-radius: 4px;
-    background: white;
+    background: var(--surface-card, var(--surface-main));
     color: #5e5e5e;
     font-weight: 500;
     cursor: pointer;

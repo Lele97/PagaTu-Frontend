@@ -7,6 +7,8 @@ import HomeGroups from "~/components/home/homeGroups.jsx";
 import HomePayments from "~/components/home/homePayments.jsx";
 import HomeStatistics from "~/components/home/homeStatistics.jsx";
 import HomeAwards from "~/components/home/homeAwards.jsx";
+import CoffeeSeparator from "~/components/shared/CoffeeSeparator.jsx";
+import SectionReveal from "~/components/shared/SectionReveal.jsx";
 import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
@@ -440,17 +442,17 @@ const Home = () => {
             } else {
                 // mock awards
                 setUserAwards([
-                    { id: 1, name: "Caffè King del mese", level: "gold", icon: "bi-cup-hot-fill" },
-                    { id: 2, name: "Streak 7 giorni", level: "silver", icon: "bi-star-fill" },
-                    { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "bi-people-fill" },
-                    { id: 4, name: "Ha pagato per 5 amici", level: "gold", icon: "bi-heart-fill" },
+                    { id: 1, name: "Caffè King del mese", level: "gold", icon: "mug-hot" },
+                    { id: 2, name: "Streak 7 giorni", level: "silver", icon: "star" },
+                    { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "user-group" },
+                    { id: 4, name: "Ha pagato per 5 amici", level: "gold", icon: "heart" },
                 ]);
             }
         } catch {
             setUserAwards([
-                { id: 1, name: "Caffè King del mese", level: "gold", icon: "bi-cup-hot-fill" },
-                { id: 2, name: "Streak 7 giorni", level: "silver", icon: "bi-star-fill" },
-                { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "bi-people-fill" },
+                { id: 1, name: "Caffè King del mese", level: "gold", icon: "mug-hot" },
+                { id: 2, name: "Streak 7 giorni", level: "silver", icon: "star" },
+                { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "user-group" },
             ]);
         } finally {
             setAwardsLoading(false);
@@ -490,11 +492,16 @@ const Home = () => {
 
                 <main className={styles.main}>
 
-                    <HomeHeader/>
+                    <HomeHeader user={user} groupsCount={groups.length} />
 
-                    <HomeStatistics statistics={userStatistics} loading={statsLoading} />
+                    <SectionReveal className={styles.recentSection}>
+                        <HomeStatistics statistics={userStatistics} loading={statsLoading} />
+                    </SectionReveal>
 
-                    <HomeGroups groups={getPaginatedGroups}
+                    <CoffeeSeparator />
+
+                    <SectionReveal>
+                        <HomeGroups groups={getPaginatedGroups}
                                 groupsLoading={groupsLoading}
                                 groupsError={groupsError}
                                 onRetry={onRetry}
@@ -505,30 +512,26 @@ const Home = () => {
                                 getTotalGroupPages={getTotalGroupPages()}
                                 setCurrentGroupPage={setCurrentGroupPage}
                                 currentUsername={user}
-                    />
+                        />
+                    </SectionReveal>
 
-                    <div className={styles.separator}>
-                        <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
-                        <div className={styles.separatorRight}></div>
-                    </div>
+                    <CoffeeSeparator />
 
+                    <SectionReveal>
+                        <HomeAwards awards={userAwards} loading={awardsLoading} />
+                    </SectionReveal>
 
-                    <HomeAwards awards={userAwards} loading={awardsLoading} />
+                    <CoffeeSeparator />
 
-                    <div className={styles.separator}>
-                        <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
-                        <div className={styles.separatorRight}></div>
-                    </div>
-
-                    <HomePayments onRetry={onRetry}
+                    <SectionReveal>
+                        <HomePayments onRetry={onRetry}
                                   payments={getPaginatedPayments}
                                   paymentsError={paymentsError}
                                   currentPaymentPage={currentPaymentPage}
                                   paymentsLoading={paymentsLoading}
                                   getTotalPaymentPages={getTotalPaymentPages()}
                                   setCurrentPaymentPage={setCurrentPaymentPage}/>
+                    </SectionReveal>
 
                 </main>
             </div>

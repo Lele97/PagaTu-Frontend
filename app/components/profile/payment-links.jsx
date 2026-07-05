@@ -86,7 +86,7 @@ const PaymentLinks = () => {
                 <button type="button" onClick={() => navigate('/home')} className={styles.backBtn}>
                     <i className="fa-solid fa-arrow-left"></i> Home
                 </button>
-                <h1><i className="bi bi-wallet2"></i> Link per rimborsi</h1>
+                <h1><i className="fa-solid fa-wallet"></i> Link per rimborsi</h1>
                 <p className={styles.subtitle}>
                     Aggiungi i tuoi link Satispay o Revolut. PagaTu resta solo un tracker — i pagamenti avvengono fuori dall&apos;app.
                 </p>

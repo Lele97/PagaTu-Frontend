@@ -1,4 +1,5 @@
 import styles from '~/styles/group.module.css';
+import TurnIndicator from '~/components/group/TurnIndicator.jsx';
 import {
     formatPaymentStatus,
     formatRoundNumber,
@@ -28,18 +29,18 @@ const GroupInfoSection = ({ group, currentUser }) => {
         <section className={styles.groupInfoSection}>
             <div className={styles.groupInfoHeader}>
                 <h2 className={styles.sectionTitle}>
-                    <i className="bi bi-people-fill" /> Membri e turno
+                    <i className="fa-solid fa-user-group" /> Membri e turno
                     {roundLabel && <span className={styles.roundBadge}>{roundLabel}</span>}
                 </h2>
                 <div className={styles.roundStats}>
-                    <span><i className="bi bi-check-circle" /> {paid} pagati</span>
-                    <span><i className="bi bi-hourglass-split" /> {pending} in attesa</span>
+                    <span><i className="fa-solid fa-circle-check" /> {paid} pagati</span>
+                    <span><i className="fa-solid fa-hourglass-half" /> {pending} in attesa</span>
                 </div>
             </div>
 
             {currentTurn && (
                 <div className={styles.turnBanner}>
-                    <i className="bi bi-cup-hot-fill" />
+                    <i className="fa-solid fa-mug-hot" />
                     <span>
                         Turno di <strong>{currentTurn}</strong>
                         {currentTurn === currentUser && ' — tocca a te!'}
@@ -47,17 +48,7 @@ const GroupInfoSection = ({ group, currentUser }) => {
                 </div>
             )}
 
-            <div className={styles.turnQueue}>
-                {members.map((member) => (
-                    <div
-                        key={member.username}
-                        className={`${styles.turnAvatar} ${member.myTurn ? styles.turnAvatarActive : ''}`}
-                        title={memberDisplayName(member)}
-                    >
-                        {memberInitial(member)}
-                    </div>
-                ))}
-            </div>
+            <TurnIndicator members={members} />
 
             <div className={styles.membersList}>
                 {members.map((member) => (

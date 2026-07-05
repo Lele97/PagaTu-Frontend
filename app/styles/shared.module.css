@@ -173,3 +173,103 @@
         transform: translateY(0) scale(1);
     }
 }
+
+/* ===============================================================================
+   COFFEE SEPARATOR
+   ================================================================================ */
+
+.separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3rem 0;
+    width: 100%;
+    height: 30px;
+}
+
+.separatorLeft {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #D1C4B7);
+    border-radius: 1rem;
+}
+
+.separatorRight {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to left, transparent, #D1C4B7);
+    border-radius: 1rem;
+}
+
+.separator img {
+    width: 40px;
+    height: 40px;
+    margin: 0 1rem;
+}
+
+/* ===============================================================================
+   SPINNER (consolidated — UX_LAST H1 / fase 2)
+   ================================================================================ */
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--coffee-400);
+    border-top: 4px solid var(--coffee-600);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.spinnerText {
+    color: var(--coffee-600);
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.loadingSpinnerInner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* ===============================================================================
+   SECTION REVEAL (UX_LAST I1 / fase 7)
+   ================================================================================ */
+
+.sectionReveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.sectionRevealVisible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summaryText {
+    color: var(--coffee-600);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.leaveGroupBtn {
+    margin-bottom: 1rem;
+}

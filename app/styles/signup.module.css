@@ -32,11 +32,21 @@
     transition: transform 0.2s ease;
 }
 
+.pageBrand {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
 .heroSection {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding: 48px 24px 32px;
+    padding: 88px 24px 32px;
 }
 
 .heroOverlay {
@@ -63,7 +73,6 @@
     display: flex;
     align-items: center;
     gap: 18px;
-    margin-bottom: 22px;
 }
 
 .heroText {
@@ -376,6 +385,57 @@
     align-items: start;
 }
 
+.zigzagSection {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    padding: 20px 24px 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.zigzagRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: center;
+}
+
+.zigzagRowReverse .zigzagVisual {
+    order: 2;
+}
+
+.zigzagRowReverse .zigzagText {
+    order: 1;
+}
+
+.zigzagVisual {
+    background: var(--surface-card, rgba(255, 251, 247, 0.78));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.zigzagVisual i {
+    font-size: 2.5rem;
+    color: var(--coffee-600);
+    margin-bottom: 1rem;
+}
+
+.zigzagText h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.5rem;
+    color: var(--coffee-800);
+}
+
+.zigzagText p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.75;
+}
+
 .storyText {
     background: rgba(255, 251, 247, 0.64);
     border: 1px solid rgba(111, 78, 55, 0.1);
@@ -569,8 +629,14 @@
 
 @media (max-width: 1080px) {
     .heroContent,
-    .storySection {
+    .storySection,
+    .zigzagRow {
         grid-template-columns: 1fr;
+    }
+
+    .zigzagRowReverse .zigzagVisual,
+    .zigzagRowReverse .zigzagText {
+        order: unset;
     }
 
     .heroText {

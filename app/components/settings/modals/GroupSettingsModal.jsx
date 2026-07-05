@@ -177,7 +177,7 @@ const GroupSettingsModal = ({
                                 onDeleteGroup?.();
                             }}
                         >
-                            <i className="bi bi-trash" /> Elimina gruppo
+                            <i className="fa-solid fa-trash" /> Elimina gruppo
                         </button>
                     </form>
                 );
@@ -238,7 +238,7 @@ const GroupSettingsModal = ({
                                     onInviteMember?.();
                                 }}
                             >
-                                <i className="bi bi-person-plus" /> Invita membro
+                                <i className="fa-solid fa-user-plus" /> Invita membro
                             </button>
                             <div className={styles.memberList}>
                                 {settings.members.map((m) => (
@@ -255,7 +255,7 @@ const GroupSettingsModal = ({
                                                 disabled={saving}
                                                 title="Rimuovi membro"
                                             >
-                                                <i className="bi bi-person-x" />
+                                                <i className="fa-solid fa-user-xmark" />
                                             </button>
                                         )}
                                     </div>

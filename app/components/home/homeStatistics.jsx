@@ -22,10 +22,10 @@ const HomeStatistics = React.memo(function HomeStatistics({ statistics, loading 
     };
 
     return (
-        <section className={styles.recentSection}>
+        <>
             <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>
-                    <i className="bi bi-graph-up"></i> Le tue statistiche
+                    <i className="fa-solid fa-chart-line"></i> Le tue statistiche
                 </h2>
             </div>
 
@@ -71,10 +71,10 @@ const HomeStatistics = React.memo(function HomeStatistics({ statistics, loading 
                     <div className={styles.statLabel}>Pagamento più alto</div>
                 </div>
                 <div className={`${styles.statCard} ${styles.fullWidth} ${styles.titleCard}`}>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--coffee-700)' }}>
+                    <div className={styles.titleCardHeading}>
                         🏆 Il tuo titolo: <strong>{stats.funTitle}</strong>
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--coffee-600)', marginTop: '4px' }}>
+                    <div className={styles.titleCardSubtext}>
                         {stats.funTitle === "Coffee Legend" && "Hai pagato per la squadra più di tutti!"}
                         {stats.funTitle === "The Reliable One" && "Sempre puntuale con i turni."}
                         {stats.funTitle === "Coffee Newbie" && "Stai iniziando il tuo viaggio nel mondo del caffè!"}
@@ -82,7 +82,7 @@ const HomeStatistics = React.memo(function HomeStatistics({ statistics, loading 
                     </div>
                 </div>
             </div>
-        </section>
+        </>
     );
 });
 

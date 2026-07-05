@@ -34,7 +34,7 @@ const Drawer = ({ open, onClose, title, children, side = 'right' }) => {
                 <header className={styles.drawerHeader}>
                     <h2 className={styles.drawerTitle}>{title}</h2>
                     <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Chiudi">
-                        <i className="bi bi-x-lg" />
+                        <i className="fa-solid fa-xmark" />
                     </button>
                 </header>
                 <div className={styles.drawerBody}>{children}</div>

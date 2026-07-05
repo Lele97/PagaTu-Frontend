@@ -13,7 +13,6 @@ import SplashScreen from '~/components/splash/splash-screen.jsx';
 import AuthLanding from '~/components/auth/AuthLanding.jsx';
 import './styles/app.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

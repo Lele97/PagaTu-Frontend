@@ -102,11 +102,13 @@
 
 .groupSection {
     margin-bottom: 2.5rem;
-    background-color: white;
-    border-radius: 1.5rem;
-    padding: 2.5rem;
-    box-shadow: 0 10px 30px rgba(139, 92, 60, 0.1);
-    transition: all 0.2s ease;
+    background: var(--surface-card, var(--surface-main));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 3rem 2.5rem;
+    min-height: 200px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
 }
 
 .sectionHeader {
@@ -148,75 +150,6 @@
     box-shadow: 0 6px 16px rgba(139, 92, 60, 0.3);
 }
 
-.groupGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-.groupCard {
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-    border: 1px solid var(--coffee-100);
-    border-radius: 1rem;
-    padding: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-}
-
-.groupCard:hover {
-    transform: translateY(-4px);
-}
-
-.groupIcon {
-    width: 50px;
-    height: 50px;
-    background: var(--coffee-600);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-}
-
-.groupInfo {
-    flex: 1;
-}
-
-.groupName {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--coffee-800);
-    margin: 0 0 0.25rem 0;
-}
-
-.groupDescription {
-    font-size: 0.95rem;
-    color: var(--coffee-600);
-    margin: 0;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.groupAction {
-    color: var(--coffee-600);
-    font-size: 1.75rem;
-    transition: transform 0.3s ease;
-}
-
-.groupCard:hover .groupAction {
-    transform: translateX(4px);
-}
-
 /* =============== GROUP SECTION ENHANCEMENTS =============== */
 .groupGrid {
     display: grid;
@@ -237,6 +170,10 @@
     transition: all 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     min-height: 130px;
+}
+
+.groupCard:hover {
+    transform: translateY(-4px);
 }
 
 .groupIcon {
@@ -323,12 +260,27 @@
     flex-shrink: 0;
 }
 
+.groupCard:hover .groupAction {
+    transform: translateX(4px);
+}
 
 /* =============== EMPTY STATE STYLES =============== */
 .emptyState {
     text-align: center;
     padding: 3rem 2rem;
     color: var(--coffee-600);
+    animation: sectionFadeIn 0.5s ease forwards;
+}
+
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .emptyIcon {
@@ -378,60 +330,29 @@
     }
 }
 
-/* =============== SEPARATOR STYLES =============== */
-.separator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 4rem 0;
-    width: 100%;
-    height: 30px;
-}
-
-.separatorLeft {
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(to right, transparent, #D1C4B7);
-    border-radius: 1rem;
-}
-
-.separatorRight {
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(to left, transparent, #D1C4B7);
-    border-radius: 1rem;
-}
-
-.separator img {
-    width: 40px;
-    height: 40px;
-    margin: 0 1rem;
-}
-
-/* Remove the old separator styles */
-.separator::before {
-    content: none;
-}
-
 /* =============== PAYMENT SECTION STYLES =============== */
 .recentSection {
     margin-bottom: 3rem;
     margin-top: 2rem;
-    background-color: white;
-    border-radius: 1rem;
-    padding: 2.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    background: var(--surface-card, var(--surface-main));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 3rem 2.5rem;
+    min-height: 200px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
 }
 
 /* =============== AWARD SECTION =============== */
 .awardSection {
     margin-bottom: 3rem;
-    background-color: white;
-    border-radius: 1.5rem;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(139, 92, 60, 0.1);
-    transition: all 0.2s ease;
+    background: var(--surface-card, var(--surface-main));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 3rem 2.5rem;
+    min-height: 180px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
 }
 
 .awardTitle {
@@ -446,25 +367,32 @@
 
 .awardGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.25rem;
 }
 
 .awardBanner {
-    padding: 1rem;
-    border-radius: 12px;
+    position: relative;
+    padding: 1.5rem 1rem 2rem;
     text-align: center;
     font-weight: 600;
     font-size: 0.9rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    transition: transform 0.2s ease;
+    gap: 0.5rem;
+    clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.awardBanner i {
+    font-size: 1.5rem;
 }
 
 .awardBanner:hover {
-    transform: translateY(-3px);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-md);
 }
 
 .awardBannerGold {
@@ -569,12 +497,37 @@
 
 /* =============== USER STATISTICS CARDS =============== */
 .statCard {
-    background: white;
+    background: linear-gradient(145deg, var(--surface-card, var(--surface-main)), var(--coffee-50));
     border: 1px solid var(--coffee-100);
-    border-radius: 12px;
-    padding: 1rem;
+    border-radius: var(--radius-sm);
+    padding: 1.15rem;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast);
+}
+
+.statCard:nth-child(3n+1) .statValue::before {
+    content: "\f0d6";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    display: block;
+    font-size: 0.9rem;
+    color: var(--coffee-500);
+    margin-bottom: 0.25rem;
+}
+
+.statCard:nth-child(3n+2) .statValue::before {
+    content: "\f005";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    display: block;
+    font-size: 0.9rem;
+    color: #c98a2e;
+    margin-bottom: 0.25rem;
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
 }
 
 .statValue {
@@ -592,7 +545,7 @@
 
 .statsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 1rem;
 }
 
@@ -601,7 +554,19 @@
 }
 
 .titleCard {
-    background: linear-gradient(135deg, var(--coffee-50), #fff);
+    background: linear-gradient(135deg, var(--coffee-50), var(--surface-card, var(--surface-main)));
+}
+
+.titleCardHeading {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--coffee-700);
+}
+
+.titleCardSubtext {
+    font-size: 0.85rem;
+    color: var(--coffee-600);
+    margin-top: 4px;
 }
 
 
@@ -617,8 +582,8 @@
 .paginationButton {
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--coffee-200);
-    background-color: white;
-    border-radius: 0.5rem;
+    background: var(--surface-card, var(--surface-main));
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.9rem;
     transition: all 0.2s ease;
@@ -931,8 +896,8 @@
 
     .groupCard {
         padding: 1.25rem;
-        flex-direction: column;
-        text-align: center;
+        flex-direction: row;
+        text-align: left;
         gap: 0.75rem;
     }
 

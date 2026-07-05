@@ -30,7 +30,7 @@
 }
 
 .form {
-    background: white;
+    background: var(--surface-card, var(--surface-main));
     padding: 1.5rem;
     border-radius: 0.75rem;
     display: flex;

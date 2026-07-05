@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation, useRouteError } from "react-router-dom";
 import styles from '~/styles/error.module.css';
+import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
 
 export default function ErrorPage() {
     const error = useRouteError();
@@ -67,18 +68,14 @@ export default function ErrorPage() {
                         </button>
                     </div>
 
-                    <div className={styles.separator}>
-                        <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator" />
-                        <div className={styles.separatorRight}></div>
-                    </div>
+                    <CoffeeSeparator />
 
                     <div className={styles.helpMessage}>
                         <p>Se il problema persiste, contatta il <a className={styles.support}
                             href="mailto:someone@example.com">supporto tecnico <i
-                                className="bi bi-envelope-at-fill"></i></a></p>
+                                className="fa-solid fa-at"></i></a></p>
                         <p className={styles.coffeeMessage}>
-                            Nel frattempo, che ne dici di un caffè? <i className="bi bi-cup-hot-fill"></i>
+                            Nel frattempo, che ne dici di un caffè? <i className="fa-solid fa-mug-hot"></i>
                         </p>
                     </div>
                 </div>

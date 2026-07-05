@@ -38,13 +38,13 @@ const PaymentCards = React.memo(function PaymentCards({
         <>
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="bi bi-cart4"/> Pagamenti
+                    <i className="fa-solid fa-cart-shopping"/> Pagamenti
                 </h2>
                 <div className={styles.paymentCardsContainer}>
                     {payments.map((payment, index) => (
                         <div key={index} className={styles.paymentCard}>
                             <div className={styles.paymentCardHeader}>
-                                <i className="bi bi-ticket-perforated-fill"/>
+                                <i className="fa-solid fa-ticket"/>
                                 <span className={styles.paymentLabel}>Utente</span>
                                 <span className={styles.paymentData}>{payment.username}</span>
                             </div>

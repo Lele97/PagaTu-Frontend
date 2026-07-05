@@ -59,11 +59,11 @@ export const leaveGroup = (groupName) =>
     });
 
 export const AVATAR_PRESETS = [
-    { key: 'default', label: 'Classico', icon: 'bi-cup-hot' },
-    { key: 'cup', label: 'Tazza', icon: 'bi-cup-straw' },
-    { key: 'beans', label: 'Chicchi', icon: 'bi-circle-fill' },
-    { key: 'steam', label: 'Vapore', icon: 'bi-cloud-fog2' },
-    { key: 'office', label: 'Ufficio', icon: 'bi-building' },
+    { key: 'default', label: 'Classico', icon: 'mug-hot' },
+    { key: 'cup', label: 'Tazza', icon: 'mug-saucer' },
+    { key: 'beans', label: 'Chicchi', icon: 'circle' },
+    { key: 'steam', label: 'Vapore', icon: 'cloud' },
+    { key: 'office', label: 'Ufficio', icon: 'building' },
 ];
 
 // === BACKEND IMPLEMENTATION REQUIRED ===
@@ -87,9 +87,9 @@ export const AVATAR_PRESETS = [
 //    Returns list of earned awards/badges.
 //    Example:
 //    [
-//      { "id": 1, "name": "Caffè King del mese", "level": "gold", "icon": "bi-cup-hot-fill" },
-//      { "id": 2, "name": "Streak 7 giorni", "level": "silver", "icon": "bi-star-fill" },
-//      { "id": 3, "name": "Ha pagato per 5 amici in un giro", "level": "gold", "icon": "bi-heart-fill" }
+//      { "id": 1, "name": "Caffè King del mese", "level": "gold", "icon": "mug-hot" },
+//      { "id": 2, "name": "Streak 7 giorni", "level": "silver", "icon": "star" },
+//      { "id": 3, "name": "Ha pagato per 5 amici in un giro", "level": "gold", "icon": "heart" }
 //    ]
 //
 // Fun stats ideas to compute server-side:

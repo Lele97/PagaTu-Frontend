@@ -25,7 +25,7 @@
 }
 
 .errorContainer {
-    background-color: white;
+    background: var(--surface-card, var(--surface-main));
     border-radius: 0.75rem;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     padding: 2rem 1rem;

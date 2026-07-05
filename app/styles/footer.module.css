@@ -31,6 +31,21 @@ footer {
     margin-bottom: 2rem;
 }
 
+@media (min-width: 768px) {
+    .footerSplit {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+
+    .footerLeft {
+        align-items: flex-start;
+    }
+
+    .footerRight {
+        text-align: left;
+    }
+}
+
 .footerBottom {
     text-align: center;
     padding-top: 1.5rem;
