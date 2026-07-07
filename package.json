@@ -30,6 +30,6 @@
   "devDependencies": {
     "@react-router/dev": "^7.5.3",
     "@types/node": "^20",
-    "vite": "7.1.11"
+    "vite": "^7.3.6"
   }
 }
