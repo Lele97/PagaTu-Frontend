@@ -21,6 +21,82 @@
    ===============================================================================
 */
 
+
+.secondaryVerifyButton:hover {
+    background-color: var(--coffee-700);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.secondaryVerifyButton:active {
+    transform: translateY(0);
+}
+
+.verifyContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.errorIcon {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    animation: bounce 2s infinite;
+}
+
+.verifyPage {
+    min-height: 100vh;
+    /* background: linear-gradient(135deg, var(--coffee-200) 0%, var(--coffee-300) 100%); */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.5rem;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--coffee-900);
+}
+
+.logo {
+    width: 15rem;
+    height: auto;
+}
+
+.verifyContainer {
+    background: var(--surface-card, var(--surface-main));
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    animation: fadeInUp 0.6s ease;
+    box-sizing: border-box;
+}
+
+.secondaryVerifyButton{
+    border: none;
+    align-items: center;
+    gap: 0.5rem;
+    width: 15rem;
+    padding: 0.875rem 2rem;
+    background-color: var(--coffee-600);
+    color: var(--coffee-0);
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.verifyMessageContainer {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    flex-direction: column;
+}
+
 .container {
     min-height: 100vh;
     display: flex;
@@ -39,9 +115,9 @@
     width: 100%;
 }
 
-.logo {
+.logoMessageVerify {
     max-width: 200px;
-    width: 50vmin;
+    width: 10vmin;
     height: auto;
     margin-bottom: 1rem;
     transition: transform 0.3s ease, color 0.3s ease;
@@ -527,12 +603,13 @@
     color: var(--coffee-700);
 }
 
-.verifySuccess {
-    color: #198754;
-    background: #d1e7dd;
-    padding: 0.75rem;
-    border-radius: 0.35rem;
-    margin-bottom: 1rem;
+.verifyMessageText {
+    font-size: 1.125rem;
+    color: var(--coffee-600);
+    margin: 0;
+    line-height: 1.5;
+    max-width: 500px;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 /* Tablet Landscape: specific adjustments */
