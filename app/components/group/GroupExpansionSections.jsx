@@ -141,7 +141,7 @@ const GroupExpansionSections = ({ groupName, isAdmin }) => {
         <>
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="fa-solid fa-scale-balanced"></i> Bilancio — chi deve a chi
+                    <i className="fa-solid fa-scale-balanced"></i> Bilancio
                 </h2>
                 {balanceLoading ? (
                     <LoadingSpinner message="Calcolo bilancio..." />

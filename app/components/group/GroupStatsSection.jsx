@@ -73,7 +73,7 @@ const GroupStatsSection = ({ groupName }) => {
         <>
             <section className={expansionStyles.section}>
                 <h2 className={groupStyles.sectionTitle}>
-                    <i className="fa-solid fa-calculator" /> Bilancio — chi deve a chi
+                    <i className="fa-solid fa-calculator" /> Bilancio
                 </h2>
                 {balanceLoading ? (
                     <LoadingSpinner message="Calcolo bilancio..." />
