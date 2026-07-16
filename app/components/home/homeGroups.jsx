@@ -4,6 +4,7 @@ import ErrorMessage from "~/components/shared/errorMessage.jsx";
 import LoadingSpinner from "~/components/shared/loadingSpinner.jsx";
 import PaginationControls from "~/components/shared/paginationControls.jsx";
 import {
+    formatPayForRemaining,
     formatRoundNumber,
     formatSkipsRemaining,
     getMemberForUser,
@@ -122,6 +123,11 @@ const HomeGroups = React.memo(function HomeGroups({
                                 {me && (
                                     <p className={styles.groupTurnHint}>
                                         {formatSkipsRemaining(me, group.maxSkipPerMonth)}
+                                    </p>
+                                )}
+                                {me && (
+                                    <p className={styles.groupTurnHint}>
+                                        {formatPayForRemaining(me, group.maxPayForPerMonth)}
                                     </p>
                                 )}
                             </div>
