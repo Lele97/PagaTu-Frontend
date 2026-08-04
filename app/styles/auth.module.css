@@ -39,12 +39,6 @@
     gap: 1.5rem;
 }
 
-.errorIcon {
-    font-size: 4rem;
-    margin-bottom: 0.5rem;
-    animation: bounce 2s infinite;
-}
-
 .verifyPage {
     min-height: 100vh;
     /* background: linear-gradient(135deg, var(--coffee-200) 0%, var(--coffee-300) 100%); */

@@ -124,14 +124,6 @@
    OPTIONAL SHARED HELPERS
    ================================================================================ */
 
-.sharedCard {
-    background: var(--surface-main);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    backdrop-filter: blur(14px);
-}
-
 .secondaryButton {
     background: var(--coffee-100);
     color: var(--coffee-800);
@@ -141,12 +133,6 @@
 .primaryButton {
     background: linear-gradient(135deg, var(--coffee-600), var(--coffee-700));
     color: var(--text-white);
-    box-shadow: var(--shadow-sm);
-}
-
-.dangerButton {
-    background: linear-gradient(135deg, #bb5b4d, #9f3e32);
-    color: #fffaf7;
     box-shadow: var(--shadow-sm);
 }
 

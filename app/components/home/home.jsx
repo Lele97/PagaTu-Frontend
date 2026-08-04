@@ -7,12 +7,11 @@ import HomeGroups from "~/components/home/homeGroups.jsx";
 import HomePayments from "~/components/home/homePayments.jsx";
 import HomeStatistics from "~/components/home/homeStatistics.jsx";
 import HomeAwards from "~/components/home/homeAwards.jsx";
-import CoffeeSeparator from "~/components/shared/CoffeeSeparator.jsx";
 import SectionReveal from "~/components/shared/SectionReveal.jsx";
 import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
-import { fetchCoffeeProfile, fetchUserStatistics, fetchUserAwards } from '~/services/userApi';
+import { fetchCoffeeProfile } from '~/services/userApi';
 import { WELCOME_PATH } from '~/utils/routes';
 
 
@@ -494,44 +493,44 @@ const Home = () => {
 
                     <HomeHeader user={user} groupsCount={groups.length} />
 
-                    <SectionReveal className={styles.recentSection}>
-                        <HomeStatistics statistics={userStatistics} loading={statsLoading} />
-                    </SectionReveal>
+                    <div className={styles.homeGrid}>
+                        <div className={styles.homeMainCol}>
+                            <SectionReveal>
+                                <HomeGroups groups={getPaginatedGroups}
+                                        groupsLoading={groupsLoading}
+                                        groupsError={groupsError}
+                                        onRetry={onRetry}
+                                        addGroup={addGroup}
+                                        selectedGroup={selectedGroup}
+                                        handleGroupSelect={handleGroupSelect}
+                                        currentGroupPage={currentGroupPage}
+                                        getTotalGroupPages={getTotalGroupPages()}
+                                        setCurrentGroupPage={setCurrentGroupPage}
+                                        currentUsername={user}
+                                />
+                            </SectionReveal>
 
-                    <CoffeeSeparator />
+                            <SectionReveal>
+                                <HomePayments onRetry={onRetry}
+                                          payments={getPaginatedPayments}
+                                          paymentsError={paymentsError}
+                                          currentPaymentPage={currentPaymentPage}
+                                          paymentsLoading={paymentsLoading}
+                                          getTotalPaymentPages={getTotalPaymentPages()}
+                                          setCurrentPaymentPage={setCurrentPaymentPage}/>
+                            </SectionReveal>
+                        </div>
 
-                    <SectionReveal>
-                        <HomeGroups groups={getPaginatedGroups}
-                                groupsLoading={groupsLoading}
-                                groupsError={groupsError}
-                                onRetry={onRetry}
-                                addGroup={addGroup}
-                                selectedGroup={selectedGroup}
-                                handleGroupSelect={handleGroupSelect}
-                                currentGroupPage={currentGroupPage}
-                                getTotalGroupPages={getTotalGroupPages()}
-                                setCurrentGroupPage={setCurrentGroupPage}
-                                currentUsername={user}
-                        />
-                    </SectionReveal>
+                        <aside className={styles.homeSidebar}>
+                            <SectionReveal className={styles.sidebarCard}>
+                                <HomeStatistics statistics={userStatistics} loading={statsLoading} />
+                            </SectionReveal>
 
-                    <CoffeeSeparator />
-
-                    <SectionReveal>
-                        <HomeAwards awards={userAwards} loading={awardsLoading} />
-                    </SectionReveal>
-
-                    <CoffeeSeparator />
-
-                    <SectionReveal>
-                        <HomePayments onRetry={onRetry}
-                                  payments={getPaginatedPayments}
-                                  paymentsError={paymentsError}
-                                  currentPaymentPage={currentPaymentPage}
-                                  paymentsLoading={paymentsLoading}
-                                  getTotalPaymentPages={getTotalPaymentPages()}
-                                  setCurrentPaymentPage={setCurrentPaymentPage}/>
-                    </SectionReveal>
+                            <SectionReveal className={styles.sidebarCard}>
+                                <HomeAwards awards={userAwards} loading={awardsLoading} />
+                            </SectionReveal>
+                        </aside>
+                    </div>
 
                 </main>
             </div>

@@ -12,7 +12,7 @@ const HomeAwards = React.memo(function HomeAwards({ awards, loading }) {
 
     if (!displayAwards.length) {
         return (
-            <section className={styles.awardSection}>
+            <>
                 <h2 className={styles.awardTitle}>
                     <i className="fa-solid fa-trophy" /> I tuoi Award
                 </h2>
@@ -23,31 +23,40 @@ const HomeAwards = React.memo(function HomeAwards({ awards, loading }) {
                     <h3>Nessun award ancora</h3>
                     <p>Continua a pagare il caffè e partecipare ai gruppi per sbloccare traguardi!</p>
                 </div>
-            </section>
+            </>
         );
     }
 
+    const ringClass = (level) => level === 'gold'
+        ? styles.awardMedalRingGold
+        : level === 'silver'
+            ? styles.awardMedalRingSilver
+            : styles.awardMedalRingBronze;
+
+    const iconClass = (level) => level === 'gold'
+        ? styles.awardMedalIconGold
+        : level === 'silver'
+            ? styles.awardMedalIconSilver
+            : styles.awardMedalIconBronze;
+
     return (
-        <section className={styles.awardSection}>
+        <>
             <h2 className={styles.awardTitle}>
                 <i className="fa-solid fa-trophy" /> I tuoi Award
             </h2>
-            <div className={styles.awardGrid}>
-                {displayAwards.map((award) => {
-                    const bannerClass = award.level === 'gold'
-                        ? styles.awardBannerGold
-                        : award.level === 'silver'
-                            ? styles.awardBannerSilver
-                            : styles.awardBannerBronze;
-                    return (
-                        <div key={award.id} className={`${styles.awardBanner} ${bannerClass}`}>
-                            <i className={fa(award.icon)} />
-                            <span>{award.name}</span>
+            <div className={styles.awardMedalGrid}>
+                {displayAwards.map((award) => (
+                    <div key={award.id} className={styles.awardMedal} title={award.name}>
+                        <div className={`${styles.awardMedalRing} ${ringClass(award.level)}`}>
+                            <div className={styles.awardMedalInner}>
+                                <i className={`${fa(award.icon)} ${iconClass(award.level)}`} />
+                            </div>
                         </div>
-                    );
-                })}
+                        <span className={styles.awardMedalLabel}>{award.name}</span>
+                    </div>
+                ))}
             </div>
-        </section>
+        </>
     );
 });
 

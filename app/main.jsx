@@ -1,18 +1,27 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import Root from './routes/root';
 import ErrorPage from './components/error/error-page.jsx';
-import Home from '~/components/home/home.jsx';
-import ForgotPswForm from '~/components/resetPassword/forgotPsw-form.jsx';
-import Group from '~/components/group/group.jsx';
-import Invitation from '~/components/invitation/invitation.jsx';
-import ResetPswForm from '~/components/resetPassword/resetPsw-form.jsx';
-import VerifyEmail from '~/components/verify-email/verify-email.jsx';
 import SplashScreen from '~/components/splash/splash-screen.jsx';
-import AuthLanding from '~/components/auth/AuthLanding.jsx';
 import './styles/app.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Route-level code splitting: solo la splash screen (rotta "/") viene caricata
+// nel bundle iniziale. Le altre pagine vengono scaricate on-demand, riducendo
+// il JS da parsare/eseguire al primo caricamento.
+const Home = lazy(() => import('~/components/home/home.jsx'));
+const ForgotPswForm = lazy(() => import('~/components/resetPassword/forgotPsw-form.jsx'));
+const Group = lazy(() => import('~/components/group/group.jsx'));
+const Invitation = lazy(() => import('~/components/invitation/invitation.jsx'));
+const ResetPswForm = lazy(() => import('~/components/resetPassword/resetPsw-form.jsx'));
+const VerifyEmail = lazy(() => import('~/components/verify-email/verify-email.jsx'));
+const AuthLanding = lazy(() => import('~/components/auth/AuthLanding.jsx'));
+
+const withSuspense = (element) => (
+    <Suspense fallback={null}>
+        {element}
+    </Suspense>
+);
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -38,7 +47,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/welcome',
-                element: <AuthLanding />,
+                element: withSuspense(<AuthLanding />),
             },
             {
                 path: '/login',
@@ -50,27 +59,27 @@ const router = createBrowserRouter([
             },
             {
                 path: '/home',
-                element: <Home />,
+                element: withSuspense(<Home />),
             },
             {
                 path: '/forgotPassword',
-                element: <ForgotPswForm />,
+                element: withSuspense(<ForgotPswForm />),
             },
             {
                 path: '/group',
-                element: <Group />,
+                element: withSuspense(<Group />),
             },
             {
                 path: '/invitation',
-                element: <Invitation />,
+                element: withSuspense(<Invitation />),
             },
             {
                 path: '/resetPassword',
-                element: <ResetPswForm />,
+                element: withSuspense(<ResetPswForm />),
             },
             {
                 path: '/verify-email',
-                element: <VerifyEmail />,
+                element: withSuspense(<VerifyEmail />),
             },
             {
                 path: '/profile/payment-links',

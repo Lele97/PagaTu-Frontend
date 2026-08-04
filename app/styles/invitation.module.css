@@ -47,7 +47,6 @@
    ================================================================================ */
 
 .invitationCard,
-.errorCard,
 .successCard {
     background-color: var(--coffee-0);
     border-radius: 20px;

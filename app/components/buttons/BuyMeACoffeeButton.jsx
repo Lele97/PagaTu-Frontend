@@ -5,7 +5,7 @@ const BuyMeACoffeeButton = () => {
     return (
         <a href="https://buymeacoffee.com/lele_97">
             <img
-                src="/yellow-button.png"
+                src="/yellow-button.webp"
                 alt="BuyMeACoffee"
                 className={styles.btnimg}
             />

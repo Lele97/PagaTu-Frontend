@@ -74,14 +74,6 @@ footer {
     margin: 0;
 }
 
-.pagatuimage {
-    width: 4.5rem;
-    height: auto;
-    object-fit: contain;
-    margin-top: 0.75rem;
-}
-
-
 .footerLeft {
     display: flex;
     gap: 1.5rem;
@@ -98,18 +90,6 @@ footer {
     font-size: 1.125rem;
     margin: 0 0 0.75rem 0;
     font-weight: 600;
-}
-
-.footerLinks {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.footerLinks p {
-    margin: 0;
-    color: var(--coffee-200);
-    font-size: 0.9rem;
 }
 
 .footerLink {
@@ -136,19 +116,6 @@ footer {
 
 .footerRight strong {
     color: var(--coffee-1000);
-}
-
-.socialSection {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.socialSection h3 {
-    color: var(--coffee-100);
-    font-size: 1.125rem;
-    margin: 0;
-    font-weight: 600;
 }
 
 .socialButtons {
@@ -231,18 +198,6 @@ footer {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-
-.repoSection {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.repoSection h3 {
-    font-size: 1.125rem;
-    margin: 0;
-    font-weight: 600;
-}
 
 .repoGrid {
     display: flex;

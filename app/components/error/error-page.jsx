@@ -72,7 +72,7 @@ export default function ErrorPage() {
 
                     <div className={styles.helpMessage}>
                         <p>Se il problema persiste, contatta il <a className={styles.support}
-                            href="mailto:someone@example.com">supporto tecnico <i
+                            href="mailto:support@pagatu.app">supporto tecnico <i
                                 className="fa-solid fa-at"></i></a></p>
                         <p className={styles.coffeeMessage}>
                             Nel frattempo, che ne dici di un caffè? <i className="fa-solid fa-mug-hot"></i>

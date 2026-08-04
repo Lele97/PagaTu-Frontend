@@ -201,7 +201,7 @@
     border-left: 4px solid #dc3545;
     border-radius: 0.75rem;
     box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.2);
-    animation: __shakeFadeIn_mroe0_1_1ka6y_1 0.4s ease;
+    animation: shakeFadeIn 0.4s ease;
     max-width: 70%;
     display: flex;
     gap: 0.75rem;

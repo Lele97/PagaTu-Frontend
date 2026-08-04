@@ -70,11 +70,6 @@
     transform: translateY(-2px);
 }
 
-.groupButtonSelected {
-    background-color: var(--coffee-700);
-    box-shadow: 0 0 0 2px var(--coffee-400);
-}
-
 .actionButtons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -302,6 +297,126 @@
     margin-right: auto;
 }
 
+/* =============== 2-COLUMN LAYOUT (main + sticky sidebar) =============== */
+.homeGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.homeMainCol {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.homeSidebar {
+    position: sticky;
+    top: 76px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.sidebarCard {
+    background: var(--surface-card, var(--surface-main));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 1024px) {
+    .homeGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .homeSidebar {
+        position: static;
+        top: auto;
+    }
+}
+
+/* =============== AWARD MEDALS (sidebar) =============== */
+.awardMedalGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.25rem;
+}
+
+.awardMedal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    width: 72px;
+}
+
+.awardMedalRing {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    box-shadow: 0 8px 18px rgba(62, 44, 32, 0.16);
+    transition: transform var(--transition-fast);
+}
+
+.awardMedal:hover .awardMedalRing {
+    transform: translateY(-3px) scale(1.03);
+}
+
+.awardMedalRingGold {
+    background: conic-gradient(from 220deg, #fff3cf, #e8b923, #f8d878, #c98a2e, #fff3cf);
+}
+
+.awardMedalRingSilver {
+    background: conic-gradient(from 220deg, #f4f6f8, #adb5bd, #eef1f3, #7c8791, #f4f6f8);
+}
+
+.awardMedalRingBronze {
+    background: conic-gradient(from 220deg, #f0c9a0, #b0692f, #f3d3ac, #7a4420, #f0c9a0);
+}
+
+.awardMedalInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--surface-card, var(--surface-main));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.awardMedalIconGold {
+    font-size: 1.05rem;
+    color: #c98a2e;
+}
+
+.awardMedalIconSilver {
+    font-size: 1.05rem;
+    color: #7c8791;
+}
+
+.awardMedalIconBronze {
+    font-size: 1.05rem;
+    color: #a0522d;
+}
+
+.awardMedalLabel {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--coffee-600);
+    text-align: center;
+    line-height: 1.2;
+}
+
 /* =============== RESPONSIVE ENHANCEMENTS =============== */
 @media (max-width: 768px) {
     .heroTitle {
@@ -343,74 +458,14 @@
     transition: all var(--transition-fast);
 }
 
-/* =============== AWARD SECTION =============== */
-.awardSection {
-    margin-bottom: 3rem;
-    background: var(--surface-card, var(--surface-main));
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-md);
-    padding: 3rem 2.5rem;
-    min-height: 180px;
-    box-shadow: var(--shadow-md);
-    transition: all var(--transition-fast);
-}
-
 .awardTitle {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--coffee-800);
-    margin-bottom: 1.25rem;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-}
-
-.awardGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.25rem;
-}
-
-.awardBanner {
-    position: relative;
-    padding: 1.5rem 1rem 2rem;
-    text-align: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: var(--shadow-sm);
-}
-
-.awardBanner i {
-    font-size: 1.5rem;
-}
-
-.awardBanner:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: var(--shadow-md);
-}
-
-.awardBannerGold {
-    background: linear-gradient(135deg, #f6e05e 0%, #d69e2e 100%);
-    color: #744210;
-    box-shadow: 0 4px 15px rgba(214, 158, 46, 0.3);
-}
-
-.awardBannerSilver {
-    background: linear-gradient(135deg, #e2e8f0 0%, #a0aec0 100%);
-    color: #2d3748;
-    box-shadow: 0 4px 15px rgba(160, 174, 192, 0.3);
-}
-
-.awardBannerBronze {
-    background: linear-gradient(135deg, #ed8936 0%, #c05621 100%);
-    color: #fffaf0;
-    box-shadow: 0 4px 15px rgba(192, 86, 33, 0.3);
 }
 
 .paymentCardsContainer {
@@ -631,7 +686,7 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--coffee-600);
     border: 3px solid var(--coffee-600);
     position: relative;
-    animation: _slideIn_1gnii_1 0.3s ease-out;
+    animation: slideIn 0.3s ease-out;
     max-height: 90vh;
     overflow-y: auto;
     box-sizing: border-box;
@@ -748,13 +803,6 @@
 .retryButton:hover {
     background-color: #c53030;
     transform: scale(1.05);
-}
-
-.textEmpty {
-    text-align: center;
-    color: var(--coffee-600);
-    padding: 2rem;
-    font-style: italic;
 }
 
 /* =============== LOADING STYLES =============== */

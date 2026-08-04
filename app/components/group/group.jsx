@@ -805,34 +805,42 @@ const Group = () => {
                         onOpenSettings={openGroupSettings}
                     />
 
-                    {groupSummaryLoading ? (
-                        <p className={sharedStyles.summaryText}>Aggiornamento turno...</p>
-                    ) : (
-                        <GroupInfoSection group={groups} currentUser={user} />
-                    )}
+                    <div className={styles.groupGridLayout}>
+                        <div className={styles.groupMainCol}>
+                            {groupSummaryLoading ? (
+                                <p className={sharedStyles.summaryText}>Aggiornamento turno...</p>
+                            ) : (
+                                <GroupInfoSection group={groups} currentUser={user} />
+                            )}
 
-                    {!isAdmin && (
-                        <button
-                            type="button"
-                            onClick={handleLeaveGroup}
-                            className={`${sharedStyles.groupButton} ${sharedStyles.leaveGroupBtn}`}
-                            disabled={leavingGroup}
-                        >
-                            <i className="fa-solid fa-right-from-bracket"/> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
-                        </button>
-                    )}
+                            {!isAdmin && (
+                                <button
+                                    type="button"
+                                    onClick={handleLeaveGroup}
+                                    className={`${sharedStyles.groupButton} ${sharedStyles.leaveGroupBtn}`}
+                                    disabled={leavingGroup}
+                                >
+                                    <i className="fa-solid fa-right-from-bracket"/> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
+                                </button>
+                            )}
+                        </div>
 
-                    <PaymentActions
-                        myTurn={myTurn}
-                        canPayFor={canPayFor}
-                        maxSkipPerMonth={groups.maxSkipPerMonth ?? 4}
-                        maxPayForPerMonth={groups.maxPayForPerMonth ?? 4}
-                        myMembership={myMembership}
-                        currentTurnUsername={groups.currentTurnUsername || currentTurnMember?.username}
-                        currentTurnDisplayName={currentTurnMember ? memberDisplayName(currentTurnMember) : null}
-                        onRegisterPayment={registerPayment}
-                        onSkipPayment={skipPayment}
-                        onPayForFriend={payForFriend}/>
+                        <aside className={styles.groupSidebar}>
+                            <PaymentActions
+                                myTurn={myTurn}
+                                canPayFor={canPayFor}
+                                maxSkipPerMonth={groups.maxSkipPerMonth ?? 4}
+                                maxPayForPerMonth={groups.maxPayForPerMonth ?? 4}
+                                myMembership={myMembership}
+                                currentTurnUsername={groups.currentTurnUsername || currentTurnMember?.username}
+                                currentTurnDisplayName={currentTurnMember ? memberDisplayName(currentTurnMember) : null}
+                                onRegisterPayment={registerPayment}
+                                onSkipPayment={skipPayment}
+                                onPayForFriend={payForFriend}
+                                paidCount={groups.roundPaidCount ?? 0}
+                                pendingCount={groups.roundPendingCount ?? 0}/>
+                        </aside>
+                    </div>
 
                     <CoffeeSeparator />
 

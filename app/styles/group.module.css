@@ -81,25 +81,6 @@
     transform: translateX(-2px);
 }
 
-.settingsHintBtn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.9rem;
-    border: 1px solid var(--coffee-300);
-    border-radius: var(--radius-sm, 0.5rem);
-    background: var(--coffee-100);
-    color: var(--coffee-700);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background var(--transition-fast);
-}
-
-.settingsHintBtn:hover {
-    background: var(--coffee-200);
-}
-
 .groupTitle {
     font-size: 1.5rem;
     font-weight: 600;
@@ -123,11 +104,6 @@
     color: var(--coffee-700);
     font-size: 0.9rem;
     margin: 0.25rem 0;
-}
-
-.groupAdminButtons {
-    display: flex;
-    gap: 1rem;
 }
 
 .sectionTitle {
@@ -188,12 +164,24 @@
 }
 
 .turnQueue {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--coffee-100);
+}
+
+.turnQueue::before {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 21px;
+    right: 21px;
+    height: 2px;
+    background: var(--coffee-200);
+    z-index: 0;
 }
 
 .turnIndicator {
@@ -213,6 +201,8 @@
 }
 
 .turnAvatar {
+    position: relative;
+    z-index: 1;
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -391,33 +381,111 @@
     transform: translateY(-2px);
 }
 
-.groupButtonSelected {
-    background-color: var(--coffee-700);
-    box-shadow: 0 0 0 2px var(--coffee-400);
-}
-
 .actionButtons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .actionButton {
-    padding: 1.5rem;
-    font-size: 1.25rem;
+    padding: 1.1rem 1.15rem;
+    font-size: 0.92rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 100px;
-    transition: all 0.3s ease;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    text-align: left;
+    transition: all 0.25s ease;
 }
 
 .actionButton:disabled {}
 
-.actionButton:hover {
-    transform: translateY(-5px);
+.actionButton:hover:not(:disabled) {
+    transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* =============== 2-COLUMN LAYOUT (main + sticky action sidebar) =============== */
+.groupGridLayout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.groupMainCol {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.groupSidebar {
+    position: sticky;
+    top: 76px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+@media (max-width: 1024px) {
+    .groupGridLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .groupSidebar {
+        position: static;
+        top: auto;
+    }
+}
+
+.actionsCard {
+    background: var(--surface-card, var(--surface-main));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.actionsCardHeading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--coffee-800);
+    margin: 0 0 0.5rem;
+}
+
+.actionsCardHint {
+    font-size: 0.82rem;
+    color: var(--coffee-600);
+    margin: 0 0 0.5rem;
+    line-height: 1.4;
+}
+
+.roundSummaryCard {
+    background: var(--coffee-50);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    margin-top: 1rem;
+}
+
+.roundSummaryTitle {
+    font-size: 0.78rem;
+    color: var(--coffee-500);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.roundSummaryRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--coffee-700);
+}
+
+.roundSummaryRow + .roundSummaryRow {
+    margin-top: 0.25rem;
 }
 
 .deleteButton {
@@ -427,16 +495,6 @@
 .deleteButton:hover {
     background-color: #c53030;
 }
-
-.inviteButton {
-    background-color: var(--coffee-600);
-}
-
-.inviteButton:hover {
-    background-color: var(--coffee-700);
-}
-
-
 
 /* =============== LOADING STYLES =============== */
 .loadingSpinner {
@@ -461,48 +519,6 @@
     color: var(--coffee-600);
     font-weight: 500;
     font-size: 1rem;
-}
-
-/* =============== Table Styles =============== */
-.tableContainer {
-    background: var(--surface-card, var(--surface-main));
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-weight: 500;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tableHeader {
-    background-color: var(--coffee-600);
-}
-
-.tableHeaderCell {
-    padding: 1rem;
-    text-align: left;
-    color: white;
-    font-weight: 500;
-}
-
-.tableRow {
-    border-bottom: 1px solid var(--coffee-100);
-}
-
-.tableRow:last-child {
-    border-bottom: none;
-}
-
-.tableRow:hover {
-    background-color: var(--coffee-50);
-}
-
-.tableCell {
-    padding: 1rem;
-    color: var(--coffee-800);
 }
 
 /* =============== Modal Styles =============== */
@@ -531,26 +547,10 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--coffee-600);
     border: 3px solid var(--coffee-600);
     position: relative;
-    animation: _slideIn_1gnii_1 0.3s ease-out;
+    animation: slideIn 0.3s ease-out;
     max-height: 90vh;
     overflow-y: auto;
     box-sizing: border-box;
-}
-
-/* =============== Utility Styles =============== */
-.textEmpty {
-    text-align: center;
-    color: var(--coffee-600);
-    padding: 2rem;
-}
-
-.loadingSpinner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    gap: 1rem;
 }
 
 /* =============== Animations =============== */
@@ -588,15 +588,6 @@
     .actionButton {
         min-height: 80px;
         font-size: 1.1rem;
-    }
-
-    .groupAdminButtons {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .groupAdminButtons button {
-        width: 100%;
     }
 
     .modalContent {
@@ -754,23 +745,6 @@
     margin-bottom: 1rem;
 }
 
-.warningText {
-    color: #dc3545;
-    font-size: 0.9em;
-    margin-top: 1rem;
-    background-color: rgba(220, 53, 69, 0.1);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    border-left: 3px solid #dc3545;
-}
-
-.modalButtonGroup {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-    justify-content: flex-end;
-}
-
 /* Form Styles */
 .formGroup {
     margin-bottom: 1.5rem;
@@ -861,7 +835,7 @@
     border-left: 4px solid #dc3545;
     border-radius: 0.75rem;
     box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.2);
-    animation: __shakeFadeIn_mroe0_1_1ka6y_1 0.4s ease;
+    animation: shakeFadeIn 0.4s ease;
     max-width: 70%;
     display: flex;
     gap: 0.75rem;
@@ -915,9 +889,4 @@
     transform: scale(1.05);
 }
 
-.textEmpty {
-    text-align: center;
-    color: var(--coffee-600);
-    padding: 2rem;
-}
 

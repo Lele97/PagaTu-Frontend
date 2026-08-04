@@ -21,6 +21,8 @@ const PaymentActions = React.memo(function PaymentActions({
                                                               onRegisterPayment,
                                                               onSkipPayment,
                                                               onPayForFriend,
+                                                              paidCount = 0,
+                                                              pendingCount = 0,
                                                           }) {
     const payForRemaining = myMembership?.monthlyPayForRemaining;
     const payForDisabled = !canPayFor || payForRemaining === 0;
@@ -46,16 +48,16 @@ const PaymentActions = React.memo(function PaymentActions({
     const turnLabel = currentTurnDisplayName || currentTurnUsername;
 
     return (
-        <section className={styles.groupSection}>
-            <h2 className={styles.turnHeading}>
+        <div className={styles.actionsCard}>
+            <h2 className={styles.actionsCardHeading}>
                 {myTurn ? 'È il tuo turno di pagare il caffè' : 'Non è il tuo turno di pagare il caffè'}
             </h2>
             {myTurn ? (
-                <p>Puoi registrare il pagamento o saltare il turno.</p>
+                <p className={styles.actionsCardHint}>Puoi registrare il pagamento o saltare il turno.</p>
             ) : turnLabel ? (
-                <p>Turno attuale: <strong>{turnLabel}</strong>. Attendi il tuo turno per pagare.</p>
+                <p className={styles.actionsCardHint}>Turno attuale: <strong>{turnLabel}</strong>. Attendi il tuo turno per pagare.</p>
             ) : (
-                <p>Attendi il tuo turno per effettuare un pagamento.</p>
+                <p className={styles.actionsCardHint}>Attendi il tuo turno per effettuare un pagamento.</p>
             )}
             <p className={styles.turnHint}>
                 {formatSkipsRemaining(myMembership, maxSkipPerMonth)}
@@ -78,7 +80,17 @@ const PaymentActions = React.memo(function PaymentActions({
                     </button>
                 ))}
             </div>
-        </section>
+
+            <div className={styles.roundSummaryCard}>
+                <div className={styles.roundSummaryTitle}>Round attuale</div>
+                <div className={styles.roundSummaryRow}>
+                    <span>Pagati</span><strong>{paidCount}</strong>
+                </div>
+                <div className={styles.roundSummaryRow}>
+                    <span>In attesa</span><strong>{pendingCount}</strong>
+                </div>
+            </div>
+        </div>
     );
 });
 
