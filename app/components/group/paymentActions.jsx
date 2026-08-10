@@ -1,12 +1,11 @@
 import React from "react";
 import styles from "~/styles/group.module.css";
-import sharedStyles from "~/styles/shared.module.css";
 import { formatPayForRemaining, formatSkipsRemaining } from "~/utils/groupHelpers";
 import { fa } from "~/utils/icons";
 
 const ACTION_ICONS = {
-    'Registra Pagamento': 'coins',
-    'Salta Pagamento': 'forward',
+    'Registra Pagamento': 'cash-register',
+    'Salta Pagamento': 'forward-step',
     'Paga per un amico': 'user-plus',
 };
 
@@ -73,7 +72,7 @@ const PaymentActions = React.memo(function PaymentActions({
                         key={i}
                         onClick={onClick}
                         disabled={disabled}
-                        className={`${sharedStyles.groupButton} ${styles.actionButton}`}
+                        className={styles.actionButton}
                     >
                         <i className={fa(ACTION_ICONS[label])} />
                         {label}

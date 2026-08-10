@@ -8,8 +8,10 @@
    ================================================================================ */
 
 .homePage {
+    position: relative;
     min-height: 100vh;
     background-color: var(--coffee-200);
+    overflow: hidden;
     box-sizing: border-box;
 }
 
@@ -172,14 +174,14 @@
 }
 
 .groupIcon {
-    width: 45px;
-    height: 45px;
-    background: var(--coffee-600);
-    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    background: var(--coffee-200);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--coffee-600);
     font-size: 1.1rem;
     flex-shrink: 0;
 }

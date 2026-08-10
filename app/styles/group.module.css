@@ -19,12 +19,10 @@
 }
 
 .groupPage {
+    position: relative;
     min-height: 100vh;
     background-color: var(--coffee-200);
-    background-image: var(--bg-motif);
-    background-repeat: repeat;
-    background-size: 120px 120px;
-    background-position: 10px 20px;
+    overflow: hidden;
     box-sizing: border-box;
 }
 
@@ -43,14 +41,13 @@
 /* =============== Header & Group Header Styles =============== */
 .groupHeader {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 2rem;
 }
 
 .groupHeaderContent {
-    width: 100%;
+    min-width: 0;
 }
 
 .groupHeaderTopRow {
@@ -64,27 +61,28 @@
 .backButton {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--coffee-200);
-    border-radius: var(--radius-sm, 0.5rem);
-    background: rgba(255, 255, 255, 0.7);
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(111, 78, 55, 0.08);
     color: var(--coffee-700);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
     transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
 .backButton:hover {
-    background: rgba(111, 78, 55, 0.08);
+    background: rgba(111, 78, 55, 0.14);
     transform: translateX(-2px);
 }
 
 .groupTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--coffee-800);
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--coffee-900, #3e2c20);
     margin: 0;
     text-align: left;
     display: flex;
@@ -115,9 +113,9 @@
 }
 
 .groupHeaderMeta {
-    margin: 0.35rem 0 0;
-    font-size: 0.9rem;
-    color: var(--coffee-600);
+    margin: 0.2rem 0 0;
+    font-size: 0.78rem;
+    color: var(--coffee-500, var(--coffee-600));
 }
 
 .groupInfoSection {
@@ -388,17 +386,33 @@
 }
 
 .actionButton {
+    background: var(--surface-card, rgba(255, 253, 249, 0.96));
+    border: 1px solid var(--border-soft, rgba(111, 78, 55, 0.14));
+    color: var(--coffee-900, #2d1f17);
     padding: 1.1rem 1.15rem;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(62, 44, 32, 0.06);
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 0.75rem;
     text-align: left;
+    cursor: pointer;
     transition: all 0.25s ease;
 }
 
-.actionButton:disabled {}
+.actionButton i {
+    font-size: 1.1rem;
+    color: var(--coffee-600);
+    flex-shrink: 0;
+}
+
+.actionButton:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
 
 .actionButton:hover:not(:disabled) {
     transform: translateY(-2px);

@@ -3,7 +3,6 @@ import ModalWrapper from '~/components/shared/modalWrapper.jsx';
 import ModalButtons from '~/components/shared/modalButtons.jsx';
 import ErrorSuccessMessages from '~/components/shared/errorSuccessMessages.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
-import { useTheme } from '~/context/ThemeContext.jsx';
 import styles from '~/styles/settings.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 import {
@@ -22,22 +21,13 @@ import { fa } from '~/utils/icons';
 
 const TABS = [
     { id: 'profile', label: 'Profilo', icon: 'user' },
-    { id: 'appearance', label: 'Aspetto', icon: 'palette' },
     { id: 'payments', label: 'Pagamenti', icon: 'wallet' },
     { id: 'preferences', label: 'Preferenze', icon: 'bell' },
     { id: 'security', label: 'Sicurezza', icon: 'shield-halved' },
 ];
 
-const THEME_SWATCHES = {
-    classic: ['#6f4e37', '#faf7f2', '#c8a882'],
-    espresso: ['#3b2314', '#1f1510', '#d4a574'],
-    latte: ['#a67b5b', '#fffcf7', '#e8c9a0'],
-    office: ['#4a5568', '#f7fafc', '#718096'],
-};
-
 const UserSettingsModal = () => {
     const { userSettingsOpen, userSettingsTab, closeUserSettings } = useSettings();
-    const { presets, themeKey, setTheme, reloadTheme } = useTheme();
 
     const [activeTab, setActiveTab] = useState('profile');
     const [loading, setLoading] = useState(false);
@@ -126,21 +116,6 @@ const UserSettingsModal = () => {
         }
     };
 
-    const saveAppearance = async (key) => {
-        setSaving(true);
-        setError('');
-        try {
-            await updatePreferences({ themeKey: key });
-            setTheme(key);
-            await reloadTheme();
-            showSuccess('Tema aggiornato');
-        } catch (err) {
-            setError(err.message || 'Errore nel salvataggio del tema');
-        } finally {
-            setSaving(false);
-        }
-    };
-
     const savePayments = async (e) => {
         e.preventDefault();
         setSaving(true);
@@ -192,13 +167,6 @@ const UserSettingsModal = () => {
             setSaving(false);
         }
     };
-
-    const themeOptions = presets?.length ? presets : [
-        { key: 'classic', label: 'Classic' },
-        { key: 'espresso', label: 'Espresso' },
-        { key: 'latte', label: 'Latte' },
-        { key: 'office', label: 'Office' },
-    ];
 
     const renderContent = () => {
         if (loading) return <p className={styles.loading}>Caricamento...</p>;
@@ -269,43 +237,6 @@ const UserSettingsModal = () => {
                             onCancel={closeUserSettings}
                         />
                     </form>
-                );
-
-            case 'appearance':
-                return (
-                    <>
-                        <div className={styles.modalBody}>
-                            <p className={styles.sectionHint}>
-                                Scegli un tema preset per personalizzare l&apos;aspetto dell&apos;app.
-                            </p>
-                            <div className={styles.themeGrid}>
-                                {themeOptions.map((t) => (
-                                    <button
-                                        key={t.key}
-                                        type="button"
-                                        className={`${styles.themeCard} ${themeKey === t.key ? styles.themeCardActive : ''}`}
-                                        onClick={() => saveAppearance(t.key)}
-                                        disabled={saving}
-                                    >
-                                        <strong>{t.label || t.key}</strong>
-                                        <div
-                                            className={styles.themeSwatch}
-                                            style={{
-                                                background: `linear-gradient(90deg, ${(THEME_SWATCHES[t.key] || THEME_SWATCHES.classic).join(', ')})`,
-                                            }}
-                                        />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <ErrorSuccessMessages error={error} successMessage={success} />
-                        <ModalButtons
-                            isSubmitting={saving}
-                            submitText="Chiudi"
-                            onClick={closeUserSettings}
-                            onCancel={closeUserSettings}
-                        />
-                    </>
                 );
 
             case 'payments':

@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import Footer from '../components/footer/footer.jsx';
-import { ThemeProvider } from '~/context/ThemeContext.jsx';
 import { SettingsProvider, useSettings } from '~/context/SettingsContext.jsx';
 
 import '../styles/app.css';
-import '../styles/themes.css';
 
 const SettingsUrlHandler = ({ children }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -28,16 +26,14 @@ const Root = () => {
     const isSplash = location.pathname === '/';
 
     return (
-        <ThemeProvider>
-            <SettingsProvider>
-                <SettingsUrlHandler>
-                    <div className="appWrapper">
-                        <Outlet />
-                        {!isSplash && <Footer />}
-                    </div>
-                </SettingsUrlHandler>
-            </SettingsProvider>
-        </ThemeProvider>
+        <SettingsProvider>
+            <SettingsUrlHandler>
+                <div className="appWrapper">
+                    <Outlet />
+                    {!isSplash && <Footer />}
+                </div>
+            </SettingsUrlHandler>
+        </SettingsProvider>
     );
 };
 

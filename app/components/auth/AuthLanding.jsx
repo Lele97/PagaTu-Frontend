@@ -4,6 +4,7 @@ import LoginForm from '~/components/login/login-form.jsx';
 import SignupForm from '~/components/signup/signup-form.jsx';
 import styles from '~/styles/signup.module.css';
 import logostyle from '~/styles/logo.module.css';
+import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
 
 const AuthLanding = () => {
     const navigate = useNavigate();
@@ -26,6 +27,8 @@ const AuthLanding = () => {
 
     return (
         <div className={styles.container}>
+            <CoffeePatternIcons variant="welcome" />
+
             <div className={styles.pageBrand}>
                 <img src="/pagaTu.png" alt="Logo PagaTu" className={logostyle.logo} />
                 <div className={logostyle.appTitle}>

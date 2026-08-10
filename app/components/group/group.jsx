@@ -21,6 +21,7 @@ import {WELCOME_PATH} from '~/utils/routes';
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import GroupSettingsModal from '~/components/settings/modals/GroupSettingsModal.jsx';
 import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
+import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
 import {useSettings} from '~/context/SettingsContext.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
@@ -792,6 +793,8 @@ const Group = () => {
 
     return (
         <div className={styles.groupPage}>
+            <CoffeePatternIcons variant="group" />
+
             <div className={`${styles.container} ${isAnyModalOpen ? 'modal-active' : ''}`}>
 
                 <Header user={user} logout={logout} showGroupSettings={isAdmin} avatarKey={avatarKey}/>
@@ -817,7 +820,7 @@ const Group = () => {
                                 <button
                                     type="button"
                                     onClick={handleLeaveGroup}
-                                    className={`${sharedStyles.groupButton} ${sharedStyles.leaveGroupBtn}`}
+                                    className={`${sharedStyles.groupButton} ${sharedStyles.secondaryButton} ${sharedStyles.leaveGroupBtn}`}
                                     disabled={leavingGroup}
                                 >
                                     <i className="fa-solid fa-right-from-bracket"/> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}

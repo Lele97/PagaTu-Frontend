@@ -8,6 +8,7 @@ import HomePayments from "~/components/home/homePayments.jsx";
 import HomeStatistics from "~/components/home/homeStatistics.jsx";
 import HomeAwards from "~/components/home/homeAwards.jsx";
 import SectionReveal from "~/components/shared/SectionReveal.jsx";
+import CoffeePatternIcons from "~/components/shared/CoffeePatternIcons.jsx";
 import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
@@ -485,6 +486,8 @@ const Home = () => {
 
     return (
         <div className={styles.homePage}>
+            <CoffeePatternIcons variant="home" />
+
             <div className={`${styles.container} ${isAnyModalOpen ? styles.modalActive : ''}`}>
 
                 <Header user={user} logout={logout} avatarKey={avatarKey} />

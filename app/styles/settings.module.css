@@ -157,43 +157,6 @@
     color: var(--text-secondary);
 }
 
-.themeGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.themeCard {
-    border: 2px solid transparent;
-    border-radius: 16px;
-    padding: 14px;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.7);
-    transition: border-color 0.15s, transform 0.15s;
-    text-align: left;
-}
-
-.themeCard:hover {
-    transform: translateY(-2px);
-}
-
-.themeCardActive {
-    border-color: var(--coffee-600);
-}
-
-.themeCard strong {
-    display: block;
-    font-size: 0.92rem;
-    color: var(--coffee-800);
-    margin-bottom: 4px;
-}
-
-.themeSwatch {
-    height: 28px;
-    border-radius: 8px;
-    margin-top: 8px;
-}
-
 .avatarGrid {
     display: flex;
     flex-wrap: wrap;
@@ -273,10 +236,4 @@
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-}
-
-@media (max-width: 480px) {
-    .themeGrid {
-        grid-template-columns: 1fr;
-    }
 }

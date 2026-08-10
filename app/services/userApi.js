@@ -35,9 +35,6 @@ export const fetchPreferences = () =>
 export const updatePreferences = (body) =>
     request(`${GATEWAY_URL}/api/coffee/user/preferences`, { method: 'PUT', body: JSON.stringify(body) });
 
-export const fetchThemePresets = () =>
-    request(`${GATEWAY_URL}/api/coffee/user/theme-presets`);
-
 export const fetchGroupSummary = (groupName) =>
     request(`${GATEWAY_URL}/api/coffee/group/summary?groupName=${encodeURIComponent(groupName)}`);
 

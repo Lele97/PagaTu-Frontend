@@ -16,8 +16,9 @@ const GroupHeader = React.memo(function GroupHeader({group, currentUser, onGoBac
                     onClick={onGoBack}
                     className={styles.backButton}
                     aria-label="Torna alla home"
+                    title="Torna alla home"
                 >
-                    <i className="fa-solid fa-arrow-left"/> Home
+                    <i className="fa-solid fa-arrow-left"/>
                 </button>
             )}
             <div className={styles.groupHeaderContent}>

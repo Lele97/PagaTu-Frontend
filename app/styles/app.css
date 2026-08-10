@@ -10,7 +10,7 @@
    ================================================================================ */
 
 :root {
-    --coffee-0: #fffdf9;
+    --coffee-0: #fffef8;
     --coffee-50: #faf7f2;
     --coffee-100: #f3ece4;
     --coffee-200: #e8ddd2;
@@ -27,6 +27,7 @@
     --text-secondary: #6f5a4c;
     --text-soft: #9f8a7b;
     --text-white: #fffaf5;
+    --text-grey-light: #b3b3b3;
 
     --surface-main: rgba(255, 253, 249, 0.82);
     --surface-card: rgba(255, 253, 249, 0.94);
@@ -114,7 +115,18 @@ a {
     overflow-x: hidden;
 }
 
-/* Theme-specific pattern applied via themes.css [data-theme] .appWrapper::before */
+.appWrapper::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.06;
+    background-image: url("/patterns/coffee-bean.svg");
+    background-size: 72px 72px;
+    background-repeat: repeat;
+    color: var(--coffee-600);
+}
 
 .appWrapper > * {
     position: relative;
