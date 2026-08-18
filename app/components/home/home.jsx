@@ -13,7 +13,8 @@ import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
 import { fetchCoffeeProfile } from '~/services/userApi';
-import { WELCOME_PATH } from '~/utils/routes';
+import { ERROR_PATH, WELCOME_PATH } from '~/utils/routes';
+import { useGroup } from '~/context/GroupContext.jsx';
 
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
@@ -57,6 +58,7 @@ const Home = () => {
     const [statsLoading, setStatsLoading] = useState(true);
     const [awardsLoading, setAwardsLoading] = useState(true);
     const navigate = useNavigate();
+    const { openGroup } = useGroup();
     const { userSettingsOpen } = useSettings();
     const requestCacheRef = useRef(new Map());
 
@@ -234,7 +236,7 @@ const Home = () => {
             await getGroupsByUser(user);
 
         } catch (err) {
-            navigate('/error', {state: {errorMessage: err.message || "Errore di connessione"}});
+            navigate(ERROR_PATH, {state: {errorMessage: err.message || "Errore di connessione"}});
         } finally {
             setIsSubmitting(false);
         }
@@ -261,18 +263,13 @@ const Home = () => {
             g.id?.toString() === groupName?.toString()
         );
 
-        if (gruppo) {
-            const normalizedGroup = {
-                id: gruppo.id,
-                name: gruppo.name || gruppo.groupName,
-                groupName: gruppo.name || gruppo.groupName,
-                ...gruppo
-            };
-            localStorage.setItem('group', JSON.stringify(normalizedGroup));
-            setSelectedGroup(groupName);
-            navigate('/group');
+        const name = gruppo?.name || gruppo?.groupName || groupName;
+        if (!name) {
+            return;
         }
-    }, [groups, navigate]);
+        setSelectedGroup(name);
+        openGroup(name);
+    }, [groups, openGroup]);
 
     const getGroupsByUser = useCallback(async (username = user) => {
         const token = localStorage.getItem('authToken');
@@ -384,36 +381,10 @@ const Home = () => {
             if (data.status === 200) {
                 setUserStatistics(data.body);
             } else {
-                // fallback mock data for now (backend to implement)
-                setUserStatistics({
-                    totalPaid: 45.50,
-                    totalCoffeesForOthers: 28,
-                    timesKing: 3,
-                    currentStreak: 5,
-                    longestStreak: 8,
-                    skippedCount: 2,
-                    coffeeKarma: 87,
-                    funTitle: "Coffee Legend",
-                    monthlySavedForFriends: 12.30,
-                    averagePayment: 4.20,
-                    mostExpensive: 12.50,
-                });
+                setUserStatistics(null);
             }
         } catch {
-            // mock on error
-            setUserStatistics({
-                totalPaid: 45.50,
-                totalCoffeesForOthers: 28,
-                timesKing: 3,
-                currentStreak: 5,
-                longestStreak: 8,
-                skippedCount: 2,
-                coffeeKarma: 87,
-                funTitle: "Coffee Legend",
-                monthlySavedForFriends: 12.30,
-                averagePayment: 4.20,
-                mostExpensive: 12.50,
-            });
+            setUserStatistics(null);
         } finally {
             setStatsLoading(false);
         }
@@ -440,20 +411,10 @@ const Home = () => {
             if (data.status === 200 && Array.isArray(data.body)) {
                 setUserAwards(data.body);
             } else {
-                // mock awards
-                setUserAwards([
-                    { id: 1, name: "Caffè King del mese", level: "gold", icon: "mug-hot" },
-                    { id: 2, name: "Streak 7 giorni", level: "silver", icon: "star" },
-                    { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "user-group" },
-                    { id: 4, name: "Ha pagato per 5 amici", level: "gold", icon: "heart" },
-                ]);
+                setUserAwards([]);
             }
         } catch {
-            setUserAwards([
-                { id: 1, name: "Caffè King del mese", level: "gold", icon: "mug-hot" },
-                { id: 2, name: "Streak 7 giorni", level: "silver", icon: "star" },
-                { id: 3, name: "Primo gruppo creato", level: "bronze", icon: "user-group" },
-            ]);
+            setUserAwards([]);
         } finally {
             setAwardsLoading(false);
         }

@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import styles from '~/styles/group.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 import Header from '../header/header.jsx';
@@ -17,7 +17,8 @@ import GroupInfoSection from '~/components/group/GroupInfoSection.jsx';
 import groupStyles from "~/styles/group.module.css";
 import {fetchCoffeeProfile, fetchGroupSummary, leaveGroup} from '~/services/userApi';
 import {getMemberForUser, getCurrentTurnMember, memberDisplayName} from '~/utils/groupHelpers';
-import {WELCOME_PATH} from '~/utils/routes';
+import {HOME_PATH, WELCOME_PATH} from '~/utils/routes';
+import {useGroup} from '~/context/GroupContext.jsx';
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import GroupSettingsModal from '~/components/settings/modals/GroupSettingsModal.jsx';
 import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
@@ -41,6 +42,9 @@ const normalizeError = (err) => {
 const Group = () => {
 
     const navigate = useNavigate();
+    const { groupName: groupNameParam } = useParams();
+    const groupNameFromUrl = groupNameParam ? decodeURIComponent(groupNameParam) : '';
+    const { replaceGroup, leaveToHome } = useGroup();
     const { userSettingsOpen, groupSettingsOpen, openGroupSettings } = useSettings();
     const [user, setUser] = useState(null);
     const [group, setGroup] = useState({groupName: 'Unnamed Group'});
@@ -140,7 +144,6 @@ const Group = () => {
             };
             setGroup(next);
             setGroups(next);
-            localStorage.setItem('group', JSON.stringify(next));
             if (summary.maxSkipPerRound !== undefined || summary.payForEnabled !== undefined) {
                 setGroupRules({
                     payForEnabled: summary.payForEnabled !== false,
@@ -227,10 +230,14 @@ const Group = () => {
         const fetchData = async () => {
             const authToken = localStorage.getItem('authToken');
             const userData = localStorage.getItem('user');
-            const groupData = localStorage.getItem('group');
 
             if (!authToken) {
                 navigate(WELCOME_PATH);
+                return;
+            }
+
+            if (!groupNameFromUrl) {
+                navigate(HOME_PATH, { replace: true });
                 return;
             }
 
@@ -247,56 +254,34 @@ const Group = () => {
 
                 setUser(username);
 
-                let groupObject = {groupName: 'Unnamed Group'};
-                let parsedGroup = null;
+                let groupObject = {
+                    groupName: groupNameFromUrl,
+                    name: groupNameFromUrl,
+                };
 
-                if (groupData) {
-                    parsedGroup = JSON.parse(groupData);
-                    const groupName = parsedGroup?.name || parsedGroup?.groupName;
+                const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({username}),
+                });
 
-                    // NOTE: mantenuto endpoint come nel tuo file
-                    const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                        credentials: 'include',
-                        body: JSON.stringify({username}),
-                    });
+                if (response.ok) {
+                    const allGroups = await response.json();
+                    const currentGroup = allGroups.find(
+                        (g) => g.name === groupNameFromUrl || g.groupName === groupNameFromUrl
+                    );
 
-                    if (response.ok) {
-                        const allGroups = await response.json();
-                        const currentGroup = allGroups.find(
-                            (g) =>
-                                g.name === groupName ||
-                                g.groupName === groupName ||
-                                g.id?.toString() === parsedGroup?.id?.toString()
-                        );
-
-                        if (currentGroup) {
-                            groupObject = {
-                                id: currentGroup.id,
-                                groupName: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
-                                name: currentGroup.name || currentGroup.groupName || 'Unnamed Group',
-                                ...currentGroup,
-                            };
-                            localStorage.setItem('group', JSON.stringify(groupObject));
-                        } else {
-                            groupObject = {
-                                id: parsedGroup.id,
-                                groupName: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
-                                name: parsedGroup.name || parsedGroup.groupName || 'Unnamed Group',
-                                ...parsedGroup,
-                            };
-                        }
-                    } else {
+                    if (currentGroup) {
                         groupObject = {
-                            id: parsedGroup?.id,
-                            groupName: parsedGroup?.name || parsedGroup?.groupName || 'Unnamed Group',
-                            name: parsedGroup?.name || parsedGroup?.groupName || 'Unnamed Group',
-                            ...parsedGroup,
+                            id: currentGroup.id,
+                            groupName: currentGroup.name || currentGroup.groupName || groupNameFromUrl,
+                            name: currentGroup.name || currentGroup.groupName || groupNameFromUrl,
+                            ...currentGroup,
                         };
                     }
                 }
@@ -304,27 +289,27 @@ const Group = () => {
                 setGroup(groupObject);
                 setGroups(groupObject);
 
-                // Fix: condizione corretta (prima era sempre true per via di "||")
-                if (groupObject?.id && groupObject?.groupName && groupObject.groupName !== 'Unnamed Group') {
-                    const summary = await fetchGroupSummary(groupObject.groupName).catch(() => null);
-                    if (summary) {
-                        groupObject = {
-                            ...groupObject,
-                            ...summary,
-                            groupName: summary.name || summary.groupName || groupObject.groupName,
-                            name: summary.name || summary.groupName || groupObject.groupName,
-                        };
-                        setGroup(groupObject);
-                        setGroups(groupObject);
-                        localStorage.setItem('group', JSON.stringify(groupObject));
-                        setGroupRules({
-                            payForEnabled: summary.payForEnabled !== false,
-                            payForAdminOnly: summary.payForAdminOnly === true,
-                            maxSkipPerRound: summary.maxSkipPerRound ?? null,
-                        });
-                    }
-                    await getClassificaPaymentsForGroup(groupObject);
+                const summary = await fetchGroupSummary(groupObject.groupName).catch(() => null);
+                if (!summary) {
+                    navigate(HOME_PATH, { replace: true });
+                    return;
                 }
+
+                groupObject = {
+                    ...groupObject,
+                    ...summary,
+                    groupName: summary.name || summary.groupName || groupObject.groupName,
+                    name: summary.name || summary.groupName || groupObject.groupName,
+                };
+                setGroup(groupObject);
+                setGroups(groupObject);
+                setGroupRules({
+                    payForEnabled: summary.payForEnabled !== false,
+                    payForAdminOnly: summary.payForAdminOnly === true,
+                    maxSkipPerRound: summary.maxSkipPerRound ?? null,
+                });
+                await getClassificaPaymentsForGroup(groupObject);
+
                 try {
                     const profile = await fetchCoffeeProfile();
                     setAvatarKey(profile?.avatarKey || 'default');
@@ -336,7 +321,7 @@ const Group = () => {
         };
 
         fetchData();
-    }, [navigate]);
+    }, [navigate, groupNameFromUrl]);
 
     useEffect(() => {
         if (user && groups && groups.userMembershipsdto) {
@@ -691,17 +676,16 @@ const Group = () => {
                     return;
                 }
 
-                localStorage.removeItem('group');
                 setSuccessMessage(`Gruppo "${group.groupName}" eliminato con successo!`);
 
-                setTimeout(() => navigate('/home'), 2000);
+                setTimeout(() => leaveToHome(), 2000);
             } catch {
                 setError("Errore nell'eliminazione del gruppo. Riprova.");
             } finally {
                 setIsDeleting(false);
             }
         },
-        [group.groupName, navigate]
+        [group.groupName, leaveToHome]
     );
 
     const confirmPayForFriend = useCallback(
@@ -758,11 +742,14 @@ const Group = () => {
     );
 
     const handleSettingsSaved = useCallback((updated) => {
+        const nextName = updated?.name || group.groupName;
         if (updated?.name) {
             const next = {...group, groupName: updated.name, name: updated.name};
             setGroup(next);
             setGroups(next);
-            localStorage.setItem('group', JSON.stringify(next));
+            if (updated.name !== group.groupName) {
+                replaceGroup(updated.name);
+            }
         }
         if (updated) {
             setGroupRules({
@@ -771,10 +758,10 @@ const Group = () => {
                 maxSkipPerRound: updated.maxSkipPerRound ?? null,
             });
         }
-        if (group?.groupName) {
-            refreshGroupSummary(group.groupName);
+        if (nextName) {
+            refreshGroupSummary(nextName);
         }
-    }, [group, refreshGroupSummary]);
+    }, [group, refreshGroupSummary, replaceGroup]);
 
     const handleLeaveGroup = useCallback(async () => {
         if (!window.confirm(`Vuoi lasciare il gruppo "${group.groupName}"?`)) return;
@@ -782,14 +769,13 @@ const Group = () => {
         setError(null);
         try {
             await leaveGroup(group.groupName);
-            localStorage.removeItem('group');
-            navigate('/home');
+            leaveToHome();
         } catch (err) {
             setError(normalizeError(err) || 'Errore durante l\'uscita dal gruppo');
         } finally {
             setLeavingGroup(false);
         }
-    }, [group.groupName, navigate]);
+    }, [group.groupName, leaveToHome]);
 
     return (
         <div className={styles.groupPage}>

@@ -20,11 +20,11 @@ const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default'
     return (
         <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ''}`}>
             <div className={styles.headerContent}>
-             {/*   <BuyMeACoffeeButton />*/}
+                {/*   <BuyMeACoffeeButton />*/}
 
                 <div className={styles.logoTitleContainer}>
                     <img
-                        src="/pagaTu.webp"
+                        src="/pagaTu.svg"
                         alt="PagaTu - Logo applicazione caffè aziendale"
                         className={styles.pagatu_image}
                     />

@@ -98,10 +98,6 @@ const GroupSettingsModal = ({
             const updated = await updateGroupSettings(body);
             showSuccess('Impostazioni salvate');
             onSettingsSaved?.(updated);
-            if (updated?.name && updated.name !== groupName) {
-                const stored = JSON.parse(localStorage.getItem('group') || '{}');
-                localStorage.setItem('group', JSON.stringify({ ...stored, name: updated.name, groupName: updated.name }));
-            }
             await loadSettings();
         } catch (err) {
             setError(err.message || 'Errore nel salvataggio');

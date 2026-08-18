@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import Root from './routes/root';
-import ErrorPage from './components/error/error-page.jsx';
+import ErrorPage, { RouterErrorPage } from './components/error/error-page.jsx';
 import SplashScreen from '~/components/splash/splash-screen.jsx';
 import './styles/app.css';
 
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <Root />,
-        errorElement: <ErrorPage />,
+        errorElement: <RouterErrorPage />,
         children: [
             {
                 index: true,
@@ -67,6 +67,10 @@ const router = createBrowserRouter([
             },
             {
                 path: '/group',
+                element: <Navigate to="/home" replace />,
+            },
+            {
+                path: '/group/:groupName',
                 element: withSuspense(<Group />),
             },
             {
@@ -87,6 +91,14 @@ const router = createBrowserRouter([
             },
             {
                 path: '/errore-token',
+                element: <ErrorPage />,
+            },
+            {
+                path: '/error',
+                element: <ErrorPage />,
+            },
+            {
+                path: '*',
                 element: <ErrorPage />,
             },
         ],

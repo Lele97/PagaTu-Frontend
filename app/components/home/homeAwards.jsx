@@ -53,6 +53,11 @@ const HomeAwards = React.memo(function HomeAwards({ awards, loading }) {
                             </div>
                         </div>
                         <span className={styles.awardMedalLabel}>{award.name}</span>
+                        {award.earnedAt && (
+                            <span className={styles.awardMedalDate}>
+                                {new Date(award.earnedAt).toLocaleDateString('it-IT')}
+                            </span>
+                        )}
                     </div>
                 ))}
             </div>

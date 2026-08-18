@@ -68,6 +68,12 @@ const HomePayments = React.memo(function HomePayments({
                                 <span className={styles.paymentLabel}>Data:</span>
                                 <span className={styles.paymentData}>{payment.paymentDate}</span>
                             </div>
+                            {payment.beneficiaryUsername && (
+                                <div className={styles.paymentInfo}>
+                                    <span className={styles.paymentLabel}>Pagato per:</span>
+                                    <span className={styles.paymentData}>{payment.beneficiaryUsername}</span>
+                                </div>
+                            )}
                         </div>
                         <div className={styles.paymentCardFooter}>
                             <span className={styles.paymentAmount}>

@@ -5,6 +5,7 @@ import authStyles from '~/styles/auth.module.css';
 import signupStyles from '~/styles/signup.module.css';
 import logostyle from '~/styles/logo.module.css';
 import { GATEWAY_URL, parseErrorMessage } from '~/utils/api';
+import { HOME_PATH, invitationPath, readPendingInvitation } from '~/utils/routes';
 
 const GETAWAY_SERVER_URL = GATEWAY_URL;
 
@@ -21,21 +22,12 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
 
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');
-        const pendingInvitation = localStorage.getItem('pendingInvitation');
-
-        if (authToken) {
-            if (pendingInvitation) {
-                try {
-                    const { username, groupName } = JSON.parse(pendingInvitation);
-                    navigate(`/invitation?username=${encodeURIComponent(username)}&groupName=${encodeURIComponent(groupName)}`);
-                } catch {
-                    localStorage.removeItem('pendingInvitation');
-                    navigate('/home');
-                }
-            } else {
-                navigate('/home');
-            }
+        if (!authToken) {
+            return;
         }
+
+        const pending = readPendingInvitation();
+        navigate(pending ? invitationPath(pending) : HOME_PATH);
     }, [navigate]);
 
     useEffect(() => {
@@ -54,26 +46,19 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
         localStorage.setItem('authToken', authToken);
         localStorage.setItem('user', JSON.stringify(userData));
 
-        const pendingInvitation = localStorage.getItem('pendingInvitation');
-        if (!pendingInvitation) {
-            navigate('/home');
+        const pending = readPendingInvitation();
+        if (!pending) {
+            navigate(HOME_PATH);
             return;
         }
 
-        try {
-            const { username: invitedUser, groupName } = JSON.parse(pendingInvitation);
-            const currentUsername = userData.username;
-
-            if (currentUsername === invitedUser) {
-                navigate(`/invitation?username=${encodeURIComponent(invitedUser)}&groupName=${encodeURIComponent(groupName)}`);
-            } else {
-                localStorage.removeItem('pendingInvitation');
-                navigate('/home');
-            }
-        } catch {
-            localStorage.removeItem('pendingInvitation');
-            navigate('/home');
+        if (userData.username === pending.username) {
+            navigate(invitationPath(pending));
+            return;
         }
+
+        localStorage.removeItem('pendingInvitation');
+        navigate(HOME_PATH);
     };
 
     const handleSubmit = async (e) => {

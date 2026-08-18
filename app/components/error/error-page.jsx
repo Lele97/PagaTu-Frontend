@@ -1,43 +1,49 @@
 import React from "react";
-import { Link, useLocation, useRouteError } from "react-router-dom";
+import { useLocation, useRouteError } from "react-router-dom";
 import styles from '~/styles/error.module.css';
 import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
 
-export default function ErrorPage() {
+export function RouterErrorPage() {
     const error = useRouteError();
+    return <ErrorPage routeError={error} />;
+}
+
+export default function ErrorPage({ routeError }) {
     const location = useLocation();
-    const passedError = location.state?.errorMessage
+    const passedError = location.state?.errorMessage;
     const invitationError = location.state?.errorInvitation;
+    const isNotFound = location.pathname !== '/error' && location.pathname !== '/errore-token' && !routeError;
 
     const getErrorInfo = () => {
         if (invitationError) {
             return {
                 title: "Oops! Qualcosa è andato storto",
-                message: invitationError
-            }
+                message: invitationError,
+            };
         }
         if (passedError) {
+            const isTokenError = location.pathname === '/errore-token';
             return {
-                title: "Errore nel Reset Password",
+                title: isTokenError ? "Errore nel Reset Password" : "Oops! Qualcosa è andato storto",
                 message: passedError,
             };
         }
-        if (error?.status === 404) {
+        if (isNotFound || routeError?.status === 404) {
             return {
                 title: "404 - Pagina Non Trovata",
                 message: "La pagina che stai cercando non esiste.",
             };
-        } else if (error?.status === 500) {
+        }
+        if (routeError?.status === 500) {
             return {
                 title: "500 - Errore del Server",
                 message: "Si è verificato un errore interno del server.",
             };
-        } else {
-            return {
-                title: "Oops! Qualcosa è andato storto",
-                message: error?.statusText || error?.message || "Si è verificato un errore imprevisto.",
-            };
         }
+        return {
+            title: "Oops! Qualcosa è andato storto",
+            message: routeError?.statusText || routeError?.message || "Si è verificato un errore imprevisto.",
+        };
     };
 
     const errorInfo = getErrorInfo();
@@ -51,13 +57,13 @@ export default function ErrorPage() {
                     <h1 className={styles.errorTitle}>{errorInfo.title}</h1>
                     <p className={styles.errorMessage}>{errorInfo.message}</p>
 
-                    {process.env.NODE_ENV === 'development' && error?.stack && (
+                    {import.meta.env.DEV && routeError?.stack && (
                         <details className={styles.errorDetails}>
                             <summary className={styles.errorSummary}>
                                 Dettagli Tecnici (Solo in Sviluppo)
                             </summary>
                             <pre className={styles.errorStack}>
-                                {error.stack}
+                                {routeError.stack}
                             </pre>
                         </details>
                     )}

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import Footer from '../components/footer/footer.jsx';
 import { SettingsProvider, useSettings } from '~/context/SettingsContext.jsx';
+import { GroupProvider } from '~/context/GroupContext.jsx';
 
 import '../styles/app.css';
 
@@ -27,12 +28,14 @@ const Root = () => {
 
     return (
         <SettingsProvider>
-            <SettingsUrlHandler>
-                <div className="appWrapper">
-                    <Outlet />
-                    {!isSplash && <Footer />}
-                </div>
-            </SettingsUrlHandler>
+            <GroupProvider>
+                <SettingsUrlHandler>
+                    <div className="appWrapper">
+                        <Outlet />
+                        {!isSplash && <Footer />}
+                    </div>
+                </SettingsUrlHandler>
+            </GroupProvider>
         </SettingsProvider>
     );
 };

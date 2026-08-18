@@ -419,6 +419,12 @@
     line-height: 1.2;
 }
 
+.awardMedalDate {
+    font-size: 0.62rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
 /* =============== RESPONSIVE ENHANCEMENTS =============== */
 @media (max-width: 768px) {
     .heroTitle {

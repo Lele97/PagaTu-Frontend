@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { WELCOME_PATH } from '~/utils/routes';
+import { HOME_PATH, WELCOME_PATH, pendingInvitationPath } from '~/utils/routes';
 import styles from '~/styles/splash.module.css';
 
 const SPLASH_MIN_DURATION_MS = 2500;
@@ -38,18 +38,7 @@ const getRedirectPath = () => {
         return WELCOME_PATH;
     }
 
-    const pendingInvitation = localStorage.getItem('pendingInvitation');
-
-    if (pendingInvitation) {
-        try {
-            const { username, groupName } = JSON.parse(pendingInvitation);
-            return `/invitation?username=${encodeURIComponent(username)}&groupName=${encodeURIComponent(groupName)}`;
-        } catch {
-            localStorage.removeItem('pendingInvitation');
-        }
-    }
-
-    return '/home';
+    return pendingInvitationPath() || HOME_PATH;
 };
 
 const SplashScreen = () => {
@@ -70,6 +59,7 @@ const SplashScreen = () => {
             clearTimeout(navigateTimer);
         };
     }, [navigate]);
+
 
     return (
         <div
@@ -107,7 +97,7 @@ const SplashScreen = () => {
 
                     {/* Logo vettoriale ritagliato: nitido a qualsiasi risoluzione */}
                     <img
-                        src="/pagaTu-mark.svg"
+                        src="/pagaTu.svg"
                         alt="Logo PagaTu"
                         className={styles.logo}
                     />

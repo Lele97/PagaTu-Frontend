@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styles from '~/styles/invitation.module.css';
 import Header from '../header/header.jsx';
+import { useGroup } from '~/context/GroupContext.jsx';
+import { HOME_PATH } from '~/utils/routes';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -16,6 +18,7 @@ const InvitationHandler = () => {
     const [success, setSuccess] = useState(false);
     const [responseInvitation, setResponseInvitation] = useState('');
     const navigate = useNavigate();
+    const { openGroup } = useGroup();
 
     useEffect(() => {
         const handleInvitation = async () => {
@@ -108,7 +111,7 @@ const InvitationHandler = () => {
             localStorage.removeItem('pendingInvitation');
 
             setTimeout(() => {
-                navigate('/home');
+                openGroup(invitationData.groupName);
             }, 2000);
         } catch {
             setError("Errore nell'accettazione dell'invito. Riprova.");
@@ -153,7 +156,7 @@ const InvitationHandler = () => {
             localStorage.removeItem('pendingInvitation');
 
             setTimeout(() => {
-                navigate('/home');
+                navigate(HOME_PATH);
             }, 2000);
         } catch {
             setError("Errore nel rifiuto dell'invito. Riprova.");
