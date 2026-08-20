@@ -174,7 +174,7 @@ const ResetPswForm = () => {
         <div className={styles.resetPswPage}>
             <div className={styles.container}>
                 <div className={styles["header-container"]}>
-                    <img src="/pagaTu.png" alt="Logo" className={styles.logo}/>
+                    <img src="/pagaTu.svg" alt="Logo" className={styles.logo}/>
                     <div className={styles.appTitle}>
                         <h1 className={styles.appTitlecolor}>P</h1>
                         <h1 className={styles.appTitlecolor2}>a</h1>

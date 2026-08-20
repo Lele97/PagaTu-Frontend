@@ -68,7 +68,7 @@ const ForgotPswForm = () => {
         <div className={styles.forgotPswPage}>
             <div className={styles.container}>
                 <div className={styles['header-container']}>
-                    <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
+                    <img src="/pagaTu.svg" alt="Logo" className={logostyle.logo}/>
                     <div className={logostyle.appTitle}>
                         <h1 className={logostyle.appTitlecolor}>P</h1>
                         <h1 className={logostyle.appTitlecolor2}>a</h1>

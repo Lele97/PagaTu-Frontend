@@ -52,7 +52,7 @@ export default function ErrorPage({ routeError }) {
         <div className={styles.errorPage}>
             <div className={styles.errorContainer}>
                 <div className={styles.errorContent}>
-                    <img src="/pagaTu.png" alt="PagaTu Logo" className={styles.logo} />
+                    <img src="/pagaTu.svg" alt="PagaTu Logo" className={styles.logo} />
 
                     <h1 className={styles.errorTitle}>{errorInfo.title}</h1>
                     <p className={styles.errorMessage}>{errorInfo.message}</p>

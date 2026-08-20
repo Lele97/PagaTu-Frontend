@@ -16,7 +16,13 @@
   ],
   "icons": [
     {
-      "src": "/pagaTu.png",
+      "src": "/pagaTu.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/pagaTu-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

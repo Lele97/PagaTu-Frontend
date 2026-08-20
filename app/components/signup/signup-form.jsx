@@ -581,7 +581,7 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
 
                 <div className={styles.heroContent}>
                     <div className={styles.brandBlock}>
-                        <img src="pagaTu.png" alt="Logo PagaTu" className={logostyle.logo} />
+                        <img src="/pagaTu.svg" alt="Logo PagaTu" className={logostyle.logo} />
                         <div className={logostyle.appTitle}>
                             <h1 className={logostyle.appTitlecolorP}>P</h1>
                             <h1 className={logostyle.appTitlecolor2a}>a</h1>

@@ -1,11 +1,12 @@
-const CACHE_NAME = 'pagatu-v1';
+const CACHE_NAME = 'pagatu-v2';
 const urlsToCache = [
     '/',
     '/index.html',
     '/manifest.json',
     '/pagaTu.ico',
     '/pagaTu.png',
-    '/pagaTu.svg'
+    '/pagaTu.svg',
+    '/pagaTu-512.png'
 ];
 
 // Install event - cache static assets
@@ -16,6 +17,7 @@ self.addEventListener('install', (event) => {
                 console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
+            .then(() => self.skipWaiting())
     );
 });
 
@@ -57,6 +59,6 @@ self.addEventListener('activate', (event) => {
                     }
                 })
             );
-        })
+        }).then(() => self.clients.claim())
     );
 });
