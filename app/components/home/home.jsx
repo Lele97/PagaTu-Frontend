@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 import Header from '../header/header.jsx';
 import HomeHeader from "~/components/home/homeHeader.jsx";
@@ -33,7 +33,7 @@ const normalizeError = (err) => {
 
 const GROUPS_PER_PAGE = 6;
 const PAYMENTS_PER_PAGE = 4;
-const initialPayload = {name: '', description: ''};
+const initialPayload = { name: '', description: '' };
 
 const Home = () => {
 
@@ -70,7 +70,7 @@ const Home = () => {
         requestCacheRef.current.delete(cacheKey);
     }, []);
 
-    const cachedFetchJson = useCallback(async (url, options = {}, cacheKey, ttl = 30000) => {
+    const cachedFetchJson = useCallback(async (url, cacheKey, ttl = 30000, options = {}) => {
         const now = Date.now();
         const cached = requestCacheRef.current.get(cacheKey);
 
@@ -87,9 +87,9 @@ const Home = () => {
             body = null;
         }
 
-        const data = {status: response.status, body};
+        const data = { status: response.status, body };
 
-        requestCacheRef.current.set(cacheKey, {data, timestamp: now});
+        requestCacheRef.current.set(cacheKey, { data, timestamp: now });
         return data;
     }, []);
 
@@ -110,7 +110,7 @@ const Home = () => {
                 }
                 setUser(username);
                 await Promise.all([
-                    getGroupsByUser(username), 
+                    getGroupsByUser(username),
                     getHistoryPayments(username),
                     getUserStatistics(username),
                     getUserAwards(username)
@@ -154,12 +154,12 @@ const Home = () => {
     }, [isAnyModalOpen]);
 
     const handleChangeName = useCallback((e) => {
-        setPayload(prev => ({...prev, name: e.target.value}));
+        setPayload(prev => ({ ...prev, name: e.target.value }));
         if (error) setError(null);
     }, [error]);
 
     const handleChangeDescription = useCallback((e) => {
-        setPayload(prev => ({...prev, description: e.target.value}));
+        setPayload(prev => ({ ...prev, description: e.target.value }));
         if (error) setError(null);
     }, [error]);
 
@@ -196,7 +196,7 @@ const Home = () => {
                 return;
             }
 
-            if (!/^[a-zA-Z0-9_]+$/.test(payload.name.trim())) {
+            if (!/^\w+$/.test(payload.name.trim())) {
                 setError("Il nome del gruppo può contenere solo lettere, numeri e underscore");
                 return;
             }
@@ -236,7 +236,7 @@ const Home = () => {
             await getGroupsByUser(user);
 
         } catch (err) {
-            navigate(ERROR_PATH, {state: {errorMessage: err.message || "Errore di connessione"}});
+            navigate(ERROR_PATH, { state: { errorMessage: err.message || "Errore di connessione" } });
         } finally {
             setIsSubmitting(false);
         }
@@ -289,7 +289,7 @@ const Home = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({username}),
+                body: JSON.stringify({ username }),
                 credentials: 'include',
             }, cacheKey);
 
@@ -338,7 +338,7 @@ const Home = () => {
                     'Authorization': `Bearer ${token}`,
                 },
                 credentials: 'include',
-                body: JSON.stringify({username}),
+                body: JSON.stringify({ username }),
             }, cacheKey);
 
             const errorMessage = normalizeError(data?.body?.message || data?.body);
@@ -461,27 +461,27 @@ const Home = () => {
                         <div className={styles.homeMainCol}>
                             <SectionReveal>
                                 <HomeGroups groups={getPaginatedGroups}
-                                        groupsLoading={groupsLoading}
-                                        groupsError={groupsError}
-                                        onRetry={onRetry}
-                                        addGroup={addGroup}
-                                        selectedGroup={selectedGroup}
-                                        handleGroupSelect={handleGroupSelect}
-                                        currentGroupPage={currentGroupPage}
-                                        getTotalGroupPages={getTotalGroupPages()}
-                                        setCurrentGroupPage={setCurrentGroupPage}
-                                        currentUsername={user}
+                                    groupsLoading={groupsLoading}
+                                    groupsError={groupsError}
+                                    onRetry={onRetry}
+                                    addGroup={addGroup}
+                                    selectedGroup={selectedGroup}
+                                    handleGroupSelect={handleGroupSelect}
+                                    currentGroupPage={currentGroupPage}
+                                    getTotalGroupPages={getTotalGroupPages()}
+                                    setCurrentGroupPage={setCurrentGroupPage}
+                                    currentUsername={user}
                                 />
                             </SectionReveal>
 
                             <SectionReveal>
                                 <HomePayments onRetry={onRetry}
-                                          payments={getPaginatedPayments}
-                                          paymentsError={paymentsError}
-                                          currentPaymentPage={currentPaymentPage}
-                                          paymentsLoading={paymentsLoading}
-                                          getTotalPaymentPages={getTotalPaymentPages()}
-                                          setCurrentPaymentPage={setCurrentPaymentPage}/>
+                                    payments={getPaginatedPayments}
+                                    paymentsError={paymentsError}
+                                    currentPaymentPage={currentPaymentPage}
+                                    paymentsLoading={paymentsLoading}
+                                    getTotalPaymentPages={getTotalPaymentPages()}
+                                    setCurrentPaymentPage={setCurrentPaymentPage} />
                             </SectionReveal>
                         </div>
 

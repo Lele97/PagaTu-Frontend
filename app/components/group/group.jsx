@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from '~/styles/group.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 import Header from '../header/header.jsx';
@@ -14,16 +14,15 @@ import SkipPaymentModal from "~/components/group/modals/SkipPaymentModal.jsx";
 import PayForFriendModal from "~/components/group/modals/PayForFriendModal.jsx";
 import GroupStatsSection from '~/components/group/GroupStatsSection.jsx';
 import GroupInfoSection from '~/components/group/GroupInfoSection.jsx';
-import groupStyles from "~/styles/group.module.css";
-import {fetchCoffeeProfile, fetchGroupSummary, leaveGroup} from '~/services/userApi';
-import {getMemberForUser, getCurrentTurnMember, memberDisplayName} from '~/utils/groupHelpers';
-import {HOME_PATH, WELCOME_PATH} from '~/utils/routes';
-import {useGroup} from '~/context/GroupContext.jsx';
+import { fetchCoffeeProfile, fetchGroupSummary, KARMA_OPS, leaveGroup, updateCoffeeKarma } from '~/services/userApi';
+import { getMemberForUser, getCurrentTurnMember, memberDisplayName } from '~/utils/groupHelpers';
+import { HOME_PATH, WELCOME_PATH } from '~/utils/routes';
+import { useGroup } from '~/context/GroupContext.jsx';
 import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import GroupSettingsModal from '~/components/settings/modals/GroupSettingsModal.jsx';
 import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
 import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
-import {useSettings} from '~/context/SettingsContext.jsx';
+import { useSettings } from '~/context/SettingsContext.jsx';
 
 const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
 
@@ -47,7 +46,7 @@ const Group = () => {
     const { replaceGroup, leaveToHome } = useGroup();
     const { userSettingsOpen, groupSettingsOpen, openGroupSettings } = useSettings();
     const [user, setUser] = useState(null);
-    const [group, setGroup] = useState({groupName: 'Unnamed Group'});
+    const [group, setGroup] = useState({ groupName: 'Unnamed Group' });
     const [groups, setGroups] = useState({});
     const [classificaPaymentsForGroup, setClassificaPaymentsForGroup] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -67,7 +66,7 @@ const Group = () => {
     const [isSkipping, setIsSkipping] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [friend, setFriend] = useState('');
-    const [groupRules, setGroupRules] = useState({payForEnabled: true, payForAdminOnly: false, maxSkipPerRound: null});
+    const [groupRules, setGroupRules] = useState({ payForEnabled: true, payForAdminOnly: false, maxSkipPerRound: null });
     const [avatarKey, setAvatarKey] = useState('default');
     const [leavingGroup, setLeavingGroup] = useState(false);
     const [groupSummaryLoading, setGroupSummaryLoading] = useState(false);
@@ -85,7 +84,7 @@ const Group = () => {
         requestCacheRef.current.delete(cacheKey);
     }, []);
 
-    const cachedFetchJson = useCallback(async (url, options = {}, cacheKey, ttl = 30000) => {
+    const cachedFetchJson = useCallback(async (url, cacheKey, ttl = 30000, options = {}) => {
         const now = Date.now();
         const cached = requestCacheRef.current.get(cacheKey);
 
@@ -102,9 +101,9 @@ const Group = () => {
             body = null;
         }
 
-        const data = {status: response.status, body};
+        const data = { status: response.status, body };
 
-        requestCacheRef.current.set(cacheKey, {data, timestamp: now});
+        requestCacheRef.current.set(cacheKey, { data, timestamp: now });
         return data;
     }, []);
 
@@ -169,7 +168,7 @@ const Group = () => {
 
             const groupName = groupToUse?.groupName || '';
             const cacheKey = `classifica_${groupToUse?.id || groupName || 'unknown'}`;
-            const requestBody = {groupId: groupToUse?.id, groupName};
+            const requestBody = { groupId: groupToUse?.id, groupName };
 
             try {
                 setPaymentLoading(true);
@@ -194,7 +193,14 @@ const Group = () => {
 
                 switch (data.status) {
                     case 200: {
-                        const payload = Array.isArray(data.body) ? data.body : data.body ? [data.body] : [];
+                        let payload;
+                        if (Array.isArray(data.body)) {
+                            payload = data.body;
+                        } else if (data.body) {
+                            payload = [data.body];
+                        } else {
+                            payload = [];
+                        }
                         setClassificaPaymentsForGroup(payload);
                         break;
                     }
@@ -217,6 +223,7 @@ const Group = () => {
                         break;
                 }
             } catch (err) {
+                console.error('Error fetching payments for group:', err);
                 setPaymentByGroupError('Errore di connessione. Verifica la tua connessione internet.');
                 setClassificaPaymentsForGroup([]);
             } finally {
@@ -267,7 +274,7 @@ const Group = () => {
                         Authorization: `Bearer ${authToken}`,
                     },
                     credentials: 'include',
-                    body: JSON.stringify({username}),
+                    body: JSON.stringify({ username }),
                 });
 
                 if (response.ok) {
@@ -324,7 +331,7 @@ const Group = () => {
     }, [navigate, groupNameFromUrl]);
 
     useEffect(() => {
-        if (user && groups && groups.userMembershipsdto) {
+        if (user && groups.userMembershipsdto) {
             setIsAdmin(isUserAdmin(user));
         }
     }, [groups, isUserAdmin, user]);
@@ -512,7 +519,7 @@ const Group = () => {
                     return;
                 }
 
-                const requestBody = {username: userInvitation, groupName: group.groupName};
+                const requestBody = { username: userInvitation, groupName: group.groupName };
 
                 const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group/update/invitation`, {
                     method: 'POST',
@@ -567,13 +574,19 @@ const Group = () => {
                             Authorization: `Bearer ${token}`,
                         },
                         credentials: 'include',
-                        body: JSON.stringify({importo, descrizione}),
+                        body: JSON.stringify({ importo, descrizione }),
                     }
                 );
 
                 if (!response.ok) {
                     setError('Problema durante la registrazione del pagamento');
                     return;
+                }
+
+                try {
+                    await updateCoffeeKarma(KARMA_OPS.PAYMENT, importo);
+                } catch {
+                    /* il pagamento è già registrato */
                 }
 
                 setSuccessMessage('Pagamento registrato con successo');
@@ -628,6 +641,12 @@ const Group = () => {
                     const errorText = await response.text();
                     setError(`Si è verificato un problema: ${errorText || 'Errore sconosciuto'}`);
                     return;
+                }
+
+                try {
+                    await updateCoffeeKarma(KARMA_OPS.JUMP_TURN);
+                } catch {
+                    /* lo skip è già registrato */
                 }
 
                 setSuccessMessage('Pagamento saltato con successo!');
@@ -712,13 +731,19 @@ const Group = () => {
                             Authorization: `Bearer ${token}`,
                         },
                         credentials: 'include',
-                        body: JSON.stringify({importo, descrizione}),
+                        body: JSON.stringify({ importo, descrizione }),
                     }
                 );
 
                 if (!response.ok) {
                     setError('Problema durante la registrazione del pagamento');
                     return;
+                }
+
+                try {
+                    await updateCoffeeKarma(KARMA_OPS.PAYMENT_FOR, importo);
+                } catch {
+                    /* il paga-per è già registrato */
                 }
 
                 setSuccessMessage('Pagamento registrato con successo');
@@ -744,7 +769,7 @@ const Group = () => {
     const handleSettingsSaved = useCallback((updated) => {
         const nextName = updated?.name || group.groupName;
         if (updated?.name) {
-            const next = {...group, groupName: updated.name, name: updated.name};
+            const next = { ...group, groupName: updated.name, name: updated.name };
             setGroup(next);
             setGroups(next);
             if (updated.name !== group.groupName) {
@@ -783,7 +808,7 @@ const Group = () => {
 
             <div className={`${styles.container} ${isAnyModalOpen ? 'modal-active' : ''}`}>
 
-                <Header user={user} logout={logout} showGroupSettings={isAdmin} avatarKey={avatarKey}/>
+                <Header user={user} logout={logout} showGroupSettings={isAdmin} avatarKey={avatarKey} />
 
                 <main className={styles.main}>
                     <GroupHeader
@@ -809,7 +834,7 @@ const Group = () => {
                                     className={`${sharedStyles.groupButton} ${sharedStyles.secondaryButton} ${sharedStyles.leaveGroupBtn}`}
                                     disabled={leavingGroup}
                                 >
-                                    <i className="fa-solid fa-right-from-bracket"/> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
+                                    <i className="fa-solid fa-right-from-bracket" /> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
                                 </button>
                             )}
                         </div>
@@ -827,7 +852,7 @@ const Group = () => {
                                 onSkipPayment={skipPayment}
                                 onPayForFriend={payForFriend}
                                 paidCount={groups.roundPaidCount ?? 0}
-                                pendingCount={groups.roundPendingCount ?? 0}/>
+                                pendingCount={groups.roundPendingCount ?? 0} />
                         </aside>
                     </div>
 
@@ -837,11 +862,11 @@ const Group = () => {
                         loading={paymentLoading}
                         error={paymentByGroupError}
                         payments={classificaPaymentsForGroup}
-                        onRetry={onRetry}/>
+                        onRetry={onRetry} />
 
                     <CoffeeSeparator />
 
-                    <GroupStatsSection groupName={group?.groupName}/>
+                    <GroupStatsSection groupName={group?.groupName} />
 
                 </main>
 

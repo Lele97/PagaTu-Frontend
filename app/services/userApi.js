@@ -11,7 +11,12 @@ const request = async (url, options = {}) => {
     }
     if (response.status === 204) return null;
     const text = await response.text();
-    return text ? JSON.parse(text) : null;
+    if (!text) return null;
+    try {
+        return JSON.parse(text);
+    } catch {
+        return text;
+    }
 };
 
 export const fetchAuthProfile = () =>
@@ -68,3 +73,18 @@ export const fetchUserStatistics = () =>
 
 export const fetchUserAwards = () =>
     request(`${GATEWAY_URL}/api/coffee/user/awards`);
+
+export const KARMA_OPS = {
+    PAYMENT: 'payment',
+    PAYMENT_FOR: 'payment_for',
+    JUMP_TURN: 'jump_turn',
+};
+
+export const updateCoffeeKarma = (typeOperation, amount = 0) =>
+    request(`${GATEWAY_URL}/api/coffee/user/coffeekarma`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            type_operation: typeOperation,
+            amount: Number(amount) || 0,
+        }),
+    });
