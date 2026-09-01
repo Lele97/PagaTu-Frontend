@@ -4,8 +4,8 @@ import styles from '~/styles/invitation.module.css';
 import Header from '../header/header.jsx';
 import { useGroup } from '~/context/GroupContext.jsx';
 import { HOME_PATH } from '~/utils/routes';
-
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+import { acceptInvitation, rejectInvitation } from '~/services/requestApi';
+import { messageFromBody } from '~/utils/api';
 
 const InvitationHandler = () => {
     const [searchParams] = useSearchParams();
@@ -88,24 +88,11 @@ const InvitationHandler = () => {
                 throw new Error('Token di autenticazione non trovato');
             }
 
-            const response = await fetch(
-                `${GETAWAY_SERVER_URL}/api/coffee/group/update/addtogroup?username=${encodeURIComponent(invitationData.username)}&groupName=${encodeURIComponent(invitationData.groupName)}&invitationId=${encodeURIComponent(invitationData.invitationId)}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                }
-            );
+            const { ok, status, body } = await acceptInvitation(invitationData);
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            if (!ok) {
+                throw new Error(`HTTP ${status}: ${messageFromBody(body)}`);
             }
-
-            await response.text();
             setResponseInvitation('Accept');
             setSuccess(true);
             localStorage.removeItem('pendingInvitation');
@@ -133,24 +120,11 @@ const InvitationHandler = () => {
                 throw new Error('Token di autenticazione non trovato');
             }
 
-            const response = await fetch(
-                `${GETAWAY_SERVER_URL}/api/coffee/group/update/rejectinvitation?username=${encodeURIComponent(invitationData.username)}&groupName=${encodeURIComponent(invitationData.groupName)}&invitationId=${encodeURIComponent(invitationData.invitationId)}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                }
-            );
+            const { ok, status, body } = await rejectInvitation(invitationData);
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            if (!ok) {
+                throw new Error(`HTTP ${status}: ${messageFromBody(body)}`);
             }
-
-            await response.text();
             setResponseInvitation('Reject');
             setSuccess(true);
             localStorage.removeItem('pendingInvitation');

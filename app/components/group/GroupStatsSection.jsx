@@ -2,8 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import expansionStyles from '~/styles/expansion.module.css';
 import groupStyles from '~/styles/group.module.css';
 import LoadingSpinner from '~/components/shared/loadingSpinner.jsx';
-import CoffeeSeparator from '~/components/shared/CoffeeSeparator.jsx';
-import { authHeaders, formatCurrency, GATEWAY_URL, parseErrorMessage } from '~/utils/api';
+import SectionReveal from '~/components/shared/SectionReveal.jsx';
+import { formatCurrency, messageFromBody } from '~/utils/api';
+import { getGroupBalance, getGroupGamification } from '~/services/requestApi';
 
 const GroupStatsSection = ({ groupName }) => {
     const [balance, setBalance] = useState(null);
@@ -18,22 +19,17 @@ const GroupStatsSection = ({ groupName }) => {
         setBalanceLoading(true);
         setBalanceError(null);
         try {
-            const response = await fetch(`${GATEWAY_URL}/api/coffee/bilancio/gruppo`, {
-                method: 'POST',
-                headers: authHeaders(),
-                credentials: 'include',
-                body: JSON.stringify({ groupName }),
-            });
-            if (response.status === 204) {
+            const { ok, status, body } = await getGroupBalance(groupName);
+            if (status === 204) {
                 setBalance(null);
                 setBalanceError('Non ci sono ancora pagamenti per calcolare il bilancio');
                 return;
             }
-            if (!response.ok) {
-                setBalanceError(await parseErrorMessage(response, 'Errore nel recupero del bilancio'));
+            if (!ok) {
+                setBalanceError(messageFromBody(body, 'Errore nel recupero del bilancio'));
                 return;
             }
-            setBalance(await response.json());
+            setBalance(body);
         } catch {
             setBalanceError('Errore di connessione');
         } finally {
@@ -46,17 +42,12 @@ const GroupStatsSection = ({ groupName }) => {
         setGamificationLoading(true);
         setGamificationError(null);
         try {
-            const response = await fetch(`${GATEWAY_URL}/api/coffee/gamification/gruppo`, {
-                method: 'POST',
-                headers: authHeaders(),
-                credentials: 'include',
-                body: JSON.stringify({ groupName }),
-            });
-            if (!response.ok) {
-                setGamificationError(await parseErrorMessage(response, 'Errore nel recupero delle statistiche'));
+            const { ok, body } = await getGroupGamification(groupName);
+            if (!ok) {
+                setGamificationError(messageFromBody(body, 'Errore nel recupero delle statistiche'));
                 return;
             }
-            setGamification(await response.json());
+            setGamification(body);
         } catch {
             setGamificationError('Errore di connessione');
         } finally {
@@ -71,10 +62,13 @@ const GroupStatsSection = ({ groupName }) => {
 
     return (
         <>
-            <section className={expansionStyles.section}>
-                <h2 className={groupStyles.sectionTitle}>
-                    <i className="fa-solid fa-calculator" /> Bilancio
-                </h2>
+            <SectionReveal>
+            <section className={groupStyles.groupSection}>
+                <div className={groupStyles.sectionHeader}>
+                    <h2 className={groupStyles.sectionTitle}>
+                        <i className="fa-solid fa-calculator" /> Bilancio
+                    </h2>
+                </div>
                 {balanceLoading ? (
                     <LoadingSpinner message="Calcolo bilancio..." />
                 ) : balanceError ? (
@@ -138,13 +132,15 @@ const GroupStatsSection = ({ groupName }) => {
                     </>
                 ) : null}
             </section>
+            </SectionReveal>
 
-            <CoffeeSeparator />
-
-            <section className={expansionStyles.section}>
-                <h2 className={groupStyles.sectionTitle}>
-                    <i className="fa-solid fa-trophy" /> Award
-                </h2>
+            <SectionReveal>
+            <section className={groupStyles.groupSection}>
+                <div className={groupStyles.sectionHeader}>
+                    <h2 className={groupStyles.sectionTitle}>
+                        <i className="fa-solid fa-trophy" /> Award
+                    </h2>
+                </div>
                 {gamificationLoading ? (
                     <LoadingSpinner message="Caricamento statistiche..." />
                 ) : gamificationError ? (
@@ -179,6 +175,7 @@ const GroupStatsSection = ({ groupName }) => {
                     </>
                 ) : null}
             </section>
+            </SectionReveal>
         </>
     );
 };

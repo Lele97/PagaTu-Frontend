@@ -36,13 +36,18 @@ const HomePayments = React.memo(function HomePayments({
 
     if (!payments?.length) {
         return (
-            <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>
-                    <i className="fa-solid fa-credit-card"></i>
+            <section className={styles.recentSection}>
+                <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}><i className="fa-solid fa-credit-card"></i> I tuoi pagamenti</h2>
                 </div>
-                <h3>Non hai effettuato ancora un pagamento</h3>
-                <p>Registra i pagamenti per i gruppi di cui fai parte</p>
-            </div>
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>
+                        <i className="fa-solid fa-credit-card"></i>
+                    </div>
+                    <h3>Non hai effettuato ancora un pagamento</h3>
+                    <p>Registra i pagamenti per i gruppi di cui fai parte</p>
+                </div>
+            </section>
         )
     }
 

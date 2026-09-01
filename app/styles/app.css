@@ -5,6 +5,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
+@font-face {
+    font-family: 'CustomFont';
+    src: url('/Oatlander.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* ===============================================================================
    CSS CUSTOM PROPERTIES (VARIABLES)
    ================================================================================ */
@@ -83,15 +91,29 @@ body {
     font-family: 'Outfit', 'Segoe UI', sans-serif;
     color: var(--text-primary);
     background:
-            radial-gradient(circle at top left, rgba(216, 197, 179, 0.18), transparent 30%),
-            radial-gradient(circle at bottom right, rgba(191, 164, 141, 0.14), transparent 28%),
-            var(--coffee-50);
+        radial-gradient(circle at top left, rgba(216, 197, 179, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(191, 164, 141, 0.14), transparent 28%),
+        var(--coffee-50);
 }
 
 /* Typography scale (UX_LAST I4) */
-h1 { font-size: 2rem; font-weight: 800; line-height: 1.15; }
-h2 { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
-h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.25; }
+h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
 
 button,
 input,
@@ -115,20 +137,7 @@ a {
     overflow-x: hidden;
 }
 
-.appWrapper::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.06;
-    background-image: url("/patterns/coffee-bean.svg");
-    background-size: 72px 72px;
-    background-repeat: repeat;
-    color: var(--coffee-600);
-}
-
-.appWrapper > * {
+.appWrapper>* {
     position: relative;
     z-index: 1;
 }

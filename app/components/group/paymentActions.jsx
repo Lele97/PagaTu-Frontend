@@ -48,9 +48,14 @@ const PaymentActions = React.memo(function PaymentActions({
 
     return (
         <div className={styles.actionsCard}>
-            <h2 className={styles.actionsCardHeading}>
+            <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>
+                    <i className="fa-solid fa-bolt" /> Azioni
+                </h2>
+            </div>
+            <h3 className={styles.actionsCardHeading}>
                 {myTurn ? 'È il tuo turno di pagare il caffè' : 'Non è il tuo turno di pagare il caffè'}
-            </h2>
+            </h3>
             {myTurn ? (
                 <p className={styles.actionsCardHint}>Puoi registrare il pagamento o saltare il turno.</p>
             ) : turnLabel ? (

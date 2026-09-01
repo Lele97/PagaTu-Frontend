@@ -10,7 +10,6 @@ import './styles/app.css';
 // nel bundle iniziale. Le altre pagine vengono scaricate on-demand, riducendo
 // il JS da parsare/eseguire al primo caricamento.
 const Home = lazy(() => import('~/components/home/home.jsx'));
-const ForgotPswForm = lazy(() => import('~/components/resetPassword/forgotPsw-form.jsx'));
 const Group = lazy(() => import('~/components/group/group.jsx'));
 const Invitation = lazy(() => import('~/components/invitation/invitation.jsx'));
 const ResetPswForm = lazy(() => import('~/components/resetPassword/resetPsw-form.jsx'));
@@ -63,7 +62,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/forgotPassword',
-                element: withSuspense(<ForgotPswForm />),
+                element: <Navigate to="/welcome?tab=forgot" replace />,
             },
             {
                 path: '/group',

@@ -1,8 +1,7 @@
 import {useEffect, useState} from "react";
 import styles from "~/styles/resetPsw.module.css";
 import {useNavigate, useSearchParams} from "react-router-dom";
-
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+import { validateResetToken, resetPassword } from '~/services/requestApi';
 
 const ResetPswForm = () => {
 
@@ -30,19 +29,10 @@ const ResetPswForm = () => {
             }
 
             try {
-                const response = await fetch(
-                    `${GETAWAY_SERVER_URL}/api/auth/reset-password?key=${encodeURIComponent(token)}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            'Content-Type': 'application/json',
-                            "ngrok-skip-browser-warning": "true",
-                        },
-                    }
-                );
+                const { ok, status, body: data } = await validateResetToken(token);
 
-                if (!response.ok) {
-                    if (response.status === 401) {
+                if (!ok) {
+                    if (status === 401) {
                         navigate("/errore-token", {
                             replace: true,
                             state: {errorMessage: "Token invalido o scaduto"}
@@ -50,7 +40,7 @@ const ResetPswForm = () => {
                         return;
                     }
 
-                    if (response.status === 503) {
+                    if (status === 503) {
                         navigate("/errore-token", {
                             replace: true,
                             state: {errorMessage: "Errore di connessione al server."}
@@ -59,17 +49,13 @@ const ResetPswForm = () => {
                     }
                 }
 
-                const contentType = response.headers.get("content-type");
-
-                if (!contentType || !contentType.includes("application/json")) {
+                if (data == null || typeof data !== 'object') {
                     navigate("/errore-token", {
                         replace: true,
                         state: {errorMessage: "Risposta non valida dal server"}
                     });
                     return;
                 }
-
-                const data = await response.json();
 
                 if (!data?.valid) {
                     navigate("/errore-token", {
@@ -139,18 +125,10 @@ const ResetPswForm = () => {
 
         try {
 
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/resetPassword`, {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-Reset-Token': token
-                },
-                body: JSON.stringify({email: email, password: password}),
-            })
+            const { ok, status } = await resetPassword(token, {email: email, password: password});
 
-            if (!response.ok) {
-                switch (response.status) {
+            if (!ok) {
+                switch (status) {
                     case 401:
                     case 400:
                         setError("Errore durante il reset della password. Riprova più tardi");

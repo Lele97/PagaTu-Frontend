@@ -1,24 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
-import {GATEWAY_URL, parseErrorMessage} from '~/utils/api';
+import {messageFromBody} from '~/utils/api';
+import {resendVerification, verifyEmail} from '~/services/requestApi';
 
 const verificationCache = new Map();
 
 const readKey = () => new URLSearchParams(window.location.search).get('key');
-
-const parseBody = async (res) => {
-    const raw = await res.text();
-    if (!raw) {
-        return res.ok ? 'Email verificata con successo!' : 'Token non valido o scaduto';
-    }
-    try {
-        const data = JSON.parse(raw);
-        return data.message || data.error || raw;
-    } catch {
-        return raw;
-    }
-};
 
 const verifyToken = (key) => {
     const cached = verificationCache.get(key);
@@ -26,12 +14,9 @@ const verifyToken = (key) => {
         return cached;
     }
 
-    const promise = fetch(
-        `${GATEWAY_URL}/api/auth/verify-email?key=${encodeURIComponent(key)}`,
-        {credentials: 'include'},
-    ).then(async (res) => {
-        const text = await parseBody(res);
-        if (res.ok) {
+    const promise = verifyEmail(key).then(({ ok, body }) => {
+        const text = messageFromBody(body, ok ? 'Email verificata con successo!' : 'Token non valido o scaduto');
+        if (ok) {
             return {status: 'success', message: text || 'Email verificata con successo!'};
         }
         return {status: 'error', message: text || 'Token non valido o scaduto'};
@@ -78,11 +63,8 @@ const VerifyEmail = () => {
             return;
         }
         try {
-            const response = await fetch(
-                `${GATEWAY_URL}/api/auth/resend-verification?email=${encodeURIComponent(resendEmail.trim())}`,
-                {method: 'POST', credentials: 'include'}
-            );
-            setResendStatus(await parseErrorMessage(response, response.ok ? 'Email inviata!' : 'Invio non riuscito'));
+            const { ok, body } = await resendVerification(resendEmail.trim());
+            setResendStatus(messageFromBody(body, ok ? 'Email inviata!' : 'Invio non riuscito'));
         } catch {
             setResendStatus('Errore di connessione');
         }

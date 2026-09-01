@@ -16,7 +16,7 @@ const statusClass = (status, myTurn) => {
     return styles.memberStatusPending;
 };
 
-const GroupInfoSection = ({ group, currentUser }) => {
+const GroupInfoSection = ({ group, currentUser, showLeave, onLeaveGroup, leavingGroup }) => {
     const members = getMembers(group);
     if (!members.length) return null;
 
@@ -27,7 +27,7 @@ const GroupInfoSection = ({ group, currentUser }) => {
 
     return (
         <section className={styles.groupInfoSection}>
-            <div className={styles.groupInfoHeader}>
+            <div className={`${styles.groupInfoHeader} ${styles.sectionHeader}`}>
                 <h2 className={styles.sectionTitle}>
                     <i className="fa-solid fa-user-group" /> Membri e turno
                     {roundLabel && <span className={styles.roundBadge}>{roundLabel}</span>}
@@ -35,6 +35,16 @@ const GroupInfoSection = ({ group, currentUser }) => {
                 <div className={styles.roundStats}>
                     <span><i className="fa-solid fa-circle-check" /> {paid} pagati</span>
                     <span><i className="fa-solid fa-hourglass-half" /> {pending} in attesa</span>
+                    {showLeave && (
+                        <button
+                            type="button"
+                            onClick={onLeaveGroup}
+                            className={`${styles.leaveGroupHeaderBtn}`}
+                            disabled={leavingGroup}
+                        >
+                            <i className="fa-solid fa-right-from-bracket" /> {leavingGroup ? 'Uscita...' : 'Lascia gruppo'}
+                        </button>
+                    )}
                 </div>
             </div>
 

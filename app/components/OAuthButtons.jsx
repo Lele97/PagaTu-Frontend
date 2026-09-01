@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from '~/styles/auth.module.css';
-import { GATEWAY_URL } from '~/utils/api';
+import { messageFromBody } from '~/utils/api';
+import { loginWithGoogle, loginWithMicrosoft } from '~/services/requestApi';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const MICROSOFT_CLIENT_ID = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
@@ -10,20 +11,15 @@ const OAuthButtons = ({ onLoginSuccess, embedded = false }) => {
     const [oauthError, setOauthError] = useState('');
     const [msLoading, setMsLoading] = useState(false);
 
-    const completeOAuthLogin = async (endpoint, token) => {
-        const response = await fetch(`${GATEWAY_URL}${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token }),
-            credentials: 'include',
-        });
+    const completeOAuthLogin = async (provider, token) => {
+        const send = provider === 'microsoft' ? loginWithMicrosoft : loginWithGoogle;
+        const { ok, body } = await send(token);
 
-        if (!response.ok) {
-            const msg = await response.text();
-            throw new Error(msg || 'Login OAuth fallito');
+        if (!ok) {
+            throw new Error(messageFromBody(body, 'Login OAuth fallito'));
         }
 
-        const { token: authToken, username, email } = await response.json();
+        const { token: authToken, username, email } = body;
         onLoginSuccess({ username, email }, authToken);
     };
 
@@ -38,7 +34,7 @@ const OAuthButtons = ({ onLoginSuccess, embedded = false }) => {
         setMsLoading(true);
         window.history.replaceState(null, '', window.location.pathname);
 
-        completeOAuthLogin('/api/auth/oauth/microsoft', accessToken)
+        completeOAuthLogin('microsoft', accessToken)
             .catch((err) => setOauthError(err.message || 'Login Microsoft fallito'))
             .finally(() => setMsLoading(false));
     }, []);
@@ -49,7 +45,7 @@ const OAuthButtons = ({ onLoginSuccess, embedded = false }) => {
         const handleCredential = async (response) => {
             setOauthError('');
             try {
-                await completeOAuthLogin('/api/auth/oauth/google', response.credential);
+                await completeOAuthLogin('google', response.credential);
             } catch (err) {
                 setOauthError(err.message || 'Login Google fallito');
             }

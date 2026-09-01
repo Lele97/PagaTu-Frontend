@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styles from '~/styles/header.module.css';
-import BuyMeACoffeeButton from '~/components/buttons/BuyMeACoffeeButton.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
 import { AVATAR_PRESETS } from '~/services/userApi';
 import { fa } from '~/utils/icons';
@@ -20,8 +19,6 @@ const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default'
     return (
         <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ''}`}>
             <div className={styles.headerContent}>
-                {/*   <BuyMeACoffeeButton />*/}
-
                 <div className={styles.logoTitleContainer}>
                     <img
                         src="/pagaTu.svg"

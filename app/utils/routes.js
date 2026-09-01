@@ -1,7 +1,6 @@
 export const WELCOME_PATH = '/welcome';
 export const HOME_PATH = '/home';
 export const ERROR_PATH = '/error';
-export const TOKEN_ERROR_PATH = '/errore-token';
 
 export const groupPath = (groupName) => {
     if (!groupName) {
@@ -9,8 +8,6 @@ export const groupPath = (groupName) => {
     }
     return `/group/${encodeURIComponent(groupName)}`;
 };
-
-export const authRedirect = (navigate) => navigate(WELCOME_PATH, { replace: true });
 
 export const invitationPath = ({ username, groupName, invitationId } = {}) => {
     if (!username || !groupName || !invitationId) {

@@ -8,20 +8,22 @@
    ================================================================================ */
 
 .container {
+    position: relative;
+    z-index: 1;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     transition: filter 0.3s ease;
 }
 
-.container.modal-active {
+.modalActive {
     filter: blur(4px);
 }
 
 .groupPage {
     position: relative;
     min-height: 100vh;
-    background-color: var(--coffee-200);
+    background-color: var(--coffee-0);
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -91,25 +93,29 @@
     flex-wrap: wrap;
 }
 
-.turnHeading {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--coffee-800);
-    margin: 0 0 0.75rem 0;
-}
-
 .turnHint {
     color: var(--coffee-700);
     font-size: 0.9rem;
     margin: 0.25rem 0;
 }
 
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
 .sectionTitle {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--coffee-800);
-    margin-bottom: 1.5rem;
-    text-align: center;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .groupHeaderMeta {
@@ -122,31 +128,51 @@
     background: var(--surface-card, var(--surface-main));
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-md);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: var(--shadow-sm);
+    padding: 3rem 2.5rem;
+    min-height: 200px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
 }
 
 .groupInfoHeader {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.groupInfoHeader .sectionTitle {
-    margin-bottom: 0;
-    text-align: left;
-    font-size: 1.2rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .roundStats {
     display: flex;
+    align-items: center;
     gap: 1rem;
     font-size: 0.85rem;
     color: var(--coffee-600);
+}
+
+.leaveGroupHeaderBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--coffee-100);
+    color: var(--coffee-800);
+    transition: all 0.3s ease;
+}
+
+.leaveGroupHeaderBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: var(--coffee-200);
+}
+
+.leaveGroupHeaderBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .turnBanner {
@@ -430,7 +456,7 @@
 .groupMainCol {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
     min-width: 0;
 }
 
@@ -439,7 +465,7 @@
     top: 76px;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     min-width: 0;
 }
 
@@ -458,8 +484,8 @@
     background: var(--surface-card, var(--surface-main));
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-md);
-    padding: 1.25rem;
-    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
 }
 
 .actionsCardHeading {
@@ -609,6 +635,16 @@
         margin: 1rem;
         border-radius: 12px;
     }
+
+    .groupSection,
+    .groupInfoSection,
+    .recentSection {
+        padding: 1.5rem 1rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.25rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -627,21 +663,15 @@
 }
 
 /* =============== PAYMENT SECTION STYLES =============== */
-.groupSection {
-    margin-bottom: 2rem;
+.groupSection,
+.recentSection {
     background: var(--surface-card, var(--surface-main));
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-md);
     padding: 3rem 2.5rem;
+    min-height: 200px;
     box-shadow: var(--shadow-md);
-}
-.recentSection {
-    margin-bottom: 5rem;
-    margin-top: 5rem;
-    background: var(--surface-card, var(--surface-main));
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all var(--transition-fast);
 }
 
 .paymentCardsContainer {

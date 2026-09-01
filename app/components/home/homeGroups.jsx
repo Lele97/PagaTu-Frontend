@@ -12,21 +12,21 @@ import {
 } from "~/utils/groupHelpers";
 
 const HomeGroups = React.memo(function HomeGroups({
-                                                      onRetry,
-                                                      groups,
-                                                      addGroup,
-                                                      groupsError,
-                                                      groupsLoading,
-                                                      currentGroupPage,
-                                                      getTotalGroupPages,
-                                                      setCurrentGroupPage,
-                                                      handleGroupSelect,
-                                                      selectedGroup,
-                                                      currentUsername,
-                                                  }) {
+    onRetry,
+    groups,
+    addGroup,
+    groupsError,
+    groupsLoading,
+    currentGroupPage,
+    getTotalGroupPages,
+    setCurrentGroupPage,
+    handleGroupSelect,
+    selectedGroup,
+    currentUsername,
+}) {
 
     if (groupsLoading) {
-        return <LoadingSpinner message="Caricamento gruppi..."/>
+        return <LoadingSpinner message="Caricamento gruppi..." />
     }
 
     if (groupsError) {
@@ -35,18 +35,23 @@ const HomeGroups = React.memo(function HomeGroups({
                 ? groupsError
                 : groupsError?.message || JSON.stringify(groupsError);
 
-        return <ErrorMessage message={error} onRetry={onRetry}/>
+        return <ErrorMessage message={error} onRetry={onRetry} />
     }
 
     if (!groups || groups.length === 0) {
         return (
             <section className={styles.groupSection}>
+
                 <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>
+                        <i className="fa-solid fa-user-group"></i> I tuoi gruppi
+                    </h2>
                     <button onClick={addGroup} className={styles.createGroupButton}>
                         <i className="fa-solid fa-plus"></i>
                         Crea il tuo primo gruppo
                     </button>
                 </div>
+
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIcon}>
                         <i className="fa-solid fa-users"></i>
@@ -83,9 +88,8 @@ const HomeGroups = React.memo(function HomeGroups({
                     return (
                         <div
                             key={group.id || group.name || index}
-                            className={`${styles.groupCard} ${
-                                selectedGroup === group.name ? styles.groupCardSelected : ''
-                            }`}
+                            className={`${styles.groupCard} ${selectedGroup === group.name ? styles.groupCardSelected : ''
+                                }`}
                             onClick={() => handleGroupSelect(group.name)}
                         >
                             <div className={styles.groupIcon}>
@@ -139,7 +143,7 @@ const HomeGroups = React.memo(function HomeGroups({
                 })}
             </div>
             <PaginationControls currentPage={currentGroupPage} totalPages={getTotalGroupPages}
-                                onPageChange={setCurrentGroupPage}/>
+                onPageChange={setCurrentGroupPage} />
         </section>
     );
 })

@@ -23,21 +23,6 @@
     transition: opacity 600ms ease, visibility 600ms ease;
 }
 
-/*
- * Sottofondo: tile SVG con 16 icone in ordine sparso.
- * Ogni icona sta dentro la propria cella del tile -> non si sovrappongono mai.
- */
-.patternLayer {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background-image: url('/patterns/splash-tile.svg');
-    background-repeat: repeat;
-    background-size: clamp(340px, 84vmin, 620px) clamp(340px, 84vmin, 620px);
-    opacity: 0.8;
-}
-
 .splashExiting {
     opacity: 0;
     visibility: hidden;
@@ -160,34 +145,6 @@
     animation: fadeInUp 700ms ease 900ms forwards;
 }
 
-.steam {
-    position: absolute;
-    bottom: 18%;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    opacity: 0;
-    animation: fadeInUp 600ms ease 600ms forwards;
-}
-
-.steamLine {
-    width: 6px;
-    height: 36px;
-    border-radius: 999px;
-    background: linear-gradient(to top, transparent, rgba(111, 78, 55, 0.25));
-    animation: steamRise 2s ease-in-out infinite;
-}
-
-.steamLine:nth-child(2) {
-    animation-delay: 0.35s;
-    height: 44px;
-}
-
-.steamLine:nth-child(3) {
-    animation-delay: 0.7s;
-}
-
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -220,25 +177,9 @@
     }
 }
 
-@keyframes steamRise {
-    0%, 100% {
-        opacity: 0.2;
-        transform: translateY(0) scaleY(0.8);
-    }
-    50% {
-        opacity: 0.7;
-        transform: translateY(-12px) scaleY(1.1);
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
-    .steamLine {
-        animation: none;
-    }
-
     .arcLetter,
-    .tagline,
-    .steam {
+    .tagline {
         opacity: 1;
         animation: none;
     }

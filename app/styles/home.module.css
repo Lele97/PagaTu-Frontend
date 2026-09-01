@@ -10,12 +10,14 @@
 .homePage {
     position: relative;
     min-height: 100vh;
-    background-color: var(--coffee-200);
+    background-color: var(--coffee-0);
     overflow: hidden;
     box-sizing: border-box;
 }
 
 .container {
+    position: relative;
+    z-index: 1;
     min-height: 100vh;
     display: flex;
     flex-direction: column;

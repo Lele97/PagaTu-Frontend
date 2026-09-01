@@ -1,9 +1,6 @@
 import styles from "~/styles/signup.module.css";
-import logostyle from '~/styles/logo.module.css'
 import {useEffect, useRef, useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
-
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+import { register } from '~/services/requestApi';
 
 const CustomSelect = ({
     value,
@@ -81,7 +78,7 @@ const CustomSelect = ({
     );
 };
 
-const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
+const SignupForm = ({ onSwitchToLogin }) => {
     const [registration, setRegistration] = useState({
         username: "",
         password: "",
@@ -92,24 +89,13 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [showDatePickerModal, setShowDatePickerModal] = useState(false);
-    const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
-        const container = document.querySelector(".container");
-        if (showDatePickerModal) {
-            container?.classList.add("modal-active");
-            document.body.style.overflow = "hidden";
-        } else {
-            container?.classList.remove("modal-active");
-            document.body.style.overflow = "unset";
-        }
-
+        document.body.style.overflow = showDatePickerModal ? 'hidden' : 'unset';
         return () => {
-            document.body.style.overflow = "unset";
-            container?.classList.remove("modal-active");
+            document.body.style.overflow = 'unset';
         };
     }, [showDatePickerModal]);
 
@@ -122,19 +108,6 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
             return () => clearTimeout(timer);
         }
     }, [error]);
-
-    useEffect(() => {
-        if (isOpen) {
-            document.addEventListener("keydown", handleKeyDown);
-            return () => document.removeEventListener("keydown", handleKeyDown);
-        }
-    }, [isOpen]);
-
-    const handleKeyDown = (e) => {
-        if (e.key === "Escape") {
-            setIsOpen(false);
-        }
-    };
 
     const handleChange = (e) => {
         const {id, value} = e.target;
@@ -312,24 +285,12 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
         setError("");
 
         try {
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/register`, {
-                method: "POST",
-                body: JSON.stringify(registration),
-                headers: {"Content-Type": "application/json"},
-                credentials: "include",
-            });
+            const { ok, status, body: data } = await register(registration);
 
-            let data;
-            try {
-                data = await response.json();
-            } catch {
-                data = {};
-            }
-
-            if (!response.ok) {
-                if (response.status === 405) {
+            if (!ok) {
+                if (status === 405) {
                     setError("Errore di connessione al server.");
-                } else if (response.status === 409) {
+                } else if (status === 409) {
                     switch (data.message) {
                         case "Email already exists":
                             setError(
@@ -353,11 +314,7 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
             setSuccessMessage("Registrazione completata! Controlla la tua email per verificare l'account prima di accedere.");
 
             setTimeout(() => {
-                if (embedded && onSwitchToLogin) {
-                    onSwitchToLogin();
-                } else {
-                    navigate('/welcome');
-                }
+                onSwitchToLogin?.();
             }, 4000);
         } catch (err) {
             setError("Errore di registrazione. " + err.message);
@@ -557,154 +514,14 @@ const SignupForm = ({ embedded = false, onSwitchToLogin }) => {
             <button type="submit" className={styles.submitButton} disabled={isLoading}>
                 {isLoading ? 'Registrazione in corso...' : 'Registrati'}
             </button>
-            {!embedded && (
-                <div className={styles.loginLink}>
-                    Hai già un account? <Link to="/welcome">Accedi</Link>
-                </div>
-            )}
         </form>
     );
 
-    if (embedded) {
-        return (
-            <>
-                {signupForm}
-                {showDatePickerModal && <DatePickerModal />}
-            </>
-        );
-    }
-
     return (
-        <div className={styles.container}>
-            <section className={styles.heroSection}>
-                <div className={styles.heroOverlay}></div>
-
-                <div className={styles.heroContent}>
-                    <div className={styles.brandBlock}>
-                        <img src="/pagaTu.svg" alt="Logo PagaTu" className={logostyle.logo} />
-                        <div className={logostyle.appTitle}>
-                            <h1 className={logostyle.appTitlecolorP}>P</h1>
-                            <h1 className={logostyle.appTitlecolor2a}>a</h1>
-                            <h1 className={logostyle.appTitlecolorg}>g</h1>
-                            <h1 className={logostyle.appTitlecolor2a}>a</h1>
-                            <br />
-                            <h1 className={logostyle.appTitlecolorT}>T</h1>
-                            <h1 className={logostyle.appTitlecolor2u}>u</h1>
-                        </div>
-                    </div>
-
-
-                    <div className={styles.heroText}>
-                        <h2 className={styles.heroTitle}>L'applicazione perfetta per la pausa più importante della giornata</h2>
-                        <span className={styles.eyebrow}>La pausa caffè, finalmente in ordine</span>
-                        <p className={styles.heroSubtitle}>
-                            PagaTu organizza gruppi, turni e pagamenti della colazione in modo semplice,
-                            leggero e divertente.
-                        </p>
-
-                        <div className={styles.heroFeatures}>
-                            <div className={styles.heroFeature}>
-                                <i className="fa-solid fa-user-group"></i>
-                                <span>Crea il tuo gruppo</span>
-                            </div>
-                            <div className={styles.heroFeature}>
-                                <i className="fa-solid fa-mug-hot"></i>
-                                <span>Scopri a chi tocca offrire</span>
-                            </div>
-                            <div className={styles.heroFeature}>
-                                <i className="fa-solid fa-receipt"></i>
-                                <span>Registra ogni pagamento</span>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div className={styles.heroText}>
-
-                        <h2 className={styles.heroTitle}>Il caffè di oggi non si dimentica più.</h2>
-                        <span className={styles.eyebrow}>La pausa caffè, finalmente in ordine</span>
-                        <p className={styles.heroSubtitle}>
-                            PagaTu organizza gruppi, turni e pagamenti della colazione in modo semplice,
-                            leggero e divertente.
-                        </p>
-
-                        <div className={styles.heroFeatures}>
-                            <div className={styles.heroFeature}>
-                                <i className="fa-solid fa-user-group"></i>
-                                <span>Crea il tuo gruppo</span>
-                            </div>
-                            <div className={styles.heroFeature}>
-                                <i className="fa-solid fa-mug-hot"></i>
-                                <span>Scopri a chi tocca offrire</span>
-                            </div>
-                            <div className={styles.heroFeature}>
-                                <i className="fa-solid fa-receipt"></i>
-                                <span>Registra ogni pagamento</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className={`${styles.authPanel} ${styles.signupForm}`}>
-                        <div className={styles.authPanelHeader}>
-                            <h3 className={styles.title}>Crea un account</h3>
-                            <p className={styles.authSubtitle}>
-                                Entra in PagaTu e inizia a gestire i momenti caffè del tuo gruppo.
-                            </p>
-                        </div>
-
-                        {signupForm}
-                    </div>
-                </div>
-            </section>
-
-            <section className={styles.infoSection}>
-                <div className={styles.infoCard}>
-                    <i className="fa-solid fa-user-group"></i>
-                    <h3>Crea il tuo gruppo</h3>
-                    <p>Organizza amici o colleghi e prepara il prossimo giro di caffè.</p>
-                </div>
-
-                <div className={styles.infoCard}>
-                    <i className="fa-solid fa-arrows-rotate"></i>
-                    <h3>Segui il turno</h3>
-                    <p>Scopri in un attimo chi offre oggi, senza più confusione.</p>
-                </div>
-
-                <div className={styles.infoCard}>
-                    <i className="fa-solid fa-wallet"></i>
-                    <h3>Registra i pagamenti</h3>
-                    <p>Tieni tutto ordinato e chiaro, dalla colazione al caffè del pomeriggio.</p>
-                </div>
-            </section>
-
-            <section className={styles.storySection}>
-                <div className={styles.storyText}>
-                    <span className={styles.eyebrow}>Perché PagaTu</span>
-                    <h3>Un’app semplice per un momento che capita ogni giorno.</h3>
-                    <p>
-                        PagaTu nasce per evitare dimenticanze, giri infiniti di messaggi e quella classica domanda:
-                        “Chi offre oggi?”.
-                    </p>
-                </div>
-
-                <div className={styles.storyHighlights}>
-                    <div className={styles.storyHighlight}>
-                        <strong>Meno confusione</strong>
-                        <span>Tutto il gruppo sa sempre com’è la situazione.</span>
-                    </div>
-                    <div className={styles.storyHighlight}>
-                        <strong>Più leggerezza</strong>
-                        <span>La gestione dei turni diventa veloce e naturale.</span>
-                    </div>
-                    <div className={styles.storyHighlight}>
-                        <strong>Più condivisione</strong>
-                        <span>Il momento caffè resta piacevole, senza discussioni inutili.</span>
-                    </div>
-                </div>
-            </section>
-
+        <>
+            {signupForm}
             {showDatePickerModal && <DatePickerModal />}
-        </div>
+        </>
     );
 };
 

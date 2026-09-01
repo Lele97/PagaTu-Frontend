@@ -15,9 +15,14 @@ import { useSettings } from '~/context/SettingsContext.jsx';
 import { fetchCoffeeProfile } from '~/services/userApi';
 import { ERROR_PATH, WELCOME_PATH } from '~/utils/routes';
 import { useGroup } from '~/context/GroupContext.jsx';
-
-
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+import { createCachedFetcher } from '~/utils/api';
+import {
+    createGroup,
+    getGroupsByUsername,
+    getRecentPayments,
+    getUserAwards as fetchUserAwardsRequest,
+    getUserStatistics as fetchUserStatisticsRequest,
+} from '~/services/requestApi';
 
 const normalizeError = (err) => {
     if (!err) return '';
@@ -70,28 +75,10 @@ const Home = () => {
         requestCacheRef.current.delete(cacheKey);
     }, []);
 
-    const cachedFetchJson = useCallback(async (url, cacheKey, ttl = 30000, options = {}) => {
-        const now = Date.now();
-        const cached = requestCacheRef.current.get(cacheKey);
-
-        if (cached && now - cached.timestamp < ttl) {
-            return cached.data;
-        }
-
-        const response = await fetch(url, options);
-
-        let body;
-        try {
-            body = await response.json();
-        } catch {
-            body = null;
-        }
-
-        const data = { status: response.status, body };
-
-        requestCacheRef.current.set(cacheKey, { data, timestamp: now });
-        return data;
-    }, []);
+    const cachedFetchJson = useMemo(
+        () => createCachedFetcher(requestCacheRef.current),
+        []
+    );
 
     useEffect(() => {
         const initializeData = async () => {
@@ -201,21 +188,12 @@ const Home = () => {
                 return;
             }
 
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    name: payload.name.trim(),
-                    description: payload.description.trim(),
-                })
+            const { status } = await createGroup({
+                name: payload.name.trim(),
+                description: payload.description.trim(),
             });
 
-            switch (response.status) {
+            switch (status) {
                 case 200:
                     setSuccess("Gruppo creato con successo");
                     setPayload(initialPayload);
@@ -226,6 +204,9 @@ const Home = () => {
                 default:
                     throw new Error("Problema durante la creazione del gruppo")
             }
+
+
+
 
             clearCache(`gruppi_by_Id_${user || 'unknown'}`);
 
@@ -282,16 +263,7 @@ const Home = () => {
             setGroupsLoading(true);
             setGroupsError(null);
 
-            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ username }),
-                credentials: 'include',
-            }, cacheKey);
+            const data = await cachedFetchJson(cacheKey, () => getGroupsByUsername(username));
 
             const errorMessage = normalizeError(data?.body?.message || data?.body);
 
@@ -330,16 +302,7 @@ const Home = () => {
             setPaymentsLoading(true);
             setPaymentsError(null);
 
-            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include',
-                body: JSON.stringify({ username }),
-            }, cacheKey);
+            const data = await cachedFetchJson(cacheKey, () => getRecentPayments(username));
 
             const errorMessage = normalizeError(data?.body?.message || data?.body);
 
@@ -369,14 +332,7 @@ const Home = () => {
         try {
             setStatsLoading(true);
 
-            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/user/statistics`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include',
-            }, cacheKey);
+            const data = await cachedFetchJson(cacheKey, () => fetchUserStatisticsRequest());
 
             if (data.status === 200) {
                 setUserStatistics(data.body);
@@ -399,14 +355,7 @@ const Home = () => {
         try {
             setAwardsLoading(true);
 
-            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/user/awards`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include',
-            }, cacheKey);
+            const data = await cachedFetchJson(cacheKey, () => fetchUserAwardsRequest());
 
             if (data.status === 200 && Array.isArray(data.body)) {
                 setUserAwards(data.body);
@@ -447,7 +396,7 @@ const Home = () => {
 
     return (
         <div className={styles.homePage}>
-            <CoffeePatternIcons variant="home" />
+            <CoffeePatternIcons />
 
             <div className={`${styles.container} ${isAnyModalOpen ? styles.modalActive : ''}`}>
 

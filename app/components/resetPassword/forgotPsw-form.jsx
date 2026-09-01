@@ -1,14 +1,10 @@
 import {useEffect, useState} from 'react';
-import styles from '~/styles/forgotPsw.module.css';
-import logostyle from '~/styles/logo.module.css'
-import {Link, useNavigate} from "react-router-dom";
+import signupStyles from '~/styles/signup.module.css';
+import { forgotPassword } from '~/services/requestApi';
 
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
-
-const ForgotPswForm = () => {
+const ForgotPswForm = ({ onSwitchToLogin }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
-    const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
@@ -16,19 +12,22 @@ const ForgotPswForm = () => {
         if (error) {
             const timer = setTimeout(() => {
                 setError(null);
-            }, 1000); // Increased to 5 seconds for better readability
+            }, 1000);
             return () => clearTimeout(timer);
         }
     }, [error]);
 
     useEffect(() => {
-        if (success) {
-            const timer = setTimeout(() => {
-                navigate('/');
-            }, 2000);
-            return () => clearTimeout(timer);
+        if (!success) {
+            return undefined;
         }
-    }, [success, navigate]);
+
+        const timer = setTimeout(() => {
+            onSwitchToLogin?.();
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, [success, onSwitchToLogin]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,16 +36,12 @@ const ForgotPswForm = () => {
         setSuccess(null);
 
         try {
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/forgotPassword?email=${encodeURIComponent(email)}`, {
-                method: 'POST',
-                credentials: 'include',
-            });
+            const { status } = await forgotPassword(email);
 
-            switch (response.status) {
+            switch (status) {
                 case 200:
-                    setSuccess('Invio della richiesta avvenuto con successo. Verrai reindirizzato alla pagina di login.');
+                    setSuccess('Richiesta inviata. Controlla la tua email: tornerai all\'accesso tra poco.');
                     localStorage.setItem("email", email);
-                    // Navigation is now handled by the useEffect above
                     break;
                 case 404:
                     setError('Email non presente nel sistema');
@@ -65,55 +60,42 @@ const ForgotPswForm = () => {
     };
 
     return (
-        <div className={styles.forgotPswPage}>
-            <div className={styles.container}>
-                <div className={styles['header-container']}>
-                    <img src="/pagaTu.svg" alt="Logo" className={logostyle.logo}/>
-                    <div className={logostyle.appTitle}>
-                        <h1 className={logostyle.appTitlecolor}>P</h1>
-                        <h1 className={logostyle.appTitlecolor2}>a</h1>
-                        <h1 className={logostyle.appTitlecolor}>g</h1>
-                        <h1 className={logostyle.appTitlecolor2}>a</h1>
-                        <br></br>
-                        <h1 className={logostyle.appTitlecolor}>T</h1>
-                        <h1 className={logostyle.appTitlecolor2}>u</h1>
-                    </div>
-                </div>
-
-                <div className={styles.forgotPswForm}>
-                    <h2 className={styles.title}>Hai dimenticato la password?</h2>
-                    <p className={styles.text}>Inserisci qui sotto l'indirizzo email che hai utilizzato per registrarti,
-                        riceverai una mail con
-                        il link per reimpostare la tua password in modo sicuro.</p>
-                    <form onSubmit={handleSubmit} className={styles.form}>
-                        <div className={styles.inputGroup}>
-                            <label htmlFor="email" className={styles.label}>Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                className={styles.inputField}
-                                placeholder="Inserisci la tua email"
-                                value={email}
-                                onChange={event => setEmail(event.target.value)}
-                                required
-                            />
-                        </div>
-
-                        {error && <div className={styles.errorMessageModal}>{error}</div>}
-                        {success && <div className={styles.successMessage}>{success}</div>}
-
-                        <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                            {isLoading ? 'Invio in corso...' : 'Invia'}
-                        </button>
-                        <div className={styles.signupLink}>
-                            Hai già un account?
-                            <Link to="/" className={styles.link}>Accedi</Link>
-                        </div>
-                    </form>
-                </div>
+        <>
+            <div className={signupStyles.authPanelHeader}>
+                <h2 className={signupStyles.title}>Hai dimenticato la password?</h2>
+                <p className={signupStyles.authSubtitle}>
+                    Inserisci l&apos;email con cui ti sei registrato: ti invieremo il link per reimpostare la password.
+                </p>
             </div>
-        </div>
-    )
+            <form onSubmit={handleSubmit}>
+                <div className={signupStyles.inputGroup}>
+                    <label htmlFor="forgot-email" className={signupStyles.label}>Email</label>
+                    <input
+                        type="email"
+                        id="forgot-email"
+                        className={signupStyles.inputField}
+                        placeholder="Inserisci la tua email"
+                        value={email}
+                        onChange={event => setEmail(event.target.value)}
+                        required
+                    />
+                </div>
+
+                {error && <div className={signupStyles.errorMessage}>{error}</div>}
+                {success && <div className={signupStyles.successMessage}>{success}</div>}
+
+                <button type="submit" className={signupStyles.submitButton} disabled={isLoading}>
+                    {isLoading ? 'Invio in corso...' : 'Invia'}
+                </button>
+                {onSwitchToLogin && (
+                    <div className={signupStyles.loginLink}>
+                        Hai già un account?{' '}
+                        <button type="button" onClick={onSwitchToLogin}>Accedi</button>
+                    </div>
+                )}
+            </form>
+        </>
+    );
 }
 
 export default ForgotPswForm;

@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import OAuthButtons from '~/components/OAuthButtons.jsx';
 import authStyles from '~/styles/auth.module.css';
 import signupStyles from '~/styles/signup.module.css';
-import logostyle from '~/styles/logo.module.css';
-import { GATEWAY_URL, parseErrorMessage } from '~/utils/api';
+import { messageFromBody } from '~/utils/api';
+import { login, resendVerification } from '~/services/requestApi';
 import { HOME_PATH, invitationPath, readPendingInvitation } from '~/utils/routes';
 
-const GETAWAY_SERVER_URL = GATEWAY_URL;
-
-const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
+const LoginForm = ({ onSwitchToForgot }) => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -17,8 +15,6 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
     const [resendEmail, setResendEmail] = useState('');
     const [resendStatus, setResendStatus] = useState('');
     const navigate = useNavigate();
-
-    const styles = embedded ? signupStyles : authStyles;
 
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');
@@ -67,22 +63,17 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
         setError('');
 
         try {
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(credentials),
-                credentials: 'include',
-            });
+            const { ok, body } = await login(credentials);
 
-            if (!response.ok) {
-                const errorMsg = await parseErrorMessage(response, 'Login non riuscito. Controlla le credenziali.');
+            if (!ok) {
+                const errorMsg = messageFromBody(body, 'Login non riuscito. Controlla le credenziali.');
                 if (errorMsg.toLowerCase().includes('verifica')) {
                     setShowResend(true);
                 }
                 throw new Error(errorMsg);
             }
 
-            const { token, username, email } = await response.json();
+            const { token, username, email } = body;
             setShowResend(false);
             handleLoginSuccess({ username, email }, token);
         } catch (err) {
@@ -98,30 +89,25 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
             return;
         }
         try {
-            const response = await fetch(
-                `${GETAWAY_SERVER_URL}/api/auth/resend-verification?email=${encodeURIComponent(resendEmail.trim())}`,
-                { method: 'POST', credentials: 'include' }
-            );
-            const text = await response.text();
-            setResendStatus(response.ok ? (text || 'Email inviata!') : text);
+            const { ok, body } = await resendVerification(resendEmail.trim());
+            const text = messageFromBody(body, ok ? 'Email inviata!' : 'Invio non riuscito');
+            setResendStatus(ok ? (text || 'Email inviata!') : text);
         } catch {
             setResendStatus('Errore di connessione');
         }
     };
 
-    const formContent = (
-        <>
-            {!embedded && <h2 className={authStyles.title}>Accedi al tuo account</h2>}
-
-            <form onSubmit={handleSubmit} className={embedded ? undefined : authStyles.form}>
-                <div className={embedded ? signupStyles.inputGroup : authStyles.inputGroup}>
-                    <label htmlFor="username" className={styles.label}>
+    return (
+        <div>
+            <form onSubmit={handleSubmit}>
+                <div className={signupStyles.inputGroup}>
+                    <label htmlFor="username" className={signupStyles.label}>
                         Username*
                     </label>
                     <input
                         type="text"
                         id="username"
-                        className={embedded ? signupStyles.inputField : authStyles.input}
+                        className={signupStyles.inputField}
                         placeholder="Il tuo username"
                         value={credentials.username}
                         onChange={handleChange}
@@ -130,26 +116,27 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
                     />
                 </div>
 
-                <div className={embedded ? signupStyles.inputGroup : authStyles.inputGroup}>
+                <div className={signupStyles.inputGroup}>
                     <div
-                        className={embedded ? undefined : authStyles.passwordHeader}
-                        style={embedded ? { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' } : undefined}
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}
                     >
-                        <label htmlFor="password" className={styles.label}>
+                        <label htmlFor="password" className={signupStyles.label}>
                             Password*
                         </label>
-                        <Link
-                            to="/forgotPassword"
-                            className={embedded ? undefined : authStyles.link}
-                            style={embedded ? { fontSize: '0.85rem', fontWeight: 700, color: 'var(--coffee-700)', textDecoration: 'none' } : undefined}
-                        >
-                            Password dimenticata?
-                        </Link>
+                        {onSwitchToForgot && (
+                            <button
+                                type="button"
+                                className={signupStyles.forgotLink}
+                                onClick={onSwitchToForgot}
+                            >
+                                Password dimenticata?
+                            </button>
+                        )}
                     </div>
                     <input
                         type="password"
                         id="password"
-                        className={embedded ? signupStyles.inputField : authStyles.input}
+                        className={signupStyles.inputField}
                         placeholder="••••••••"
                         autoComplete="current-password"
                         value={credentials.password}
@@ -160,7 +147,7 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
                 </div>
 
                 {error && (
-                    <div className={embedded ? signupStyles.errorMessage : authStyles.error}>
+                    <div className={signupStyles.errorMessage}>
                         {error}
                     </div>
                 )}
@@ -170,7 +157,7 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
                         <p>Non hai ricevuto l&apos;email di verifica?</p>
                         <input
                             type="email"
-                            className={embedded ? signupStyles.inputField : authStyles.input}
+                            className={signupStyles.inputField}
                             placeholder="La tua email"
                             value={resendEmail}
                             onChange={(e) => setResendEmail(e.target.value)}
@@ -184,45 +171,14 @@ const LoginForm = ({ embedded = false, onSwitchToSignup }) => {
 
                 <button
                     type="submit"
-                    className={embedded ? signupStyles.submitButton : authStyles.primaryButton}
+                    className={signupStyles.submitButton}
                     disabled={isLoading}
                 >
                     {isLoading ? 'Accesso...' : 'Accedi'}
                 </button>
-
-                {!embedded && (
-                    <div className={authStyles.footer}>
-                        Non hai un account?
-                        <Link to="/welcome?tab=signup" className={authStyles.link}>
-                            Registrati
-                        </Link>
-                    </div>
-                )}
             </form>
 
-            <OAuthButtons onLoginSuccess={handleLoginSuccess} embedded={embedded} />
-        </>
-    );
-
-    if (embedded) {
-        return <div>{formContent}</div>;
-    }
-
-    return (
-        <div className={authStyles.container}>
-            <div className={authStyles['header-container']}>
-                <img src="/pagaTu.svg" alt="Logo" className={logostyle.logo} />
-                <div className={logostyle.appTitle}>
-                    <h1 className={logostyle.appTitlecolor}>P</h1>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <h1 className={logostyle.appTitlecolor}>g</h1>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <br />
-                    <h1 className={logostyle.appTitlecolor}>T</h1>
-                    <h1 className={logostyle.appTitlecolor2}>u</h1>
-                </div>
-            </div>
-            <div className={authStyles.formContainer}>{formContent}</div>
+            <OAuthButtons onLoginSuccess={handleLoginSuccess} embedded />
         </div>
     );
 };

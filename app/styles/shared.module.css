@@ -227,10 +227,12 @@
 .coffeePattern {
     position: absolute;
     inset: 0;
+    z-index: 0;
     pointer-events: none;
-    overflow: hidden;
-    z-index: -1;
-    color: var(--coffee-600);
+    background-image: url('/patterns/splash-tile.svg');
+    background-repeat: repeat;
+    background-size: clamp(340px, 84vmin, 620px) clamp(340px, 84vmin, 620px);
+    opacity: 0.8;
 }
 
 /* ===============================================================================
@@ -267,8 +269,4 @@
     color: var(--coffee-600);
     margin-bottom: 1rem;
     font-size: 0.95rem;
-}
-
-.leaveGroupBtn {
-    margin-bottom: 1rem;
 }

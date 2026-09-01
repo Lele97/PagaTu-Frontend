@@ -1,22 +1,11 @@
-import { authHeaders, GATEWAY_URL, parseErrorMessage } from '~/utils/api';
+import { GATEWAY_URL, messageFromBody, sendRequest } from '~/utils/api';
 
 const request = async (url, options = {}) => {
-    const response = await fetch(url, {
-        credentials: 'include',
-        ...options,
-        headers: authHeaders(options.headers),
-    });
-    if (!response.ok) {
-        throw new Error(await parseErrorMessage(response));
+    const { ok, body } = await sendRequest(url, options);
+    if (!ok) {
+        throw new Error(messageFromBody(body));
     }
-    if (response.status === 204) return null;
-    const text = await response.text();
-    if (!text) return null;
-    try {
-        return JSON.parse(text);
-    } catch {
-        return text;
-    }
+    return body;
 };
 
 export const fetchAuthProfile = () =>
@@ -67,12 +56,6 @@ export const AVATAR_PRESETS = [
     { key: 'steam', label: 'Vapore', icon: 'cloud' },
     { key: 'office', label: 'Ufficio', icon: 'building' },
 ];
-
-export const fetchUserStatistics = () =>
-    request(`${GATEWAY_URL}/api/coffee/user/statistics`);
-
-export const fetchUserAwards = () =>
-    request(`${GATEWAY_URL}/api/coffee/user/awards`);
 
 export const KARMA_OPS = {
     PAYMENT: 'payment',

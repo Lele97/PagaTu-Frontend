@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HOME_PATH, WELCOME_PATH, pendingInvitationPath } from '~/utils/routes';
+import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
 import styles from '~/styles/splash.module.css';
 
 const SPLASH_MIN_DURATION_MS = 2500;
@@ -68,16 +69,13 @@ const SplashScreen = () => {
             aria-live="polite"
             aria-label="Caricamento PagaTu"
         >
-            {/* Sottofondo: tile di icone sparse, mai sovrapposte */}
-            <div className={styles.patternLayer} aria-hidden="true" />
+
+            <CoffeePatternIcons />
 
             <div className={styles.content}>
-                {/*
-                  * Stage circolare: tutto vive qui dentro.
-                  * Coordinate in % dello stage -> il layout scala insieme.
-                  */}
+
                 <div className={styles.beanStage}>
-                    {/* Corona fissa: i chicchi appaiono in sequenza, non ruotano */}
+
                     <div className={styles.beanOrbit} aria-hidden="true">
                         {beans.map((bean) => (
                             <img
@@ -95,17 +93,13 @@ const SplashScreen = () => {
                         ))}
                     </div>
 
-                    {/* Logo vettoriale ritagliato: nitido a qualsiasi risoluzione */}
                     <img
                         src="/pagaTu.svg"
                         alt="Logo PagaTu"
                         className={styles.logo}
                     />
 
-                    {/*
-                      * "PagaTu" su arco: textPath SVG, così le lettere seguono
-                      * il bordo inferiore del logo.
-                      */}
+
                     <svg
                         className={styles.arcSvg}
                         viewBox="0 0 200 200"

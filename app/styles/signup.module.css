@@ -5,56 +5,84 @@
 .container {
     position: relative;
     min-height: 100vh;
-    background:
-            radial-gradient(circle at top left, rgba(216, 197, 179, 0.22), transparent 28%),
-            radial-gradient(circle at bottom right, rgba(191, 164, 141, 0.16), transparent 26%),
-            var(--coffee-50);
+    background: var(--coffee-0);
     overflow: hidden;
-}
-
-.container::before {
-    content: "☕ 🫘 🥐 ☕ 🥄 🫘 ☕ 🥐";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.04;
-    font-size: 30px;
-    line-height: 140px;
-    letter-spacing: 34px;
-    transform: rotate(-7deg) scale(1.08);
 }
 
 .heroSection,
 .infoSection,
-.storySection {
+.zigzagSection {
     position: relative;
     z-index: 1;
     transition: transform 0.2s ease;
 }
 
 .pageBrand {
+    --stage: clamp(240px, 28vw, 300px);
     position: absolute;
-    top: 20px;
-    left: 24px;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    margin: 3rem;
+    z-index: 10;
+    width: var(--stage);
+    height: calc(var(--stage) * 0.8);
+    user-select: none;
+    pointer-events: none;
+}
+
+.brandLogo {
+    position: absolute;
+    left: 50%;
+    top: 38%;
+    z-index: 1;
+    width: 44%;
+    height: auto;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 4px 10px rgba(111, 78, 55, 0.12));
+}
+
+.brandArcSvg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: var(--stage);
+    height: var(--stage);
+    overflow: visible;
+    pointer-events: none;
+}
+
+.brandArcText {
+    font-family: 'CustomFont', sans-serif;
+    font-size: 48px;
+    font-weight: 400;
+    letter-spacing: 7px;
+}
+
+.brandLetterDark {
+    fill: #462a17;
+}
+
+.brandLetterLight {
+    fill: #d4a470;
 }
 
 .heroSection {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding: 88px 24px 32px;
+    padding: clamp(196px, 24vw, 252px) 24px 32px;
+}
+
+.heroText {
+    max-width: 620px;
 }
 
 .heroOverlay {
     position: absolute;
     inset: 0;
     background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
-            radial-gradient(circle at center top, rgba(255, 255, 255, 0.24), transparent 34%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
+        radial-gradient(circle at center top, rgba(255, 255, 255, 0.24), transparent 34%);
     pointer-events: none;
 }
 
@@ -67,16 +95,6 @@
     grid-template-columns: 1.05fr 1fr;
     gap: 40px;
     align-items: center;
-}
-
-.brandBlock {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.heroText {
-    max-width: 620px;
 }
 
 .eyebrow {
@@ -143,8 +161,7 @@
    AUTH PANEL
    ================================================================================ */
 
-.authPanel,
-.signupForm {
+.authPanel {
     width: 100%;
     max-width: 560px;
     margin-left: auto;
@@ -317,15 +334,39 @@
     color: var(--text-secondary);
 }
 
-.loginLink a {
+.loginLink a,
+.loginLink button {
     color: var(--coffee-700);
     font-weight: 700;
     text-decoration: none;
 }
 
+.loginLink button {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.forgotLink {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--coffee-700);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.forgotLink:hover {
+    color: var(--coffee-800);
+}
+
 /* ===============================================================================
    INFO SECTION
    ================================================================================ */
+
 
 .infoSection {
     width: min(1280px, 100%);
@@ -369,20 +410,6 @@
     color: var(--text-secondary);
     line-height: 1.7;
     font-size: 0.98rem;
-}
-
-/* ===============================================================================
-   STORY SECTION
-   ================================================================================ */
-
-.storySection {
-    width: min(1280px, 100%);
-    margin: 0 auto;
-    padding: 26px 24px 80px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-    align-items: start;
 }
 
 .zigzagSection {
@@ -434,56 +461,6 @@
     margin: 0;
     color: var(--text-secondary);
     line-height: 1.75;
-}
-
-.storyText {
-    background: rgba(255, 251, 247, 0.64);
-    border: 1px solid rgba(111, 78, 55, 0.1);
-    border-radius: 28px;
-    padding: 34px 30px;
-    box-shadow: var(--shadow-md);
-}
-
-.storyText h3 {
-    margin: 0;
-    font-size: clamp(1.9rem, 3vw, 3rem);
-    line-height: 1.08;
-    color: var(--coffee-900);
-    max-width: 14ch;
-}
-
-.storyText p {
-    margin: 18px 0 0;
-    color: var(--text-secondary);
-    line-height: 1.8;
-    font-size: 1rem;
-    max-width: 56ch;
-}
-
-.storyHighlights {
-    display: grid;
-    gap: 18px;
-}
-
-.storyHighlight {
-    background: rgba(255, 253, 249, 0.82);
-    border: 1px solid rgba(111, 78, 55, 0.11);
-    border-radius: 22px;
-    padding: 22px 20px;
-    box-shadow: var(--shadow-sm);
-}
-
-.storyHighlight strong {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--coffee-800);
-    font-size: 1rem;
-}
-
-.storyHighlight span {
-    color: var(--text-secondary);
-    line-height: 1.65;
-    font-size: 0.96rem;
 }
 
 /* ===============================================================================
@@ -628,8 +605,8 @@
    ================================================================================ */
 
 @media (max-width: 1080px) {
+
     .heroContent,
-    .storySection,
     .zigzagRow {
         grid-template-columns: 1fr;
     }
@@ -643,8 +620,7 @@
         max-width: 100%;
     }
 
-    .authPanel,
-    .signupForm {
+    .authPanel {
         max-width: 100%;
         margin-left: 0;
     }
@@ -655,13 +631,19 @@
 }
 
 @media (max-width: 768px) {
+    .pageBrand {
+        --stage: 200px;
+        height: 160px;
+        top: 16px;
+        left: 16px;
+    }
+
     .heroSection {
-        padding: 32px 16px 20px;
+        padding: 176px 16px 20px;
         min-height: auto;
     }
 
-    .infoSection,
-    .storySection {
+    .infoSection {
         padding-left: 16px;
         padding-right: 16px;
     }
@@ -672,8 +654,6 @@
     }
 
     .authPanel,
-    .signupForm,
-    .storyText,
     .infoCard,
     .modalContent {
         padding: 22px 18px;
@@ -698,27 +678,13 @@
 }
 
 @media (max-width: 480px) {
-    .brandBlock {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
     .title {
         font-size: 1.55rem;
     }
 
     .heroSubtitle,
-    .infoCard p,
-    .storyText p,
-    .storyHighlight span {
+    .infoCard p {
         font-size: 0.95rem;
-    }
-
-    .container::before {
-        font-size: 24px;
-        line-height: 110px;
-        letter-spacing: 22px;
     }
 }
 
@@ -731,6 +697,7 @@
         opacity: 0;
         transform: translateY(6px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

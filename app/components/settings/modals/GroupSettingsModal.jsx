@@ -6,7 +6,8 @@ import { useSettings } from '~/context/SettingsContext.jsx';
 import styles from '~/styles/settings.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 import { fetchGroupSettings, updateGroupSettings } from '~/services/userApi';
-import { GATEWAY_URL, authHeaders, parseErrorMessage } from '~/utils/api';
+import { messageFromBody } from '~/utils/api';
+import { removeGroupMember } from '~/services/requestApi';
 
 const TABS = [
     { id: 'general', label: 'Generale' },
@@ -111,13 +112,8 @@ const GroupSettingsModal = ({
         setSaving(true);
         setError('');
         try {
-            const response = await fetch(`${GATEWAY_URL}/api/coffee/group/update/member`, {
-                method: 'DELETE',
-                headers: authHeaders(),
-                credentials: 'include',
-                body: JSON.stringify({ groupName, username }),
-            });
-            if (!response.ok) throw new Error(await parseErrorMessage(response));
+            const { ok, body } = await removeGroupMember(groupName, username);
+            if (!ok) throw new Error(messageFromBody(body));
             showSuccess(`Membro ${username} rimosso`);
             await loadSettings();
         } catch (err) {

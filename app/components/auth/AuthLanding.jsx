@@ -1,44 +1,70 @@
-import {useEffect, useState} from 'react';
-import {useNavigate, useSearchParams} from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoginForm from '~/components/login/login-form.jsx';
 import SignupForm from '~/components/signup/signup-form.jsx';
+import ForgotPswForm from '~/components/resetPassword/forgotPsw-form.jsx';
 import styles from '~/styles/signup.module.css';
-import logostyle from '~/styles/logo.module.css';
 import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
 
+const AUTH_TABS = new Set(['login', 'signup', 'forgot']);
+const tabFromSearch = (value) => (AUTH_TABS.has(value) ? value : 'login');
+
+const TITLE_LETTERS = [
+    { char: 'P', tone: 'dark' },
+    { char: 'a', tone: 'light' },
+    { char: 'g', tone: 'dark' },
+    { char: 'a', tone: 'light' },
+    { char: 'T', tone: 'dark' },
+    { char: 'u', tone: 'light' },
+];
+
 const AuthLanding = () => {
+
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const initialTab = searchParams.get('tab') === 'signup' ? 'signup' : 'login';
-    const [activeTab, setActiveTab] = useState(initialTab);
+    const [activeTab, setActiveTab] = useState(() => tabFromSearch(searchParams.get('tab')));
 
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
-            navigate('/home', {replace: true});
+            navigate('/home', { replace: true });
         }
     }, [navigate]);
 
     useEffect(() => {
-        setSearchParams(activeTab === 'signup' ? {tab: 'signup'} : {}, {replace: true});
+        setSearchParams(activeTab === 'login' ? {} : { tab: activeTab }, { replace: true });
     }, [activeTab, setSearchParams]);
 
     const switchTab = (tab) => setActiveTab(tab);
 
     return (
         <div className={styles.container}>
-            <CoffeePatternIcons variant="welcome" />
+            <CoffeePatternIcons />
 
-            <div className={styles.pageBrand}>
-                <img src="/pagaTu.svg" alt="Logo PagaTu" className={logostyle.logo} />
-                <div className={logostyle.appTitle}>
-                    <h1 className={logostyle.appTitlecolorP}>P</h1>
-                    <h1 className={logostyle.appTitlecolor2a}>a</h1>
-                    <h1 className={logostyle.appTitlecolorg}>g</h1>
-                    <h1 className={logostyle.appTitlecolor2a}>a</h1>
-                    <h1 className={logostyle.appTitlecolorT}>T</h1>
-                    <h1 className={logostyle.appTitlecolor2u}>u</h1>
-                </div>
+            <div className={styles.pageBrand} role="img" aria-label="PagaTu">
+                <img src="/pagaTu.svg" alt="" className={styles.brandLogo} />
+                <svg
+                    className={styles.brandArcSvg}
+                    viewBox="0 0 200 200"
+                    aria-hidden="true"
+                    focusable="false"
+                >
+                    <defs>
+                        <path id="pagatuArcLanding" d="M 10 88 A 90 90 0 0 0 190 88" fill="none" />
+                    </defs>
+                    <text className={styles.brandArcText}>
+                        <textPath href="#pagatuArcLanding" startOffset="50%" textAnchor="middle">
+                            {TITLE_LETTERS.map(({ char, tone }, i) => (
+                                <tspan
+                                    key={`${char}-${i}`}
+                                    className={tone === 'dark' ? styles.brandLetterDark : styles.brandLetterLight}
+                                >
+                                    {char}
+                                </tspan>
+                            ))}
+                        </textPath>
+                    </text>
+                </svg>
             </div>
 
             <section className={styles.heroSection}>
@@ -68,31 +94,37 @@ const AuthLanding = () => {
                     </div>
 
                     <div className={styles.authPanel}>
-                        <div className={styles.authTabs} role="tablist" aria-label="Accesso o registrazione">
-                            <button
-                                type="button"
-                                role="tab"
-                                aria-selected={activeTab === 'login'}
-                                className={`${styles.authTab} ${activeTab === 'login' ? styles.authTabActive : ''}`}
-                                onClick={() => switchTab('login')}
-                            >
-                                Accedi
-                            </button>
-                            <button
-                                type="button"
-                                role="tab"
-                                aria-selected={activeTab === 'signup'}
-                                className={`${styles.authTab} ${activeTab === 'signup' ? styles.authTabActive : ''}`}
-                                onClick={() => switchTab('signup')}
-                            >
-                                Registrati
-                            </button>
-                        </div>
+                        {activeTab !== 'forgot' && (
+                            <div className={styles.authTabs} role="tablist" aria-label="Accesso o registrazione">
+                                <button
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={activeTab === 'login'}
+                                    className={`${styles.authTab} ${activeTab === 'login' ? styles.authTabActive : ''}`}
+                                    onClick={() => switchTab('login')}
+                                >
+                                    Accedi
+                                </button>
+                                <button
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={activeTab === 'signup'}
+                                    className={`${styles.authTab} ${activeTab === 'signup' ? styles.authTabActive : ''}`}
+                                    onClick={() => switchTab('signup')}
+                                >
+                                    Registrati
+                                </button>
+                            </div>
+                        )}
 
-                        {activeTab === 'login' ? (
-                            <LoginForm embedded onSwitchToSignup={() => switchTab('signup')} />
-                        ) : (
-                            <SignupForm embedded onSwitchToLogin={() => switchTab('login')} />
+                        {activeTab === 'login' && (
+                            <LoginForm onSwitchToForgot={() => switchTab('forgot')} />
+                        )}
+                        {activeTab === 'signup' && (
+                            <SignupForm onSwitchToLogin={() => switchTab('login')} />
+                        )}
+                        {activeTab === 'forgot' && (
+                            <ForgotPswForm onSwitchToLogin={() => switchTab('login')} />
                         )}
                     </div>
                 </div>
