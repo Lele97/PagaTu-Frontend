@@ -1,82 +1,7 @@
 import styles from "~/styles/signup.module.css";
-import {useEffect, useRef, useState} from "react";
-import { register } from '~/services/requestApi';
-
-const CustomSelect = ({
-    value,
-    options,
-    onChange,
-    visibleItems = 8,
-    className = "",
-}) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const selectRef = useRef(null);
-    const optionsRef = useRef(null);
-
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (selectRef.current && !selectRef.current.contains(e.target)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    useEffect(() => {
-        if (isOpen && selectRef.current && optionsRef.current) {
-            const selectRect = selectRef.current.getBoundingClientRect();
-            let topPosition = selectRect.bottom;
-            const bottomSpace = window.innerHeight - selectRect.bottom;
-
-            if (bottomSpace < 320 && selectRect.top > 320) {
-                topPosition = selectRect.top - 320;
-            }
-
-            optionsRef.current.style.top = `${topPosition}px`;
-            optionsRef.current.style.left = `${selectRect.left}px`;
-            optionsRef.current.style.width = `${selectRect.width}px`;
-        }
-    }, [isOpen]);
-
-    const selectedOption = options.find((opt) => opt.value === value) || options[0];
-
-    return (
-        <div
-            className={`${styles.customSelectContainer} ${className}`}
-            ref={selectRef}
-        >
-            <div
-                className={styles.customSelectHeader}
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <span>{selectedOption?.label}</span>
-                <span className={styles.arrow}>{isOpen ? "▲" : "▼"}</span>
-            </div>
-            {isOpen && (
-                <div
-                    ref={optionsRef}
-                    className={`${styles.customSelectOptions} ${isOpen ? styles.open : ""}`}
-                >
-                    {options.map((option) => (
-                        <div
-                            key={option.value}
-                            className={`${styles.customSelectOption} ${
-                                value === option.value ? styles.selectedOption : ""
-                            }`}
-                            onClick={() => {
-                                onChange(option.value);
-                                setIsOpen(false);
-                            }}
-                        >
-                            {option.label}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
+import { useEffect, useRef, useState } from "react";
+import { register } from '~/utils/apiService';
+import DatePickerModal from "./modal/datePickerModal";
 
 const SignupForm = ({ onSwitchToLogin }) => {
     const [registration, setRegistration] = useState({
@@ -92,12 +17,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
 
-    useEffect(() => {
-        document.body.style.overflow = showDatePickerModal ? 'hidden' : 'unset';
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [showDatePickerModal]);
+
 
     useEffect(() => {
         if (error) {
@@ -109,15 +29,16 @@ const SignupForm = ({ onSwitchToLogin }) => {
         }
     }, [error]);
 
-    const handleChange = (e) => {
-        const {id, value} = e.target;
-        setRegistration((prev) => ({...prev, [id]: value}));
-    };
-
     const handleDateSelect = (date) => {
-        setRegistration((prev) => ({...prev, dateOfBirth: date}));
+        setRegistration((prev) => ({ ...prev, dateOfBirth: date }));
         setShowDatePickerModal(false);
     };
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setRegistration((prev) => ({ ...prev, [id]: value }));
+    };
+
 
     const formatDate = (dateString) => {
         if (!dateString)
@@ -135,40 +56,8 @@ const SignupForm = ({ onSwitchToLogin }) => {
         });
     };
 
-    const generateCalendar = () => {
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const years = [];
-        for (let year = currentYear; year >= 1940; year--) {
-            years.push({value: year, label: year});
-        }
-        const months = [
-            {value: 0, label: "Gennaio"},
-            {value: 1, label: "Febbraio"},
-            {value: 2, label: "Marzo"},
-            {value: 3, label: "Aprile"},
-            {value: 4, label: "Maggio"},
-            {value: 5, label: "Giugno"},
-            {value: 6, label: "Luglio"},
-            {value: 7, label: "Agosto"},
-            {value: 8, label: "Settembre"},
-            {value: 9, label: "Ottobre"},
-            {value: 10, label: "Novembre"},
-            {value: 11, label: "Dicembre"},
-        ];
-        return {years, months};
-    };
-
-    const getDaysInMonth = (year, month) => {
-        return new Date(year, month + 1, 0).getDate();
-    };
-
     const datePickerOpenModal = () => {
         setShowDatePickerModal(true);
-    };
-
-    const datePickerCloseModal = () => {
-        setShowDatePickerModal(false);
     };
 
     const validateUsername = (username) => {
@@ -323,123 +212,11 @@ const SignupForm = ({ onSwitchToLogin }) => {
         }
     }
 
-    const DatePickerModal = () => {
-
-        const initializeDate = () => {
-            if (registration.dateOfBirth) {
-                const existingDate = new Date(registration.dateOfBirth);
-                return {
-                    year: existingDate.getFullYear(),
-                    month: existingDate.getMonth(),
-                    day: existingDate.getDate()
-                };
-            }
-            return {
-                year: new Date().getFullYear() - 25,
-                month: 0,
-                day: 1
-            };
-        };
-
-        const initialDate = initializeDate();
-        const [selectedYear, setSelectedYear] = useState(initialDate.year);
-        const [selectedMonth, setSelectedMonth] = useState(initialDate.month);
-        const [selectedDay, setSelectedDay] = useState(initialDate.day);
-
-        const {years, months} = generateCalendar();
-        const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
-
-        useEffect(() => {
-            if (selectedDay > daysInMonth) {
-                setSelectedDay(daysInMonth);
-            }
-        }, [selectedYear, selectedMonth, daysInMonth, selectedDay]);
-
-        const days = Array.from({length: daysInMonth}, (_, i) => ({
-            value: i + 1,
-            label: i + 1,
-        }));
-
-        const handleConfirm = () => {
-
-            const date = new Date(selectedYear, selectedMonth, selectedDay + 1);
-            const formattedDate = date.toISOString().split("T")[0];
-            handleDateSelect(formattedDate);
-        };
-
-
-        const handleContentClick = (e) => {
-            e.stopPropagation();
-        };
-
-        return (
-            <div className={styles.modalContainer} onClick={datePickerCloseModal}>
-                <div
-                    className={styles.modalContent}
-                    onClick={handleContentClick} // Prevent click propagation
-                >
-                    <div className={styles.selectContainer}>
-                        <div className={styles.daySelect}>
-                            <label className={styles.labelStyle}>Giorno</label>
-                            <CustomSelect
-                                value={selectedDay}
-                                options={days}
-                                onChange={setSelectedDay}
-                                className={styles.customSelect}
-                                visibleItems={8}
-                            />
-                        </div>
-
-                        <div className={styles.monthSelect}>
-                            <label className={styles.labelStyle}>Mese</label>
-                            <CustomSelect
-                                value={selectedMonth}
-                                options={months}
-                                onChange={setSelectedMonth}
-                                className={styles.customSelect}
-                                visibleItems={8}
-                            />
-                        </div>
-
-                        <div className={styles.yearSelect}>
-                            <label className={styles.labelStyle}>Anno</label>
-                            <CustomSelect
-                                value={selectedYear}
-                                options={years}
-                                onChange={setSelectedYear}
-                                className={styles.customSelect}
-                                visibleItems={8}
-                            />
-                        </div>
-                    </div>
-
-                    <div className={styles.buttonContainer}>
-                        <button
-                            type="button"
-                            onClick={datePickerCloseModal}
-                            className={`${styles.buttonStyle} ${styles.cancelButton}`}
-                        >
-                            Annulla
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleConfirm}
-                            className={`${styles.buttonStyle} ${styles.confirmButton}`}
-                        >
-                            Conferma
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-
     const signupForm = (
         <form onSubmit={handleSubmit}>
             <div className={styles.inputGrid}>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="username" className={styles.label}>Username</label>
+                    <label htmlFor="username" className={styles.label}>Username*</label>
                     <input
                         type="text"
                         id="username"
@@ -450,7 +227,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
                     />
                 </div>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="email" className={styles.label}>Email</label>
+                    <label htmlFor="email" className={styles.label}>Email*</label>
                     <input
                         type="email"
                         id="email"
@@ -463,7 +240,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
             </div>
             <div className={styles.inputGrid}>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="password" className={styles.label}>Password</label>
+                    <label htmlFor="password" className={styles.label}>Password*</label>
                     <input
                         type="password"
                         id="password"
@@ -485,9 +262,17 @@ const SignupForm = ({ onSwitchToLogin }) => {
                     </button>
                 </div>
             </div>
+
+            {showDatePickerModal && (
+                <DatePickerModal
+                    initialDate={registration.dateOfBirth}
+                    onConfirm={handleDateSelect}
+                    onClose={() => setShowDatePickerModal(false)}
+                />
+            )}
             <div className={styles.inputGrid}>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="firstName" className={styles.label}>Nome</label>
+                    <label htmlFor="firstName" className={styles.label}>Nome*</label>
                     <input
                         type="text"
                         id="firstName"
@@ -498,7 +283,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
                     />
                 </div>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="lastName" className={styles.label}>Cognome</label>
+                    <label htmlFor="lastName" className={styles.label}>Cognome*</label>
                     <input
                         type="text"
                         id="lastName"
@@ -520,7 +305,6 @@ const SignupForm = ({ onSwitchToLogin }) => {
     return (
         <>
             {signupForm}
-            {showDatePickerModal && <DatePickerModal />}
         </>
     );
 };

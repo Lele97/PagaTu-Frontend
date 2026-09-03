@@ -1,16 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import styles from '~/styles/header.module.css';
 import { useSettings } from '~/context/SettingsContext.jsx';
-import { AVATAR_PRESETS } from '~/services/userApi';
-import { fa } from '~/utils/icons';
+import { AVATAR_PRESETS } from '~/utils/apiService';
+import { fa } from '~/utils/groupHelpers';
 
-const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default' }) => {
+const Header = memo(function Header({ user, logout, showGroupSettings = false, avatarKey = 'default' }) {
     const { openUserSettings, openGroupSettings } = useSettings();
     const avatar = AVATAR_PRESETS.find((a) => a.key === avatarKey) || AVATAR_PRESETS[0];
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 8);
+        let ticking = false;
+        const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                setScrolled(window.scrollY > 8);
+                ticking = false;
+            });
+        };
         onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
@@ -24,6 +32,9 @@ const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default'
                         src="/pagaTu.svg"
                         alt="PagaTu - Logo applicazione caffè aziendale"
                         className={styles.pagatu_image}
+                        width={80}
+                        height={80}
+                        decoding="async"
                     />
                 </div>
 
@@ -74,6 +85,6 @@ const Header = ({ user, logout, showGroupSettings = false, avatarKey = 'default'
             </div>
         </header>
     );
-};
+});
 
 export default Header;

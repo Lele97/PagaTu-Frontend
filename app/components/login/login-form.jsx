@@ -4,8 +4,8 @@ import OAuthButtons from '~/components/OAuthButtons.jsx';
 import authStyles from '~/styles/auth.module.css';
 import signupStyles from '~/styles/signup.module.css';
 import { messageFromBody } from '~/utils/api';
-import { login, resendVerification } from '~/services/requestApi';
-import { HOME_PATH, invitationPath, readPendingInvitation } from '~/utils/routes';
+import { login, resendVerification } from '~/utils/apiService';
+import { HOME_PATH, invitationPath, readPendingInvitation } from '~/utils/groupHelpers';
 
 const LoginForm = ({ onSwitchToForgot }) => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });

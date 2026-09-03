@@ -5,9 +5,9 @@ import ErrorSuccessMessages from '~/components/shared/errorSuccessMessages.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
 import styles from '~/styles/settings.module.css';
 import sharedStyles from '~/styles/shared.module.css';
-import { fetchGroupSettings, updateGroupSettings } from '~/services/userApi';
+import { fetchGroupSettings, updateGroupSettings } from '~/utils/apiService';
 import { messageFromBody } from '~/utils/api';
-import { removeGroupMember } from '~/services/requestApi';
+import { removeGroupMember } from '~/utils/apiService';
 
 const TABS = [
     { id: 'general', label: 'Generale' },

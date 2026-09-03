@@ -16,8 +16,8 @@ import {
     updateCoffeeProfile,
     updatePaymentLinks,
     updatePreferences,
-} from '~/services/userApi';
-import { fa } from '~/utils/icons';
+} from '~/utils/apiService';
+import { fa } from '~/utils/groupHelpers';
 
 const TABS = [
     { id: 'profile', label: 'Profilo', icon: 'user' },

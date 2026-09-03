@@ -31,21 +31,21 @@ const Footer = () => {
                                target="_blank" rel="noopener noreferrer"
                                aria-label="Vai al repository Backend su GitHub">
                                 <img src="/server-minimalistic-svgrepo-com.svg" alt="Icona server"
-                                     className={styles.cardIcon}/>
+                                     className={styles.cardIcon} loading="lazy" decoding="async" width={40} height={40}/>
                                 <div className={styles.cardContent}>
                                     <strong>Backend</strong>
                                 </div>
-                                <img src="/github-svgrepo-com.svg" alt="GitHub" className={styles.cardGithub}/>
+                                <img src="/github-svgrepo-com.svg" alt="GitHub" className={styles.cardGithub} loading="lazy" decoding="async" width={24} height={24}/>
                             </a>
                             <a href="https://github.com/Lele97/PagaTu-Frontend" className={styles.repoCardFrontEnd}
                                target="_blank" rel="noopener noreferrer"
                                aria-label="Vai al repository Frontend su GitHub">
                                 <img src="/tablet-laptop-2-svgrepo-com.svg" alt="Icona dispositivi"
-                                     className={styles.cardIcon}/>
+                                     className={styles.cardIcon} loading="lazy" decoding="async" width={40} height={40}/>
                                 <div className={styles.cardContent}>
                                     <strong>Frontend</strong>
                                 </div>
-                                <img src="/github-svgrepo-com.svg" alt="GitHub" className={styles.cardGithub}/>
+                                <img src="/github-svgrepo-com.svg" alt="GitHub" className={styles.cardGithub} loading="lazy" decoding="async" width={24} height={24}/>
                             </a>
                         </nav>
                     </div>

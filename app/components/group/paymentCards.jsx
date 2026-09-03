@@ -48,7 +48,7 @@ const PaymentCards = React.memo(function PaymentCards({
             </div>
             <div className={styles.paymentCardsContainer}>
                 {payments.map((payment, index) => (
-                    <div key={index} className={styles.paymentCard}>
+                    <div key={payment.username || payment.id || index} className={styles.paymentCard}>
                         <div className={styles.paymentCardHeader}>
                             <i className="fa-solid fa-ticket" />
                             <span className={styles.paymentLabel}>Utente</span>

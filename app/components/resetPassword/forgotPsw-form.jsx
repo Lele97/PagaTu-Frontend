@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import signupStyles from '~/styles/signup.module.css';
-import { forgotPassword } from '~/services/requestApi';
+import { forgotPassword } from '~/utils/apiService';
 
 const ForgotPswForm = ({ onSwitchToLogin }) => {
     const [isLoading, setIsLoading] = useState(false);

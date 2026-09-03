@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import styles from '~/styles/group.module.css';
 import TurnIndicator from '~/components/group/TurnIndicator.jsx';
 import {
@@ -16,7 +17,7 @@ const statusClass = (status, myTurn) => {
     return styles.memberStatusPending;
 };
 
-const GroupInfoSection = ({ group, currentUser, showLeave, onLeaveGroup, leavingGroup }) => {
+const GroupInfoSection = memo(function GroupInfoSection({ group, currentUser, showLeave, onLeaveGroup, leavingGroup }) {
     const members = getMembers(group);
     if (!members.length) return null;
 
@@ -95,6 +96,6 @@ const GroupInfoSection = ({ group, currentUser, showLeave, onLeaveGroup, leaving
             </div>
         </section>
     );
-};
+});
 
 export default GroupInfoSection;

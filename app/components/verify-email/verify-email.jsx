@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
 import {messageFromBody} from '~/utils/api';
-import {resendVerification, verifyEmail} from '~/services/requestApi';
+import {resendVerification, verifyEmail} from '~/utils/apiService';
 
 const verificationCache = new Map();
 

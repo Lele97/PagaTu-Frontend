@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from '~/styles/auth.module.css';
 import { messageFromBody } from '~/utils/api';
-import { loginWithGoogle, loginWithMicrosoft } from '~/services/requestApi';
+import { loginWithGoogle, loginWithMicrosoft } from '~/utils/apiService';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const MICROSOFT_CLIENT_ID = import.meta.env.VITE_MICROSOFT_CLIENT_ID;

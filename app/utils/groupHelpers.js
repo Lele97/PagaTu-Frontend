@@ -70,3 +70,45 @@ export const formatRoundProgress = (group) => {
     const progress = total ? `${paid ?? 0}/${total} pagati` : '';
     return [roundLabel, progress].filter(Boolean).join(' · ');
 };
+
+// From icons.js
+export const fa = (name) => {
+    const icon = name?.startsWith('fa-') ? name.slice(3) : name;
+    return `fa-solid fa-${icon}`;
+};
+
+// From routes.js
+export const WELCOME_PATH = '/welcome';
+export const HOME_PATH = '/home';
+export const ERROR_PATH = '/error';
+
+export const groupPath = (groupName) => {
+    if (!groupName) {
+        return HOME_PATH;
+    }
+    return `/group/${encodeURIComponent(groupName)}`;
+};
+
+export const invitationPath = ({ username, groupName, invitationId } = {}) => {
+    if (!username || !groupName || !invitationId) {
+        return null;
+    }
+    const params = new URLSearchParams({ username, groupName, invitationId });
+    return `/invitation?${params.toString()}`;
+};
+
+export const readPendingInvitation = () => {
+    const raw = localStorage.getItem('pendingInvitation');
+    if (!raw) {
+        return null;
+    }
+    try {
+        const parsed = JSON.parse(raw);
+        return invitationPath(parsed) ? parsed : null;
+    } catch {
+        localStorage.removeItem('pendingInvitation');
+        return null;
+    }
+};
+
+export const pendingInvitationPath = () => invitationPath(readPendingInvitation() || {});

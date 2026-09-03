@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HOME_PATH, WELCOME_PATH, pendingInvitationPath } from '~/utils/routes';
+import { HOME_PATH, WELCOME_PATH, pendingInvitationPath } from '~/utils/groupHelpers';
 import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
 import styles from '~/styles/splash.module.css';
 

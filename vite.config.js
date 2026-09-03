@@ -1,12 +1,25 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
 
     return {
-        plugins: [react()],
+        plugins: [
+            react(),
+            VitePWA({
+                registerType: 'autoUpdate',
+                manifest: false,
+                devOptions: { enabled: false },
+                workbox: {
+                    globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,avif,json}'],
+                    navigateFallbackDenylist: [/^\/api/],
+                    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+                }
+            })
+        ],
         server: {
             host: env.VITE_HOST,
             port: parseInt(env.VITE_PORT || '8888', 10),

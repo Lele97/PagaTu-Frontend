@@ -1,8 +1,17 @@
-import { GATEWAY_URL, sendRequest } from '~/utils/api';
+import { GATEWAY_URL, sendRequest, messageFromBody } from '~/utils/api';
 
 const auth = (path, options) => sendRequest(`${GATEWAY_URL}/api/auth${path}`, options);
 const coffee = (path, options) => sendRequest(`${GATEWAY_URL}/api/coffee${path}`, options);
 
+const request = async (url, options = {}) => {
+    const { ok, body } = await sendRequest(url, options);
+    if (!ok) {
+        throw new Error(messageFromBody(body));
+    }
+    return body;
+};
+
+// Exports from requestApi.js
 export const login = (credentials) =>
     auth('/login', { method: 'POST', body: JSON.stringify(credentials) });
 
@@ -127,5 +136,67 @@ export const removeGroupMember = (groupName, username) =>
         body: JSON.stringify({ groupName, username }),
     });
 
+// Exports from userApi.js
+export const fetchAuthProfile = () =>
+    request(`${GATEWAY_URL}/api/auth/profile`);
 
+export const updateAuthProfile = (body) =>
+    request(`${GATEWAY_URL}/api/auth/profile`, { method: 'PUT', body: JSON.stringify(body) });
 
+export const changePassword = (body) =>
+    request(`${GATEWAY_URL}/api/auth/change-password`, { method: 'PUT', body: JSON.stringify(body) });
+
+export const fetchCoffeeProfile = () =>
+    request(`${GATEWAY_URL}/api/coffee/user/profile`);
+
+export const updateCoffeeProfile = (body) =>
+    request(`${GATEWAY_URL}/api/coffee/user/profile`, { method: 'PUT', body: JSON.stringify(body) });
+
+export const fetchPreferences = () =>
+    request(`${GATEWAY_URL}/api/coffee/user/preferences`);
+
+export const updatePreferences = (body) =>
+    request(`${GATEWAY_URL}/api/coffee/user/preferences`, { method: 'PUT', body: JSON.stringify(body) });
+
+export const fetchGroupSummary = (groupName) =>
+    request(`${GATEWAY_URL}/api/coffee/group/summary?groupName=${encodeURIComponent(groupName)}`);
+
+export const fetchGroupSettings = (groupName) =>
+    request(`${GATEWAY_URL}/api/coffee/group/settings?groupName=${encodeURIComponent(groupName)}`);
+
+export const updateGroupSettings = (body) =>
+    request(`${GATEWAY_URL}/api/coffee/group/settings`, { method: 'PUT', body: JSON.stringify(body) });
+
+export const fetchPaymentLinks = () =>
+    request(`${GATEWAY_URL}/api/coffee/user/payment-links`);
+
+export const updatePaymentLinks = (body) =>
+    request(`${GATEWAY_URL}/api/coffee/user/payment-links`, { method: 'PUT', body: JSON.stringify(body) });
+
+export const leaveGroup = (groupName) =>
+    request(`${GATEWAY_URL}/api/coffee/group/update/leave?groupName=${encodeURIComponent(groupName)}`, {
+        method: 'PUT',
+    });
+
+export const AVATAR_PRESETS = [
+    { key: 'default', label: 'Classico', icon: 'mug-hot' },
+    { key: 'cup', label: 'Tazza', icon: 'mug-saucer' },
+    { key: 'beans', label: 'Chicchi', icon: 'circle' },
+    { key: 'steam', label: 'Vapore', icon: 'cloud' },
+    { key: 'office', label: 'Ufficio', icon: 'building' },
+];
+
+export const KARMA_OPS = {
+    PAYMENT: 'payment',
+    PAYMENT_FOR: 'payment_for',
+    JUMP_TURN: 'jump_turn',
+};
+
+export const updateCoffeeKarma = (typeOperation, amount = 0) =>
+    request(`${GATEWAY_URL}/api/coffee/user/coffeekarma`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            type_operation: typeOperation,
+            amount: Number(amount) || 0,
+        }),
+    });

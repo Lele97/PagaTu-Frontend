@@ -21,11 +21,6 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: filter 0.3s ease;
-}
-
-.modalActive {
-    filter: blur(4px);
 }
 
 .main {
@@ -166,8 +161,9 @@
     align-items: center;
     gap: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    contain: content;
     min-height: 130px;
 }
 

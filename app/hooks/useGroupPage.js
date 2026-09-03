@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchCoffeeProfile, fetchGroupSummary, KARMA_OPS, leaveGroup, updateCoffeeKarma } from '~/services/userApi';
-import { getCurrentTurnMember, getMemberForUser } from '~/utils/groupHelpers';
-import { HOME_PATH, WELCOME_PATH } from '~/utils/routes';
-import { createCachedFetcher, messageFromBody } from '~/utils/api';
+import { fetchCoffeeProfile, fetchGroupSummary, KARMA_OPS, leaveGroup, updateCoffeeKarma } from '~/utils/apiService';
+import { getCurrentTurnMember, getMemberForUser, memberDisplayName } from '~/utils/groupHelpers';
+import { HOME_PATH, WELCOME_PATH } from '~/utils/groupHelpers';
+import { clearRequestCache, createCachedFetcher, messageFromBody } from '~/utils/api';
 import {
     deleteGroup as deleteGroupRequest,
-    getGroupsByUsername,
     getPaymentRanking,
     getUserByUsername,
     getUserByUsernamePost,
@@ -14,7 +13,7 @@ import {
     registerPayment as registerPaymentRequest,
     sendGroupInvitation,
     skipPayment as skipPaymentRequest,
-} from '~/services/requestApi';
+} from '~/utils/apiService';
 import { useGroup } from '~/context/GroupContext.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
 
@@ -41,7 +40,7 @@ const useGroupPage = () => {
     const [group, setGroup] = useState({ groupName: 'Unnamed Group' });
     const [groups, setGroups] = useState({});
     const [classificaPaymentsForGroup, setClassificaPaymentsForGroup] = useState([]);
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [statsRevision, setStatsRevision] = useState(0);
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showRegisterPaymentModal, setShowRegisterPaymentModal] = useState(false);
@@ -66,32 +65,25 @@ const useGroupPage = () => {
     const isAnyModalOpen = showInviteForm || showDeleteModal || showRegisterPaymentModal
         || showSaltaPaymentModal || showPayForFriendModal || userSettingsOpen || groupSettingsOpen;
 
-    const canPayFor = groupRules.payForEnabled !== false
-        && (!groupRules.payForAdminOnly || isAdmin);
+    const timeoutsRef = useRef([]);
+    const groupRef = useRef(group);
+    groupRef.current = group;
 
-    const requestCacheRef = useRef(new Map());
-
-    const clearCache = useCallback((cacheKey) => {
-        if (!cacheKey) {
-            requestCacheRef.current.clear();
-            return;
-        }
-        requestCacheRef.current.delete(cacheKey);
+    const later = useCallback((fn, ms) => {
+        const id = setTimeout(fn, ms);
+        timeoutsRef.current.push(id);
+        return id;
     }, []);
 
-    const cachedFetchJson = useMemo(
-        () => createCachedFetcher(requestCacheRef.current),
-        []
-    );
+    const cachedFetchJson = useMemo(() => createCachedFetcher(), []);
 
-    const isUserAdmin = useCallback(
-        (username) => {
-            if (!groups || !username || !groups.userMembershipsdto) return false;
-            const m = groups.userMembershipsdto.find((member) => member.username === username);
-            return Boolean(m?.isAdmin);
-        },
-        [groups]
-    );
+    const isAdmin = useMemo(() => {
+        if (!groups || !user || !groups.userMembershipsdto) return false;
+        return Boolean(groups.userMembershipsdto.find((member) => member.username === user)?.isAdmin);
+    }, [groups, user]);
+
+    const canPayFor = groupRules.payForEnabled !== false
+        && (!groupRules.payForAdminOnly || isAdmin);
 
     const myTurn = useMemo(() => {
         if (!groups || !user || !groups.userMembershipsdto) return false;
@@ -112,14 +104,18 @@ const useGroupPage = () => {
         try {
             const summary = await fetchGroupSummary(groupName);
             if (!summary) return null;
-            const next = {
-                ...group,
+            const merge = (prev) => ({
+                ...prev,
                 ...summary,
                 groupName: summary.name || summary.groupName || groupName,
                 name: summary.name || summary.groupName || groupName,
-            };
-            setGroup(next);
-            setGroups(next);
+            });
+            let next = null;
+            setGroup((prev) => {
+                next = merge(prev);
+                return next;
+            });
+            setGroups(merge);
             if (summary.maxSkipPerRound !== undefined || summary.payForEnabled !== undefined) {
                 setGroupRules({
                     payForEnabled: summary.payForEnabled !== false,
@@ -133,19 +129,20 @@ const useGroupPage = () => {
         } finally {
             setGroupSummaryLoading(false);
         }
-    }, [group]);
+    }, []);
 
     const getClassificaPaymentsForGroup = useCallback(
-        async (groupToUse = group) => {
+        async (groupToUse) => {
             const token = localStorage.getItem('authToken');
             if (!token) {
                 setPaymentByGroupError('No token provided');
                 return;
             }
 
-            const groupName = groupToUse?.groupName || '';
-            const cacheKey = `classifica_${groupToUse?.id || groupName || 'unknown'}`;
-            const requestBody = { groupId: groupToUse?.id, groupName };
+            const target = groupToUse || groupRef.current;
+            const groupName = target?.groupName || target?.name || '';
+            const cacheKey = `classifica_${target?.id || groupName || 'unknown'}`;
+            const requestBody = { groupId: target?.id, groupName };
 
             try {
                 setPaymentLoading(true);
@@ -192,10 +189,12 @@ const useGroupPage = () => {
                 setPaymentLoading(false);
             }
         },
-        [cachedFetchJson, group, navigate]
+        [cachedFetchJson, navigate]
     );
 
     useEffect(() => {
+        let cancelled = false;
+
         const fetchData = async () => {
             const authToken = localStorage.getItem('authToken');
             const userData = localStorage.getItem('user');
@@ -221,44 +220,30 @@ const useGroupPage = () => {
                 }
                 if (!username) throw new Error('No user data available');
 
-                setUser(username);
-
-                let groupObject = {
+                const seed = {
                     groupName: groupNameFromUrl,
                     name: groupNameFromUrl,
                 };
 
-                const { ok, body: allGroups } = await getGroupsByUsername(username);
+                const [summary, profile] = await Promise.all([
+                    fetchGroupSummary(groupNameFromUrl).catch(() => null),
+                    fetchCoffeeProfile().catch(() => null),
+                    getClassificaPaymentsForGroup(seed),
+                ]);
 
-                if (ok && Array.isArray(allGroups)) {
-                    const currentGroup = allGroups.find(
-                        (g) => g.name === groupNameFromUrl || g.groupName === groupNameFromUrl
-                    );
+                if (cancelled) return;
 
-                    if (currentGroup) {
-                        groupObject = {
-                            id: currentGroup.id,
-                            groupName: currentGroup.name || currentGroup.groupName || groupNameFromUrl,
-                            name: currentGroup.name || currentGroup.groupName || groupNameFromUrl,
-                            ...currentGroup,
-                        };
-                    }
-                }
-
-                setGroup(groupObject);
-                setGroups(groupObject);
-
-                const summary = await fetchGroupSummary(groupObject.groupName).catch(() => null);
                 if (!summary) {
                     navigate(HOME_PATH, { replace: true });
                     return;
                 }
 
-                groupObject = {
-                    ...groupObject,
+                setUser(username);
+                const groupObject = {
+                    ...seed,
                     ...summary,
-                    groupName: summary.name || summary.groupName || groupObject.groupName,
-                    name: summary.name || summary.groupName || groupObject.groupName,
+                    groupName: summary.name || summary.groupName || groupNameFromUrl,
+                    name: summary.name || summary.groupName || groupNameFromUrl,
                 };
                 setGroup(groupObject);
                 setGroups(groupObject);
@@ -267,27 +252,24 @@ const useGroupPage = () => {
                     payForAdminOnly: summary.payForAdminOnly === true,
                     maxSkipPerRound: summary.maxSkipPerRound ?? null,
                 });
-                await getClassificaPaymentsForGroup(groupObject);
-
-                try {
-                    const profile = await fetchCoffeeProfile();
-                    setAvatarKey(profile?.avatarKey || 'default');
-                } catch {
-                    /* keep default */
+                if (profile?.avatarKey) {
+                    setAvatarKey(profile.avatarKey);
                 }
             } catch {
-                navigate(WELCOME_PATH);
+                if (!cancelled) navigate(WELCOME_PATH);
             }
         };
 
         fetchData();
-    }, [navigate, groupNameFromUrl]);
+        return () => {
+            cancelled = true;
+        };
+    }, [navigate, groupNameFromUrl, getClassificaPaymentsForGroup]);
 
-    useEffect(() => {
-        if (user && groups.userMembershipsdto) {
-            setIsAdmin(isUserAdmin(user));
-        }
-    }, [groups, isUserAdmin, user]);
+    useEffect(() => () => {
+        timeoutsRef.current.forEach(clearTimeout);
+        timeoutsRef.current = [];
+    }, []);
 
     useEffect(() => {
         if (!isAnyModalOpen) {
@@ -343,26 +325,26 @@ const useGroupPage = () => {
     const handleInputChangeDescrizione = useCallback((e) => setDescrizione(e.target.value), []);
 
     const getFriend = useCallback(async () => {
-        setFriend('');
+        const member = getCurrentTurnMember(groups);
+        const fromMembership = member ? memberDisplayName(member) : '';
+        if (fromMembership) {
+            setFriend(fromMembership);
+            return;
+        }
 
-        const friendUsername = getCurrentTurnMember(groups)?.username;
-        if (!friendUsername) return;
+        const friendUsername = member?.username;
+        if (!friendUsername) {
+            setFriend('');
+            return;
+        }
 
         try {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                setError('No token provided');
-                return;
-            }
-
             const { ok, body: userData } = await getUserByUsername(friendUsername);
             if (!ok) {
                 setFriend('');
                 return;
             }
-
-            const fullName = `${userData?.name || ''} ${userData?.lastname || ''}`.trim();
-            setFriend(fullName);
+            setFriend(`${userData?.name || ''} ${userData?.lastname || ''}`.trim());
         } catch {
             setFriend('');
         }
@@ -407,8 +389,11 @@ const useGroupPage = () => {
     }, []);
 
     const onRetry = useCallback(async () => {
-        if (group) await getClassificaPaymentsForGroup(group);
-    }, [getClassificaPaymentsForGroup, group]);
+        const target = groupRef.current;
+        if (!target) return;
+        clearRequestCache(`classifica_${target.id || target.groupName || 'unknown'}`);
+        await getClassificaPaymentsForGroup(target);
+    }, [getClassificaPaymentsForGroup]);
 
     const submitInvite = useCallback(
         async (e) => {
@@ -451,14 +436,14 @@ const useGroupPage = () => {
 
                 setSuccessMessage(`Invito inviato a ${userInvitation}!`);
                 setUserInvitation('');
-                setTimeout(() => setShowInviteForm(false), 2000);
+                later(() => setShowInviteForm(false), 2000);
             } catch (err) {
                 setError(normalizeError(err) || "Errore nell'invio dell'invito. Riprova.");
             } finally {
                 setIsSubmitting(false);
             }
         },
-        [group.groupName, groups?.userMembershipsdto, userInvitation]
+        [group.groupName, groups?.userMembershipsdto, later, userInvitation]
     );
 
     const submitPayment = useCallback(
@@ -490,8 +475,9 @@ const useGroupPage = () => {
                 setSuccessMessage('Pagamento registrato con successo');
                 setImporto('');
                 setDescrizione('');
-                clearCache(`classifica_${group.id || group.groupName || 'unknown'}`);
-                setTimeout(() => setShowRegisterPaymentModal(false), 2000);
+                clearRequestCache(`classifica_${group.id || group.groupName || 'unknown'}`);
+                later(() => setShowRegisterPaymentModal(false), 2000);
+                setStatsRevision((n) => n + 1);
                 await Promise.all([
                     getClassificaPaymentsForGroup(group),
                     refreshGroupSummary(group.groupName),
@@ -502,7 +488,7 @@ const useGroupPage = () => {
                 setIsSubmitting(false);
             }
         },
-        [clearCache, descrizione, getClassificaPaymentsForGroup, group, importo, refreshGroupSummary]
+        [descrizione, getClassificaPaymentsForGroup, group, importo, later, refreshGroupSummary]
     );
 
     const confirmSkipPayment = useCallback(
@@ -532,8 +518,9 @@ const useGroupPage = () => {
                 }
 
                 setSuccessMessage('Pagamento saltato con successo!');
-                clearCache(`classifica_${group.id || group.groupName || 'unknown'}`);
-                setTimeout(() => setShowSaltaPaymentModal(false), 2000);
+                clearRequestCache(`classifica_${group.id || group.groupName || 'unknown'}`);
+                later(() => setShowSaltaPaymentModal(false), 2000);
+                setStatsRevision((n) => n + 1);
                 await Promise.all([
                     getClassificaPaymentsForGroup(group),
                     refreshGroupSummary(group.groupName),
@@ -544,7 +531,7 @@ const useGroupPage = () => {
                 setIsSkipping(false);
             }
         },
-        [clearCache, getClassificaPaymentsForGroup, group, refreshGroupSummary]
+        [getClassificaPaymentsForGroup, group, later, refreshGroupSummary]
     );
 
     const confirmDeleteGroup = useCallback(
@@ -568,14 +555,14 @@ const useGroupPage = () => {
                 }
 
                 setSuccessMessage(`Gruppo "${group.groupName}" eliminato con successo!`);
-                setTimeout(() => leaveToHome(), 2000);
+                later(() => leaveToHome(), 2000);
             } catch {
                 setError("Errore nell'eliminazione del gruppo. Riprova.");
             } finally {
                 setIsDeleting(false);
             }
         },
-        [group.groupName, leaveToHome]
+        [group.groupName, later, leaveToHome]
     );
 
     const confirmPayForFriend = useCallback(
@@ -607,8 +594,9 @@ const useGroupPage = () => {
                 setSuccessMessage('Pagamento registrato con successo');
                 setImporto('');
                 setDescrizione('');
-                clearCache(`classifica_${group.id || group.groupName || 'unknown'}`);
-                setTimeout(() => setShowPayForFriendModal(false), 2000);
+                clearRequestCache(`classifica_${group.id || group.groupName || 'unknown'}`);
+                later(() => setShowPayForFriendModal(false), 2000);
+                setStatsRevision((n) => n + 1);
                 await Promise.all([
                     getClassificaPaymentsForGroup(group),
                     refreshGroupSummary(group.groupName),
@@ -619,7 +607,7 @@ const useGroupPage = () => {
                 setIsSubmitting(false);
             }
         },
-        [clearCache, descrizione, getClassificaPaymentsForGroup, group, importo, refreshGroupSummary]
+        [descrizione, getClassificaPaymentsForGroup, group, importo, later, refreshGroupSummary]
     );
 
     const handleSettingsSaved = useCallback((updated) => {
@@ -670,6 +658,7 @@ const useGroupPage = () => {
         canPayFor,
         groupRules,
         groupSummaryLoading,
+        statsRevision,
         classificaPaymentsForGroup,
         paymentLoading,
         paymentByGroupError,

@@ -1,4 +1,6 @@
-export const GATEWAY_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+export const GATEWAY_URL = import.meta.env.DEV
+    ? ''
+    : (import.meta.env.VITE_GETAWAY_SERVER_URL || '');
 
 export const getAuthToken = () => localStorage.getItem('authToken');
 
@@ -45,17 +47,24 @@ export const parseErrorMessage = async (response, fallback = 'Errore del server'
     }
 };
 
+const euroFormatter = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
+
 export const formatCurrency = (amount) => {
     if (amount === null || amount === undefined) return '€ 0,00';
-    return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(amount);
+    return euroFormatter.format(amount);
 };
 
 export const sendRequest = async (url, options = {}) => {
-    const response = await fetch(url, {
-        credentials: 'include',
-        ...options,
-        headers: authHeaders(options.headers),
-    });
+    let response;
+    try {
+        response = await fetch(url, {
+            credentials: 'include',
+            ...options,
+            headers: authHeaders(options.headers),
+        });
+    } catch {
+        throw new Error('Server non raggiungibile. Avvia il gateway (porta 8080) e riprova.');
+    }
     const body = await parseBody(response);
     return {
         ok: response.ok,
@@ -64,7 +73,23 @@ export const sendRequest = async (url, options = {}) => {
     };
 };
 
-export const createCachedFetcher = (cache) => async (cacheKey, requestFn, ttl = 30000) => {
+const responseCache = new Map();
+const inFlight = new Map();
+
+const isErrorResponse = (data) =>
+    Boolean(data && typeof data.status === 'number' && data.status >= 400);
+
+export const clearRequestCache = (cacheKey) => {
+    if (!cacheKey) {
+        responseCache.clear();
+        inFlight.clear();
+        return;
+    }
+    responseCache.delete(cacheKey);
+    inFlight.delete(cacheKey);
+};
+
+export const createCachedFetcher = (cache = responseCache) => async (cacheKey, requestFn, ttl = 30000) => {
     const now = Date.now();
     const cached = cacheKey ? cache.get(cacheKey) : null;
 
@@ -72,9 +97,27 @@ export const createCachedFetcher = (cache) => async (cacheKey, requestFn, ttl = 
         return cached.data;
     }
 
-    const data = await requestFn();
-    if (cacheKey) {
-        cache.set(cacheKey, { data, timestamp: now });
+    if (cacheKey && cache === responseCache && inFlight.has(cacheKey)) {
+        return inFlight.get(cacheKey);
     }
-    return data;
+
+    const request = Promise.resolve()
+        .then(requestFn)
+        .then((data) => {
+            if (cacheKey && !isErrorResponse(data)) {
+                cache.set(cacheKey, { data, timestamp: Date.now() });
+            }
+            return data;
+        })
+        .finally(() => {
+            if (cacheKey && cache === responseCache) {
+                inFlight.delete(cacheKey);
+            }
+        });
+
+    if (cacheKey && cache === responseCache) {
+        inFlight.set(cacheKey, request);
+    }
+
+    return request;
 };

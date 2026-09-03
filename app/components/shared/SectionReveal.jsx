@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useSectionReveal } from '~/hooks/useSectionReveal';
 import sharedStyles from '~/styles/shared.module.css';
 
-const SectionReveal = ({ children, className = '', as: Tag = 'section' }) => {
+const SectionReveal = memo(function SectionReveal({ children, className = '', as: Tag = 'section' }) {
     const { ref, visible } = useSectionReveal();
 
     return (
@@ -13,6 +13,6 @@ const SectionReveal = ({ children, className = '', as: Tag = 'section' }) => {
             {children}
         </Tag>
     );
-};
+});
 
 export default SectionReveal;

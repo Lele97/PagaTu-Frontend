@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import styles from "~/styles/resetPsw.module.css";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import { validateResetToken, resetPassword } from '~/services/requestApi';
+import { validateResetToken, resetPassword } from '~/utils/apiService';
 
 const ResetPswForm = () => {
 

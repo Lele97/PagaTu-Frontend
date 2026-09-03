@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import Root from './routes/root';
 import ErrorPage, { RouterErrorPage } from './components/error/error-page.jsx';
 import SplashScreen from '~/components/splash/splash-screen.jsx';
+import RequireAuth from '~/components/auth/RequireAuth.jsx';
 import './styles/app.css';
 
 // Route-level code splitting: solo la splash screen (rotta "/") viene caricata
@@ -22,15 +23,21 @@ const withSuspense = (element) => (
     </Suspense>
 );
 
+const withAuth = (element) => (
+    <RequireAuth>
+        {withSuspense(element)}
+    </RequireAuth>
+);
+
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-                console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-                console.log('SW registration failed: ', registrationError);
+        if (import.meta.env.DEV) {
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+                regs.forEach((reg) => reg.unregister());
             });
+            return;
+        }
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
     });
 }
 
@@ -58,7 +65,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/home',
-                element: withSuspense(<Home />),
+                element: withAuth(<Home />),
             },
             {
                 path: '/forgotPassword',
@@ -70,7 +77,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/group/:groupName',
-                element: withSuspense(<Group />),
+                element: withAuth(<Group />),
             },
             {
                 path: '/invitation',

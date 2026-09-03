@@ -1,7 +1,7 @@
 import styles from "~/styles/home.module.css";
 import React from "react";
 import LoadingSpinner from "~/components/shared/loadingSpinner.jsx";
-import { fa } from "~/utils/icons";
+import { fa } from "~/utils/groupHelpers";
 
 const HomeAwards = React.memo(function HomeAwards({ awards, loading }) {
     if (loading) {

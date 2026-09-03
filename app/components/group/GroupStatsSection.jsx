@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import expansionStyles from '~/styles/expansion.module.css';
 import groupStyles from '~/styles/group.module.css';
 import LoadingSpinner from '~/components/shared/loadingSpinner.jsx';
 import SectionReveal from '~/components/shared/SectionReveal.jsx';
 import { formatCurrency, messageFromBody } from '~/utils/api';
-import { getGroupBalance, getGroupGamification } from '~/services/requestApi';
+import { getGroupBalance, getGroupGamification } from '~/utils/apiService';
 
-const GroupStatsSection = ({ groupName }) => {
+const GroupStatsSection = memo(function GroupStatsSection({ groupName, refreshToken = 0 }) {
     const [balance, setBalance] = useState(null);
     const [gamification, setGamification] = useState(null);
     const [balanceLoading, setBalanceLoading] = useState(false);
@@ -58,7 +58,7 @@ const GroupStatsSection = ({ groupName }) => {
     useEffect(() => {
         fetchBalance();
         fetchGamification();
-    }, [fetchBalance, fetchGamification]);
+    }, [fetchBalance, fetchGamification, refreshToken]);
 
     return (
         <>
@@ -178,6 +178,6 @@ const GroupStatsSection = ({ groupName }) => {
             </SectionReveal>
         </>
     );
-};
+});
 
 export default GroupStatsSection;

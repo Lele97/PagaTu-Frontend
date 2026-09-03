@@ -13,11 +13,6 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: filter 0.3s ease;
-}
-
-.modalActive {
-    filter: blur(4px);
 }
 
 .groupPage {
@@ -246,13 +241,19 @@
     color: white;
     border-color: var(--coffee-400);
     transform: scale(1.12);
-    box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.25), 0 0 16px rgba(111, 78, 55, 0.35);
+    box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.25);
     animation: turnPulse 2s ease-in-out infinite;
 }
 
 @keyframes turnPulse {
-    0%, 100% { box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.25), 0 0 12px rgba(111, 78, 55, 0.3); }
-    50% { box-shadow: 0 0 0 5px rgba(111, 78, 55, 0.15), 0 0 20px rgba(111, 78, 55, 0.45); }
+    0%, 100% { transform: scale(1.12); }
+    50% { transform: scale(1.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .turnAvatarActive {
+        animation: none;
+    }
 }
 
 .membersList {
@@ -687,6 +688,7 @@
     padding: 1.25rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    contain: content;
     border: 1px solid var(--coffee-100);
     display: flex;
     flex-direction: column;

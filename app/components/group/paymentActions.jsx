@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "~/styles/group.module.css";
 import { formatPayForRemaining, formatSkipsRemaining } from "~/utils/groupHelpers";
-import { fa } from "~/utils/icons";
+import { fa } from "~/utils/groupHelpers";
 
 const ACTION_ICONS = {
     'Registra Pagamento': 'cash-register',

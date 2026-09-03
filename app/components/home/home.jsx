@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 import Header from '../header/header.jsx';
@@ -9,20 +9,21 @@ import HomeStatistics from "~/components/home/homeStatistics.jsx";
 import HomeAwards from "~/components/home/homeAwards.jsx";
 import SectionReveal from "~/components/shared/SectionReveal.jsx";
 import CoffeePatternIcons from "~/components/shared/CoffeePatternIcons.jsx";
-import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
-import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
 import { useSettings } from '~/context/SettingsContext.jsx';
-import { fetchCoffeeProfile } from '~/services/userApi';
-import { ERROR_PATH, WELCOME_PATH } from '~/utils/routes';
+import { fetchCoffeeProfile } from '~/utils/apiService';
+import { ERROR_PATH, WELCOME_PATH } from '~/utils/groupHelpers';
 import { useGroup } from '~/context/GroupContext.jsx';
-import { createCachedFetcher } from '~/utils/api';
+import { clearRequestCache, createCachedFetcher } from '~/utils/api';
 import {
     createGroup,
     getGroupsByUsername,
     getRecentPayments,
     getUserAwards as fetchUserAwardsRequest,
     getUserStatistics as fetchUserStatisticsRequest,
-} from '~/services/requestApi';
+} from '~/utils/apiService';
+
+const AddGroupModal = lazy(() => import('~/components/home/modals/AddGroupModal.jsx'));
+const UserSettingsModal = lazy(() => import('~/components/settings/modals/UserSettingsModal.jsx'));
 
 const normalizeError = (err) => {
     if (!err) return '';
@@ -65,22 +66,11 @@ const Home = () => {
     const navigate = useNavigate();
     const { openGroup } = useGroup();
     const { userSettingsOpen } = useSettings();
-    const requestCacheRef = useRef(new Map());
 
-    const clearCache = useCallback((cacheKey) => {
-        if (!cacheKey) {
-            requestCacheRef.current.clear();
-            return;
-        }
-        requestCacheRef.current.delete(cacheKey);
-    }, []);
-
-    const cachedFetchJson = useMemo(
-        () => createCachedFetcher(requestCacheRef.current),
-        []
-    );
+    const cachedFetchJson = useMemo(() => createCachedFetcher(), []);
 
     useEffect(() => {
+        let cancelled = false;
         const initializeData = async () => {
             const authToken = localStorage.getItem('authToken');
             const userData = localStorage.getItem('user');
@@ -100,17 +90,21 @@ const Home = () => {
                     getGroupsByUser(username),
                     getHistoryPayments(username),
                     getUserStatistics(username),
-                    getUserAwards(username)
+                    getUserAwards(username),
+                    fetchCoffeeProfile()
+                        .then((profile) => {
+                            if (!cancelled) setAvatarKey(profile?.avatarKey || 'default');
+                        })
+                        .catch(() => {}),
                 ]);
-                try {
-                    const profile = await fetchCoffeeProfile();
-                    setAvatarKey(profile?.avatarKey || 'default');
-                } catch { /* keep default */ }
             } catch {
-                navigate(WELCOME_PATH);
+                if (!cancelled) navigate(WELCOME_PATH);
             }
         };
         initializeData();
+        return () => {
+            cancelled = true;
+        };
     }, [navigate]);
 
     useEffect(() => {
@@ -208,7 +202,7 @@ const Home = () => {
 
 
 
-            clearCache(`gruppi_by_Id_${user || 'unknown'}`);
+            clearRequestCache(`gruppi_by_Id_${user || 'unknown'}`);
 
             setTimeout(() => {
                 setShowAddGroupModal(false);
@@ -222,7 +216,7 @@ const Home = () => {
             setIsSubmitting(false);
         }
 
-    }, [payload, user, navigate, clearCache]);
+    }, [payload, user, navigate]);
 
     const addGroup = useCallback(() => {
         setShowAddGroupModal(true);
@@ -235,7 +229,7 @@ const Home = () => {
         setSuccess('');
         setError(null);
         setPayload(initialPayload);
-    }, [initialPayload]);
+    }, []);
 
     const handleGroupSelect = useCallback((groupName) => {
         const gruppo = groups.find(g =>
@@ -290,7 +284,7 @@ const Home = () => {
         } finally {
             setGroupsLoading(false);
         }
-    }, [cachedFetchJson, user]);
+    }, [cachedFetchJson, logout]);
 
     const getHistoryPayments = useCallback(async (username) => {
         const token = localStorage.getItem('authToken');
@@ -321,7 +315,7 @@ const Home = () => {
         } finally {
             setPaymentsLoading(false);
         }
-    }, [cachedFetchJson, user]);
+    }, [cachedFetchJson, logout]);
 
     const getUserStatistics = useCallback(async (username) => {
         const token = localStorage.getItem('authToken');
@@ -344,7 +338,7 @@ const Home = () => {
         } finally {
             setStatsLoading(false);
         }
-    }, [cachedFetchJson, user]);
+    }, [cachedFetchJson, logout]);
 
     const getUserAwards = useCallback(async (username) => {
         const token = localStorage.getItem('authToken');
@@ -367,7 +361,7 @@ const Home = () => {
         } finally {
             setAwardsLoading(false);
         }
-    }, [cachedFetchJson, user]);
+    }, [cachedFetchJson, logout]);
 
     const getPaginatedGroups = useMemo(() => {
         const startIndex = (currentGroupPage - 1) * GROUPS_PER_PAGE;
@@ -379,26 +373,35 @@ const Home = () => {
         return pagamentis.slice(startIndex, startIndex + PAYMENTS_PER_PAGE);
     }, [currentPaymentPage, pagamentis]);
 
-    const getTotalGroupPages = () => Math.ceil(groups.length / GROUPS_PER_PAGE);
+    const totalGroupPages = useMemo(
+        () => Math.ceil(groups.length / GROUPS_PER_PAGE),
+        [groups.length]
+    );
 
-    const getTotalPaymentPages = () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE);
+    const totalPaymentPages = useMemo(
+        () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE),
+        [pagamentis.length]
+    );
 
     const onRetry = useCallback(async () => {
-        if (user) {
-            await Promise.all([
-                getGroupsByUser(user),
-                getHistoryPayments(user),
-                getUserStatistics(user),
-                getUserAwards(user)
-            ]);
-        }
-    }, [getGroupsByUser, getHistoryPayments, getUserStatistics, getUserAwards, user])
+        if (!user) return;
+        clearRequestCache(`gruppi_by_Id_${user}`);
+        clearRequestCache(`payments_by_Id_${user}`);
+        clearRequestCache(`user_stats_${user}`);
+        clearRequestCache(`user_awards_${user}`);
+        await Promise.all([
+            getGroupsByUser(user),
+            getHistoryPayments(user),
+            getUserStatistics(user),
+            getUserAwards(user)
+        ]);
+    }, [getGroupsByUser, getHistoryPayments, getUserStatistics, getUserAwards, user]);
 
     return (
         <div className={styles.homePage}>
             <CoffeePatternIcons />
 
-            <div className={`${styles.container} ${isAnyModalOpen ? styles.modalActive : ''}`}>
+            <div className={styles.container}>
 
                 <Header user={user} logout={logout} avatarKey={avatarKey} />
 
@@ -417,7 +420,7 @@ const Home = () => {
                                     selectedGroup={selectedGroup}
                                     handleGroupSelect={handleGroupSelect}
                                     currentGroupPage={currentGroupPage}
-                                    getTotalGroupPages={getTotalGroupPages()}
+                                    getTotalGroupPages={totalGroupPages}
                                     setCurrentGroupPage={setCurrentGroupPage}
                                     currentUsername={user}
                                 />
@@ -429,7 +432,7 @@ const Home = () => {
                                     paymentsError={paymentsError}
                                     currentPaymentPage={currentPaymentPage}
                                     paymentsLoading={paymentsLoading}
-                                    getTotalPaymentPages={getTotalPaymentPages()}
+                                    getTotalPaymentPages={totalPaymentPages}
                                     setCurrentPaymentPage={setCurrentPaymentPage} />
                             </SectionReveal>
                         </div>
@@ -448,19 +451,22 @@ const Home = () => {
                 </main>
             </div>
 
-            {userSettingsOpen && <UserSettingsModal />}
-
-            {showAddGroupModal && (
-                <AddGroupModal
-                    payload={payload}
-                    handleChangeName={handleChangeName}
-                    handleChangeDescription={handleChangeDescription}
-                    confirmCreateGroup={confirmCreateGroup}
-                    closeAddGroupModal={closeAddGroupModal}
-                    error={error}
-                    success={success}
-                    isSubmitting={isSubmitting}
-                />
+            {(userSettingsOpen || showAddGroupModal) && (
+                <Suspense fallback={null}>
+                    {userSettingsOpen && <UserSettingsModal />}
+                    {showAddGroupModal && (
+                        <AddGroupModal
+                            payload={payload}
+                            handleChangeName={handleChangeName}
+                            handleChangeDescription={handleChangeDescription}
+                            confirmCreateGroup={confirmCreateGroup}
+                            closeAddGroupModal={closeAddGroupModal}
+                            error={error}
+                            success={success}
+                            isSubmitting={isSubmitting}
+                        />
+                    )}
+                </Suspense>
             )}
         </div>
     );

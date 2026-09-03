@@ -233,6 +233,7 @@
     background-repeat: repeat;
     background-size: clamp(340px, 84vmin, 620px) clamp(340px, 84vmin, 620px);
     opacity: 0.8;
+    contain: strict;
 }
 
 /* ===============================================================================

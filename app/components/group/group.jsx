@@ -1,31 +1,35 @@
+import { lazy, Suspense } from 'react';
 import styles from '~/styles/group.module.css';
 import sharedStyles from '~/styles/shared.module.css';
 import Header from '../header/header.jsx';
 import GroupHeader from '../group/groupHeader.jsx';
 import PaymentActions from '../group/paymentActions.jsx';
 import PaymentCards from '../group/paymentCards.jsx';
-import RegisterPaymentModal from '../group/modals/RegisterPaymentModal.jsx';
-import DeleteGroupModal from '~/components/group/modals/DeleteGroupModal.jsx';
-import InviteUserModal from '~/components/group/modals/InviteUserModal.jsx';
-import SkipPaymentModal from '~/components/group/modals/SkipPaymentModal.jsx';
-import PayForFriendModal from '~/components/group/modals/PayForFriendModal.jsx';
 import GroupStatsSection from '~/components/group/GroupStatsSection.jsx';
 import GroupInfoSection from '~/components/group/GroupInfoSection.jsx';
 import SectionReveal from '~/components/shared/SectionReveal.jsx';
-import UserSettingsModal from '~/components/settings/modals/UserSettingsModal.jsx';
-import GroupSettingsModal from '~/components/settings/modals/GroupSettingsModal.jsx';
 import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
 import { memberDisplayName } from '~/utils/groupHelpers';
 import useGroupPage from '~/hooks/useGroupPage.js';
 
+const RegisterPaymentModal = lazy(() => import('../group/modals/RegisterPaymentModal.jsx'));
+const DeleteGroupModal = lazy(() => import('~/components/group/modals/DeleteGroupModal.jsx'));
+const InviteUserModal = lazy(() => import('~/components/group/modals/InviteUserModal.jsx'));
+const SkipPaymentModal = lazy(() => import('~/components/group/modals/SkipPaymentModal.jsx'));
+const PayForFriendModal = lazy(() => import('~/components/group/modals/PayForFriendModal.jsx'));
+const UserSettingsModal = lazy(() => import('~/components/settings/modals/UserSettingsModal.jsx'));
+const GroupSettingsModal = lazy(() => import('~/components/settings/modals/GroupSettingsModal.jsx'));
+
 const Group = () => {
     const page = useGroupPage();
+    const hasMembers = Boolean(page.groups?.userMembershipsdto?.length);
+    const anyModalOpen = page.isAnyModalOpen;
 
     return (
         <div className={styles.groupPage}>
             <CoffeePatternIcons />
 
-            <div className={`${styles.container} ${page.isAnyModalOpen ? styles.modalActive : ''}`}>
+            <div className={styles.container}>
                 <Header
                     user={page.user}
                     logout={page.logout}
@@ -45,9 +49,9 @@ const Group = () => {
                     <div className={styles.groupGridLayout}>
                         <div className={styles.groupMainCol}>
                             <SectionReveal>
-                                {page.groupSummaryLoading ? (
+                                {page.groupSummaryLoading && !hasMembers ? (
                                     <section className={styles.groupInfoSection}>
-                                        <p className={sharedStyles.summaryText}>Aggiornamento turno...</p>
+                                        <p className={sharedStyles.summaryText}>Caricamento turno...</p>
                                     </section>
                                 ) : (
                                     <GroupInfoSection
@@ -69,7 +73,10 @@ const Group = () => {
                                 />
                             </SectionReveal>
 
-                            <GroupStatsSection groupName={page.group?.groupName} />
+                            <GroupStatsSection
+                                groupName={page.group?.groupName}
+                                refreshToken={page.statsRevision}
+                            />
                         </div>
 
                         <aside className={styles.groupSidebar}>
@@ -94,78 +101,82 @@ const Group = () => {
                 </main>
             </div>
 
-            {page.userSettingsOpen && <UserSettingsModal />}
+            {anyModalOpen && (
+                <Suspense fallback={null}>
+                    {page.userSettingsOpen && <UserSettingsModal />}
 
-            {page.groupSettingsOpen && (
-                <GroupSettingsModal
-                    groupName={page.group?.groupName}
-                    isAdmin={page.isAdmin}
-                    onInviteMember={page.inviteMember}
-                    onDeleteGroup={page.deleteGroup}
-                    onSettingsSaved={page.handleSettingsSaved}
-                />
-            )}
+                    {page.groupSettingsOpen && (
+                        <GroupSettingsModal
+                            groupName={page.group?.groupName}
+                            isAdmin={page.isAdmin}
+                            onInviteMember={page.inviteMember}
+                            onDeleteGroup={page.deleteGroup}
+                            onSettingsSaved={page.handleSettingsSaved}
+                        />
+                    )}
 
-            {page.showInviteForm && (
-                <InviteUserModal
-                    closeInviteForm={page.closeInviteForm}
-                    submitInvite={page.submitInvite}
-                    userInvitation={page.userInvitation}
-                    isSubmitting={page.isSubmitting}
-                    error={page.error}
-                    successMessage={page.successMessage}
-                    handleInputChangeInvitation={page.handleInputChangeInvitation}
-                />
-            )}
+                    {page.showInviteForm && (
+                        <InviteUserModal
+                            closeInviteForm={page.closeInviteForm}
+                            submitInvite={page.submitInvite}
+                            userInvitation={page.userInvitation}
+                            isSubmitting={page.isSubmitting}
+                            error={page.error}
+                            successMessage={page.successMessage}
+                            handleInputChangeInvitation={page.handleInputChangeInvitation}
+                        />
+                    )}
 
-            {page.showPayForFriendModal && (
-                <PayForFriendModal
-                    closePayForFriendModal={page.closePayForFriendModal}
-                    handleInputChangeImporto={page.handleInputChangeImporto}
-                    confirmPayForFriend={page.confirmPayForFriend}
-                    importo={page.importo}
-                    descrizione={page.descrizione}
-                    handleInputChangeDescrizione={page.handleInputChangeDescrizione}
-                    isSubmitting={page.isSubmitting}
-                    error={page.error}
-                    friend={page.friend}
-                    successMessage={page.successMessage}
-                />
-            )}
+                    {page.showPayForFriendModal && (
+                        <PayForFriendModal
+                            closePayForFriendModal={page.closePayForFriendModal}
+                            handleInputChangeImporto={page.handleInputChangeImporto}
+                            confirmPayForFriend={page.confirmPayForFriend}
+                            importo={page.importo}
+                            descrizione={page.descrizione}
+                            handleInputChangeDescrizione={page.handleInputChangeDescrizione}
+                            isSubmitting={page.isSubmitting}
+                            error={page.error}
+                            friend={page.friend}
+                            successMessage={page.successMessage}
+                        />
+                    )}
 
-            {page.showRegisterPaymentModal && (
-                <RegisterPaymentModal
-                    submitPayment={page.submitPayment}
-                    importo={page.importo}
-                    descrizione={page.descrizione}
-                    error={page.error}
-                    successMessage={page.successMessage}
-                    isSubmitting={page.isSubmitting}
-                    closeRegisterPaymentModal={page.closeRegisterPaymentModal}
-                    handleInputChangeImporto={page.handleInputChangeImporto}
-                    handleInputChangeDescrizione={page.handleInputChangeDescrizione}
-                />
-            )}
+                    {page.showRegisterPaymentModal && (
+                        <RegisterPaymentModal
+                            submitPayment={page.submitPayment}
+                            importo={page.importo}
+                            descrizione={page.descrizione}
+                            error={page.error}
+                            successMessage={page.successMessage}
+                            isSubmitting={page.isSubmitting}
+                            closeRegisterPaymentModal={page.closeRegisterPaymentModal}
+                            handleInputChangeImporto={page.handleInputChangeImporto}
+                            handleInputChangeDescrizione={page.handleInputChangeDescrizione}
+                        />
+                    )}
 
-            {page.showDeleteModal && (
-                <DeleteGroupModal
-                    groupName={page.group?.groupName || 'Unnamed Group'}
-                    closeDeleteModal={page.closeDeleteModal}
-                    confirmDeleteGroup={page.confirmDeleteGroup}
-                    isDeleting={page.isDeleting}
-                    error={page.error}
-                    successMessage={page.successMessage}
-                />
-            )}
+                    {page.showDeleteModal && (
+                        <DeleteGroupModal
+                            groupName={page.group?.groupName || 'Unnamed Group'}
+                            closeDeleteModal={page.closeDeleteModal}
+                            confirmDeleteGroup={page.confirmDeleteGroup}
+                            isDeleting={page.isDeleting}
+                            error={page.error}
+                            successMessage={page.successMessage}
+                        />
+                    )}
 
-            {page.showSaltaPaymentModal && (
-                <SkipPaymentModal
-                    closeSaltaPaymentForm={page.closeSaltaPaymentForm}
-                    confirmSkipPayment={page.confirmSkipPayment}
-                    isSkipping={page.isSkipping}
-                    error={page.error}
-                    successMessage={page.successMessage}
-                />
+                    {page.showSaltaPaymentModal && (
+                        <SkipPaymentModal
+                            closeSaltaPaymentForm={page.closeSaltaPaymentForm}
+                            confirmSkipPayment={page.confirmSkipPayment}
+                            isSkipping={page.isSkipping}
+                            error={page.error}
+                            successMessage={page.successMessage}
+                        />
+                    )}
+                </Suspense>
             )}
         </div>
     );
