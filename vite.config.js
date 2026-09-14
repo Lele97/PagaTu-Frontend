@@ -53,7 +53,8 @@ export default defineConfig(({ mode }) => {
             },
         },
         preview: {
-            host: '127.0.0.1',  // ← AGGIUNGI
+            //host: '127.0.0.1',  // ← AGGIUNGI
+            host: '0.0.0.0',
             port: 4173,
         },
     };
