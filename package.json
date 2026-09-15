@@ -4,8 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:local": "vite --mode test",
     "build": "vite build",
     "build:locale": "vite build --mode locale",
+    "build:local": "vite build --mode test",
     "build:prod": "vite build --mode production",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"

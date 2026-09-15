@@ -1,6 +1,6 @@
 export const GATEWAY_URL = import.meta.env.DEV
     ? ''
-    : (import.meta.env.VITE_GETAWAY_SERVER_URL || '');
+    : (import.meta.env.VITE_GATEWAY_SERVER_URL || '');
 
 export const getAuthToken = () => localStorage.getItem('authToken');
 

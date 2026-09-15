@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
             open: true,
             proxy: {
                 '/api': {
-                    target: env.VITE_GETAWAY_SERVER_URL,
+                    target: env.VITE_GATEWAY_SERVER_URL || 'http://localhost:8080',
                     changeOrigin: true,
                     secure: false,
                 },
@@ -53,8 +53,8 @@ export default defineConfig(({ mode }) => {
             },
         },
         preview: {
-            //host: '127.0.0.1',  // ← AGGIUNGI
-            host: '0.0.0.0',
+            host: '127.0.0.1',  // ← AGGIUNGI
+            //host: '0.0.0.0',
             port: 4173,
         },
     };
