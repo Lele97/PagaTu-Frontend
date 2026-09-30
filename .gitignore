@@ -10,5 +10,9 @@
 # Project
 .env
 .env.local
+.env.*.local
 script/.env.buildone
-/package-lock.json
+
+# NOTA: package-lock.json è tracciato di proposito.
+# Il Dockerfile usa `npm ci`, che senza lock file non può funzionare:
+# tenere il lock file garantisce build riproducibili.
