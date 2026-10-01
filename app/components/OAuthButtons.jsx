@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from '~/styles/auth.module.css';
 import { messageFromBody } from '~/utils/api';
-import { loginWithGoogle, loginWithMicrosoft } from '~/utils/apiService';
+import { loginWithGoogle, loginWithMicrosoft as loginWithMicrosoftApi } from '~/utils/apiService';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const MICROSOFT_CLIENT_ID = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
@@ -12,7 +12,7 @@ const OAuthButtons = ({ onLoginSuccess, embedded = false }) => {
     const [msLoading, setMsLoading] = useState(false);
 
     const completeOAuthLogin = async (provider, token) => {
-        const send = provider === 'microsoft' ? loginWithMicrosoft : loginWithGoogle;
+        const send = provider === 'microsoft' ? loginWithMicrosoftApi : loginWithGoogle;
         const { ok, body } = await send(token);
 
         if (!ok) {

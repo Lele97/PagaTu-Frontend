@@ -137,6 +137,7 @@ const ResetPswForm = () => {
                         setError("Errore durante il reset della password. Riprova più tardi");
                         break;
                 }
+                return;
             }
 
             setSuccess("Password resettata con successo");
