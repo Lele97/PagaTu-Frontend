@@ -518,60 +518,6 @@
     }
 }
 
-.oauthEmbedded {
-    margin-top: 1rem;
-}
-
-.oauthSection {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.oauthDivider {
-    width: 100%;
-    text-align: center;
-    color: var(--coffee-600);
-    font-size: 0.9rem;
-    position: relative;
-    margin: 0.5rem 0;
-}
-
-.oauthDivider span {
-    background: var(--surface-card, var(--surface-main));
-    padding: 0 0.75rem;
-    position: relative;
-    z-index: 1;
-}
-
-.oauthDivider::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 1px;
-    background: var(--coffee-300);
-}
-
-.oauthButtonWrap {
-    display: flex;
-    justify-content: center;
-}
-
-.microsoftButton {
-    width: 280px;
-    padding: 0.65rem 1rem;
-    border: 1px solid #8c8c8c;
-    border-radius: 4px;
-    background: var(--surface-card, var(--surface-main));
-    color: #5e5e5e;
-    font-weight: 500;
-    cursor: pointer;
-}
-
 .resendBox {
     background: var(--coffee-50);
     padding: 1rem;

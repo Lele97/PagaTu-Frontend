@@ -21,8 +21,13 @@ export const register = (payload) =>
 export const loginWithGoogle = (token) =>
     auth('/oauth/google', { method: 'POST', body: JSON.stringify({ token }) });
 
-export const loginWithMicrosoft = (token) =>
-    auth('/oauth/microsoft', { method: 'POST', body: JSON.stringify({ token }) });
+export const loginWithDiscord = (code, redirectUri) =>
+    auth('/oauth/discord', { method: 'POST', body: JSON.stringify({ code, redirectUri }) });
+
+// redirectUri deve coincidere con quello usato nella richiesta di autorizzazione:
+// GitHub rifiuta lo scambio del code se i due valori differiscono.
+export const loginWithGithub = (code, redirectUri) =>
+    auth('/oauth/github', { method: 'POST', body: JSON.stringify({ code, redirectUri }) });
 
 export const verifyEmail = (key) =>
     auth(`/verify-email?key=${encodeURIComponent(key)}`);

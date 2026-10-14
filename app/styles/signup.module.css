@@ -48,6 +48,196 @@
     filter: drop-shadow(0 4px 10px rgba(111, 78, 55, 0.12));
 }
 
+
+/* ===============================================================================
+   OAUTH2 SOCIAL LOGIN BUTTONS
+   ================================================================================ */
+
+.oauthDivider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 22px 0 14px;
+    width: 100%;
+}
+
+.oauthDivider::before,
+.oauthDivider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(111, 78, 55, 0.16);
+}
+
+.oauthDivider span {
+    padding: 0 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--coffee-600);
+}
+
+.oauthSigninContainer {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.oauthSigninBtn {
+    width: 100%;
+    min-height: 52px;
+    margin-bottom: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+    box-sizing: border-box;
+}
+
+/* Provider specific variants */
+.oauthBtnGithub {
+    background: linear-gradient(145deg, #24292f, #1b1f23);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.oauthBtnGithub:hover {
+    /*background: linear-gradient(145deg, #2d333b, #22272e);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);*/
+    transform: translateY(-2px);
+}
+
+.oauthBtnGithub:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.oauthBtnDiscord {
+    background: linear-gradient(45deg, #4752c4, #6571f3);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.oauthBtnDiscord:hover {
+    /*background: linear-gradient(145deg, #2d333b, #22272e);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);*/
+    transform: translateY(-2px);
+}
+
+.oauthBtnDiscord:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+
+.oauthBtnSlack {
+    background: #4A154B;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.oauthBtnSlack:hover {
+    /*background: linear-gradient(145deg, #2d333b, #22272e);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);*/
+    transform: translateY(-2px);
+}
+
+.oauthBtnSlack:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+
+
+
+
+.oauthBtnGoogle {
+    background: #ffffff;
+    color: #3c4043;
+    border: 1px solid rgba(111, 78, 55, 0.18);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.oauthBtnGoogle:hover {
+    background: #f8fafc;
+    border-color: rgba(111, 78, 55, 0.28);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.oauthBtnGoogle:active {
+    transform: translateY(0);
+}
+
+/* Contenitore per il pulsante Google con overlay */
+.oauthGoogleWrap {
+    position: relative;
+    width: 100%;
+}
+
+/* Overlay trasparente di Google */
+.oauthGoogleOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.001;
+    overflow: hidden;
+    z-index: 2;
+    cursor: pointer;
+}
+
+/* Quando il mouse è sopra il contenitore (anche sopra l'overlay trasparente), anima il bottone sotto! */
+.oauthGoogleWrap:hover .oauthSigninBtn {
+    /*background: #f8fafc;
+    border-color: rgba(111, 78, 55, 0.28);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);*/
+    transform: translateY(-2px);
+}
+
+.oauthGoogleWrap:active .oauthSigninBtn {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Slot del bottone Google Identity Services, che si renderizza da solo */
+.oauthProviderSlot {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.oauthError {
+    margin-top: 10px;
+    color: var(--coffee-700, #7b3f1d);
+    font-size: 0.88rem;
+    text-align: center;
+}
+
+.oauthIconWrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.oauthIcon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
 .brandArcSvg {
     position: absolute;
     top: 0;
