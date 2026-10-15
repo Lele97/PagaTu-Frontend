@@ -1,9 +1,44 @@
-.DS_Store
-/node_modules/
+# Build output
+dist/
+build/
 
-# React Router
-/.react-router/
-/build/
-/package-lock.json
-/dist/
-/.idea/
+# Dependencies
+node_modules/
+
+# Local environment overrides.
+# The base .env is tracked on purpose: it only holds public OAuth client ids
+# and the localhost default. Secrets stay out of git.
+.env.local
+.env.*.local
+
+# Build/CI credentials
+script/.env.*
+
+# NOTA: package-lock.json è tracciato di proposito.
+# Il Dockerfile usa `npm ci`, che senza lock file non può funzionare:
+# tenere il lock file garantisce build riproducibili.
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+
+# Misc
+*.tgz
+.cache/

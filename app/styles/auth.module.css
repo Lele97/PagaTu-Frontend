@@ -1,9 +1,78 @@
-@font-face {
-    font-family: 'CustomFont';
-    src: url('/Oatlander.ttf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+/**
+ * AUTHENTICATION PAGES STYLES
+ * Shared styles for login and authentication-related pages
+ */
+
+/* ===============================================================================
+   LAYOUT & CONTAINER
+   =============================================================================== */
+
+.secondaryVerifyButton:hover {
+    background-color: var(--coffee-700);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.secondaryVerifyButton:active {
+    transform: translateY(0);
+}
+
+.verifyContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.verifyPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.5rem;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--coffee-900);
+}
+
+.logo {
+    width: 15rem;
+    height: auto;
+}
+
+.verifyContainer {
+    background: var(--surface-card, var(--surface-main));
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-lg);
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    animation: fadeInUp 0.6s ease;
+    box-sizing: border-box;
+}
+
+.secondaryVerifyButton {
+    border: none;
+    align-items: center;
+    gap: 0.5rem;
+    width: 15rem;
+    padding: 0.875rem 2rem;
+    background-color: var(--coffee-600);
+    color: var(--coffee-0);
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.verifyMessageContainer {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    flex-direction: column;
 }
 
 .container {
@@ -24,9 +93,9 @@
     width: 100%;
 }
 
-.logo {
+.logoMessageVerify {
     max-width: 200px;
-    width: 50vmin;
+    width: 10vmin;
     height: auto;
     margin-bottom: 1rem;
     transition: transform 0.3s ease, color 0.3s ease;
@@ -70,11 +139,15 @@
     color: #c29159;
 }
 
+/* ===============================================================================
+   FORM CONTAINER
+   ================================================================================ */
+
 .formContainer {
     background-color: var(--coffee-0);
     border-radius: 0.75rem;
     padding: 2rem;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
     width: 100%;
     max-width: 450px;
     animation: fadeIn 0.6s ease;
@@ -88,6 +161,10 @@
     margin-bottom: 1.5rem;
     text-align: center;
 }
+
+/* ===============================================================================
+   FORM ELEMENTS
+   ================================================================================ */
 
 .form {
     display: flex;
@@ -133,7 +210,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
 }
+
+/* ===============================================================================
+   BUTTONS
+   ================================================================================ */
 
 .primaryButton {
     background-color: var(--coffee-600);
@@ -157,6 +239,10 @@
     cursor: not-allowed;
 }
 
+/* ===============================================================================
+   LINKS & FOOTER
+   ================================================================================ */
+
 .link {
     color: var(--coffee-600);
     text-decoration: none;
@@ -166,7 +252,6 @@
 
 .link:hover {
     color: var(--coffee-800);
-    text-decoration: underline;
 }
 
 .footer {
@@ -178,16 +263,24 @@
     gap: 0.25rem;
 }
 
+/* ===============================================================================
+   ERROR MESSAGES
+   ================================================================================ */
+
 .error {
-    background: linear-gradient(to right, #fff5f5, #ffe6e6);
-    color: #dc3545;
+    background: var(--error-bg);
+    color: var(--error);
     padding: 0.75rem;
     border-radius: 0.5rem;
     margin: 1rem 0;
-    border-left: 4px solid #dc3545;
+    border-left: 4px solid var(--error);
     font-weight: 600;
     font-size: 1rem;
 }
+
+/* ===============================================================================
+   RESPONSIVE - DESKTOP & TABLET
+   ================================================================================ */
 
 @media (max-width: 1024px) {
     .appTitle h1 {
@@ -225,109 +318,197 @@
     }
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
+/* =============== MOBILE & TABLET RESPONSIVE STYLES =============== */
+/* Note: Desktop styles (1025px+) remain unchanged */
+
+/* Mobile Portrait: 320px - 480px */
+@media only screen and (max-width: 480px) and (orientation: portrait) {
+    .container {
+        padding: 0.75rem;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .header-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .logo {
+        max-width: 160px;
+        width: 40vmin;
+        margin-bottom: 0.75rem;
+    }
+
+    .appTitle {
+        margin-top: -3rem;
+        margin-bottom: 2rem;
+        gap: 0.2rem;
+    }
+
+    .appTitle h1 {
+        font-size: 3.5rem;
+    }
+
+    .formContainer {
+        padding: 1.5rem;
+        max-width: 100%;
+        width: calc(100% - 1.5rem);
+        margin: 0 0.75rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .input {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+
+    .primaryButton {
+        padding: 0.875rem;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+
+    .label {
+        font-size: 0.9rem;
+    }
+
+    .form {
+        gap: 1.25rem;
+    }
+
+    .inputGroup {
+        gap: 0.375rem;
     }
 }
 
-/* OAuth Buttons */
-.oauthContainer {
-    margin-top: 1.5rem;
-    width: 100%;
+/* Mobile Landscape: 480px - 768px */
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header-container {
+        margin-bottom: 1.75rem;
+    }
+
+    .logo {
+        max-width: 180px;
+        width: 45vmin;
+        margin-bottom: 0.875rem;
+    }
+
+    .appTitle {
+        margin-top: -3.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .appTitle h1 {
+        font-size: 4rem;
+    }
+
+    .formContainer {
+        padding: 1.75rem;
+        max-width: 420px;
+    }
+
+    .title {
+        font-size: 1.625rem;
+        margin-bottom: 1.375rem;
+    }
+
+    .input {
+        padding: 0.8125rem 1rem;
+    }
+
+    .primaryButton {
+        padding: 0.8125rem;
+    }
 }
 
-.divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 1rem;
-    color: var(--coffee-500);
-    font-size: 0.875rem;
+/* Tablet Portrait: 768px - 1024px */
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding: 1.25rem;
+    }
+
+    .header-container {
+        margin-bottom: 1.875rem;
+    }
+
+    .logo {
+        max-width: 190px;
+        width: 48vmin;
+        margin-bottom: 0.9375rem;
+    }
+
+    .appTitle {
+        margin-top: -3.75rem;
+        margin-bottom: 2.75rem;
+    }
+
+    .appTitle h1 {
+        font-size: 4.5rem;
+    }
+
+    .formContainer {
+        padding: 1.875rem;
+        max-width: 440px;
+    }
+
+    .title {
+        font-size: 1.6875rem;
+    }
 }
 
-.divider::before,
-.divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid var(--coffee-300);
-}
-
-.divider span {
-    padding: 0 1rem;
-    background-color: var(--coffee-0);
-}
-
-.oauthButtons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.oauthButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
+.resendBox {
+    background: var(--coffee-50);
+    padding: 1rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--coffee-300);
-    background-color: var(--coffee-0);
-    color: var(--coffee-700);
-    font-weight: 500;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--coffee-600);
 }
 
-.oauthButton:hover {
-    background-color: var(--coffee-50);
-    border-color: var(--coffee-400);
+.secondaryButton {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--coffee-100);
+    border: 1px solid var(--coffee-400);
+    border-radius: 0.35rem;
+    cursor: pointer;
     color: var(--coffee-800);
-    text-decoration: none;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.oauthButton:active {
-    transform: translateY(0);
+.resendStatus {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    color: var(--coffee-700);
 }
 
-.oauthIcon {
-    font-size: 1.25rem;
-    flex-shrink: 0;
+.verifyMessageText {
+    font-size: 1.125rem;
+    color: var(--coffee-600);
+    margin: 0;
+    line-height: 1.5;
+    max-width: 500px;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* Provider-specific colors */
-.oauth-github:hover {
-    border-color: #24292e;
-    color: #24292e;
-}
+/* Tablet Landscape: specific adjustments */
+@media only screen and (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+    .container {
+        justify-content: center;
+    }
 
-.oauth-github .oauthIcon {
-    color: #24292e;
-}
+    .header-container {
+        margin-bottom: 1.5rem;
+    }
 
-.oauth-discord:hover {
-    border-color: #5865f2;
-    color: #5865f2;
-}
-
-.oauth-discord .oauthIcon {
-    color: #5865f2;
-}
-
-.oauth-slack:hover {
-    border-color: #4a154b;
-    color: #4a154b;
-}
-
-.oauth-slack .oauthIcon {
-    color: #4a154b;
+    .appTitle {
+        margin-top: -3rem;
+        margin-bottom: 2rem;
+    }
 }

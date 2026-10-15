@@ -1,0 +1,90 @@
+import React, { memo, useEffect, useState } from 'react';
+import styles from '~/styles/header.module.css';
+import { useSettings } from '~/context/SettingsContext.jsx';
+import { AVATAR_PRESETS } from '~/utils/apiService';
+import { fa } from '~/utils/icons';
+
+const Header = memo(function Header({ user, logout, showGroupSettings = false, avatarKey = 'default' }) {
+    const { openUserSettings, openGroupSettings } = useSettings();
+    const avatar = AVATAR_PRESETS.find((a) => a.key === avatarKey) || AVATAR_PRESETS[0];
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        let ticking = false;
+        const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                setScrolled(window.scrollY > 8);
+                ticking = false;
+            });
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
+    return (
+        <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ''}`}>
+            <div className={styles.headerContent}>
+                <div className={styles.logoTitleContainer}>
+                    <img
+                        src="/pagaTu.svg"
+                        alt="PagaTu - Logo applicazione caffè aziendale"
+                        className={styles.pagatu_image}
+                        width={80}
+                        height={80}
+                        decoding="async"
+                    />
+                </div>
+
+                <div className={styles.rightSection}>
+                    <div className={styles.userNameArea}>
+                        <div className={styles.avatarWrapper} aria-label={`Utente ${user}`}>
+                            <i className={`${fa(avatar.icon)} ${styles.avatarIcon}`} />
+                            <span className={styles.coffeeLetter}>
+                                {user?.charAt(0).toUpperCase()}
+                            </span>
+                        </div>
+                        <span className={styles.userName}>{user}</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        className={styles.iconBtn}
+                        onClick={() => openUserSettings('profile')}
+                        title="Impostazioni"
+                        aria-label="Impostazioni utente"
+                    >
+                        <i className="fa-solid fa-gear" />
+                    </button>
+
+                    {showGroupSettings && (
+                        <button
+                            type="button"
+                            className={styles.iconBtn}
+                            onClick={openGroupSettings}
+                            title="Impostazioni gruppo"
+                            aria-label="Impostazioni gruppo"
+                        >
+                            <i className="fa-solid fa-sliders" />
+                        </button>
+                    )}
+
+                    <button
+                        type="button"
+                        className={styles.iconBtn}
+                        onClick={logout}
+                        title="Logout"
+                        aria-label="Logout"
+                    >
+                        <i className="fa-solid fa-right-from-bracket" />
+                    </button>
+                </div>
+
+            </div>
+        </header>
+    );
+});
+
+export default Header;

@@ -1,15 +1,43 @@
-import React from 'react';
-import {Outlet} from 'react-router-dom';
-import Footer from '../components/footer.jsx';
-import '../styles/app.css';
+import React, { useEffect } from 'react';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import Footer from '../components/footer/footer.jsx';
+import { SettingsProvider, useSettings } from '~/context/SettingsContext.jsx';
+import { GroupProvider } from '~/context/GroupContext.jsx';
+
+// Gli stili globali sono importati una sola volta da main.jsx.
+
+const SettingsUrlHandler = ({ children }) => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { openUserSettings } = useSettings();
+    const location = useLocation();
+
+    useEffect(() => {
+        const tab = searchParams.get('settings');
+        if (tab && location.pathname === '/home') {
+            openUserSettings(tab);
+            setSearchParams({}, { replace: true });
+        }
+    }, [searchParams, location.pathname, openUserSettings, setSearchParams]);
+
+    return children;
+};
 
 const Root = () => {
+    const location = useLocation();
+    const isSplash = location.pathname === '/';
+
     return (
-        <div className={"appWrapper"}>
-            <Outlet/>
-            <Footer/>
-        </div>
+        <SettingsProvider>
+            <GroupProvider>
+                <SettingsUrlHandler>
+                    <div className="appWrapper">
+                        <Outlet />
+                        {!isSplash && <Footer />}
+                    </div>
+                </SettingsUrlHandler>
+            </GroupProvider>
+        </SettingsProvider>
     );
-}
+};
 
 export default Root;

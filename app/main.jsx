@@ -1,72 +1,118 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import Root from './routes/root';
-import Login from './routes/auth/login';
-import OAuthCallback from './routes/auth/oauth-callback';
-import ErrorPage from './routes/error/error-page.jsx';
+import ErrorPage, { RouterErrorPage } from './components/error/error-page.jsx';
+import SplashScreen from '~/components/splash/splash-screen.jsx';
+import RequireAuth from '~/components/auth/RequireAuth.jsx';
 import './styles/app.css';
-import Signup from "~/routes/register/signup";
-import Home from "~/routes/home/home.jsx";
-import ForgotPswForm from "~/routes/resetPassword/forgotPsw-form.jsx";
-import Group from "~/routes/group/group.jsx";
-import Invitation from "~/routes/invitation/invitation.jsx";
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap-icons/font/bootstrap-icons.css'
-import ResetPswForm from "~/routes/resetPassword/resetPsw-form.jsx";
+
+// Route-level code splitting: solo la splash screen (rotta "/") viene caricata
+// nel bundle iniziale. Le altre pagine vengono scaricate on-demand, riducendo
+// il JS da parsare/eseguire al primo caricamento.
+const Home = lazy(() => import('~/components/home/home.jsx'));
+const Group = lazy(() => import('~/components/group/group.jsx'));
+const Invitation = lazy(() => import('~/components/invitation/invitation.jsx'));
+const ResetPswForm = lazy(() => import('~/components/resetPassword/resetPsw-form.jsx'));
+const VerifyEmail = lazy(() => import('~/components/verify-email/verify-email.jsx'));
+const AuthLanding = lazy(() => import('~/components/auth/AuthLanding.jsx'));
+
+const withSuspense = (element) => (
+    <Suspense fallback={null}>
+        {element}
+    </Suspense>
+);
+
+const withAuth = (element) => (
+    <RequireAuth>
+        {withSuspense(element)}
+    </RequireAuth>
+);
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        if (import.meta.env.DEV) {
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+                regs.forEach((reg) => reg.unregister());
+            });
+            return;
+        }
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+}
 
 const router = createBrowserRouter([
     {
-        path: "/",
-        element: <Root/>,
-        errorElement: <ErrorPage/>,
+        path: '/',
+        element: <Root />,
+        errorElement: <RouterErrorPage />,
         children: [
             {
                 index: true,
-                element: <Home/>,
+                element: <SplashScreen />,
             },
             {
-                path: "/login",
-                element: <Login/>,
+                path: '/welcome',
+                element: withSuspense(<AuthLanding />),
             },
             {
-                path: "/auth/callback",
-                element: <OAuthCallback/>,
+                path: '/login',
+                element: <Navigate to="/welcome" replace />,
             },
             {
-                path: "/home",
-                element: <Home/>,
+                path: '/signup',
+                element: <Navigate to="/welcome?tab=signup" replace />,
             },
             {
-                path: "/signup",
-                element: <Signup/>,
+                path: '/home',
+                element: withAuth(<Home />),
             },
             {
-                path: "/forgotPassword",
-                element: <ForgotPswForm/>,
+                path: '/forgotPassword',
+                element: <Navigate to="/welcome?tab=forgot" replace />,
             },
             {
-                path: "/group",
-                element: <Group/>,
+                path: '/group',
+                element: <Navigate to="/home" replace />,
             },
             {
-                path: "/invitation",
-                element: <Invitation/>,
+                path: '/group/:groupName',
+                element: withAuth(<Group />),
             },
             {
-                path: "/resetPassword",
-                element: <ResetPswForm/>
+                path: '/invitation',
+                element: withSuspense(<Invitation />),
             },
             {
-                path: "/errore-token",
-                element: <ErrorPage/>,
-            }
+                path: '/resetPassword',
+                element: withSuspense(<ResetPswForm />),
+            },
+            {
+                path: '/verify-email',
+                element: withSuspense(<VerifyEmail />),
+            },
+            {
+                path: '/profile/payment-links',
+                element: <Navigate to="/home?settings=payments" replace />,
+            },
+            {
+                path: '/errore-token',
+                element: <ErrorPage />,
+            },
+            {
+                path: '/error',
+                element: <ErrorPage />,
+            },
+            {
+                path: '*',
+                element: <ErrorPage />,
+            },
         ],
     },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <RouterProvider router={router}/>
+        <RouterProvider router={router} />
     </React.StrictMode>
 );

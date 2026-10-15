@@ -1,27 +1,205 @@
+/**
+ * GLOBAL APPLICATION STYLES
+ * Root CSS variables, shared fonts, animations, and base application wrapper styles
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
+
+/* ===============================================================================
+   CSS CUSTOM PROPERTIES (VARIABLES)
+   ================================================================================ */
+
 :root {
-    --coffee-0: #ffffff;
-    --coffee-50: #FAF7F2;
-    --coffee-100: #F5F5F0;
-    --coffee-200: #E8E0D9;
-    --coffee-300: #D7CEC4;
-    --coffee-400: #B8A99C;
-    --coffee-500: #9C8B7D;
-    --coffee-600: #6F4E37;
-    --coffee-700: #5A3E2D;
-    --coffee-800: #3E2C20;
-    --coffee-900: #2A1E16;
+    --coffee-0: #fffef8;
+    --coffee-50: #faf7f2;
+    --coffee-100: #f3ece4;
+    --coffee-200: #e8ddd2;
+    --coffee-300: #d8c5b3;
+    --coffee-400: #bfa48d;
+    --coffee-500: #9b7b62;
+    --coffee-600: #6f4e37;
+    --coffee-700: #5a3e2d;
+    --coffee-800: #3e2c20;
+    --coffee-900: #2a1e16;
+    --coffee-1000: #17100c;
+
+    --text-primary: #2d1f17;
+    --text-secondary: #6f5a4c;
+    --text-soft: #9f8a7b;
+    --text-white: #fffaf5;
+    --text-grey-light: #b3b3b3;
+
+    --surface-main: rgba(255, 253, 249, 0.82);
+    --surface-card: rgba(255, 253, 249, 0.94);
+    --surface-soft: rgba(243, 236, 228, 0.9);
+    --surface-strong: #f4ede6;
+    --border-soft: rgba(111, 78, 55, 0.14);
+
+    --success: #4caf50;
+    --success-bg: #edf8ee;
+    --error: #d94b3d;
+    --error-bg: #fff1ef;
+    --warning: #c98a2e;
+
+    --shadow-sm: 0 8px 20px rgba(62, 44, 32, 0.06);
+    --shadow-md: 0 14px 30px rgba(62, 44, 32, 0.1);
+    --shadow-lg: 0 24px 60px rgba(62, 44, 32, 0.14);
+
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+
+    --transition-fast: 180ms ease;
+    --transition-smooth: 320ms ease;
+}
+
+/* ===============================================================================
+   SHARED FONTS
+   ================================================================================ */
+
+@font-face {
+    font-family: 'CustomFont';
+    src: url('/Oatlander.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ===============================================================================
+   SHARED ANIMATIONS
+   ================================================================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===============================================================================
+   SHARED RESPONSIVE BREAKPOINTS (as mixins via CSS custom properties)
+   ================================================================================ */
+
+:root {
+    --bp-mobile: 480px;
+    --bp-tablet: 768px;
+    --bp-desktop: 1024px;
+    --bp-wide: 1280px;
+}
+
+/* ===============================================================================
+   BASE STYLES
+   ================================================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    margin: 0;
+    min-height: 100%;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    height: 100%;
+    min-height: 100vh;
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+    color: var(--text-primary);
+    background:
+        radial-gradient(circle at top left, rgba(216, 197, 179, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(191, 164, 141, 0.14), transparent 28%),
+        var(--coffee-50);
+}
+
+/* Typography scale (UX_LAST I4) */
+h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .appWrapper {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--coffee-50);
-    color: var(--coffee-900);
-    font-family: 'Segoe UI', sans-serif;
+    background: transparent;
+    color: var(--text-primary);
+    position: relative;
+    overflow-x: hidden;
+}
+
+.appWrapper>* {
+    position: relative;
+    z-index: 1;
 }

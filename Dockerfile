@@ -1,22 +1,42 @@
-FROM node:20-alpine AS development-dependencies-env
-COPY . /app
+# ---------- Build Stage ----------
+#FROM node:20-alpine AS builder
+# Set working dir
+#WORKDIR /app
+# Copy only package.json and package-lock.json first (for caching)
+#COPY package*.json ./
+# Install dependencies
+#RUN npm ci
+# Copy source code
+#COPY . .
+# Build React app (output goes to /app/build)
+#RUN npm run build
+
+# ---------- NGINX Stage ----------
+#FROM nginx:stable-alpine
+# Copy custom nginx config (see below)
+#COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy React build files
+#COPY --from=builder /app/dist /usr/share/nginx/html
+#EXPOSE 80
+#CMD ["nginx", "-g", "daemon off;"]
+
+FROM node:20-alpine AS builder
+
 WORKDIR /app
+
+COPY package*.json ./
 RUN npm ci
 
-FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
+COPY . .
 
-FROM node:20-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build
+RUN npm run build:locale
 
-FROM node:20-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
-CMD ["npm", "run", "start"]
+
+FROM nginx:stable-alpine
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
