@@ -1,6 +1,7 @@
 import React from "react";
 import styles from '~/styles/footer.module.css'
 
+/** Bottone che linka il profilo GitHub del creatore dell'app. */
 const GithubPersonalProfileIconButton = () => {
     return (
         <a href="https://github.com/Lele97">

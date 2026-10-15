@@ -4,22 +4,76 @@
  */
 
 /* ===============================================================================
-   CUSTOM FONTS
-   ================================================================================ */
+   LAYOUT & CONTAINER
+   =============================================================================== */
 
-@font-face {
-    font-family: 'CustomFont';
-    src: url('/Oatlander.ttf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+.secondaryVerifyButton:hover {
+    background-color: var(--coffee-700);
+    transform: translateY(-2px);
+    color: #fff;
 }
 
-/*
-   ===============================================================================
-   LAYOUT & CONTAINER
-   ===============================================================================
-*/
+.secondaryVerifyButton:active {
+    transform: translateY(0);
+}
+
+.verifyContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.verifyPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.5rem;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--coffee-900);
+}
+
+.logo {
+    width: 15rem;
+    height: auto;
+}
+
+.verifyContainer {
+    background: var(--surface-card, var(--surface-main));
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-lg);
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    animation: fadeInUp 0.6s ease;
+    box-sizing: border-box;
+}
+
+.secondaryVerifyButton {
+    border: none;
+    align-items: center;
+    gap: 0.5rem;
+    width: 15rem;
+    padding: 0.875rem 2rem;
+    background-color: var(--coffee-600);
+    color: var(--coffee-0);
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.verifyMessageContainer {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    flex-direction: column;
+}
 
 .container {
     min-height: 100vh;
@@ -39,9 +93,9 @@
     width: 100%;
 }
 
-.logo {
+.logoMessageVerify {
     max-width: 200px;
-    width: 50vmin;
+    width: 10vmin;
     height: auto;
     margin-bottom: 1rem;
     transition: transform 0.3s ease, color 0.3s ease;
@@ -93,7 +147,7 @@
     background-color: var(--coffee-0);
     border-radius: 0.75rem;
     padding: 2rem;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
     width: 100%;
     max-width: 450px;
     animation: fadeIn 0.6s ease;
@@ -156,6 +210,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
 }
 
 /* ===============================================================================
@@ -213,29 +268,14 @@
    ================================================================================ */
 
 .error {
-    background: linear-gradient(to right, #fff5f5, #ffe6e6);
-    color: #dc3545;
+    background: var(--error-bg);
+    color: var(--error);
     padding: 0.75rem;
     border-radius: 0.5rem;
     margin: 1rem 0;
-    border-left: 4px solid #dc3545;
+    border-left: 4px solid var(--error);
     font-weight: 600;
     font-size: 1rem;
-}
-
-/* ===============================================================================
-   ANIMATIONS
-   ================================================================================ */
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* ===============================================================================
@@ -278,17 +318,6 @@
     }
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* =============== MOBILE & TABLET RESPONSIVE STYLES =============== */
 /* Note: Desktop styles (1025px+) remain unchanged */
 
@@ -297,67 +326,59 @@
     .container {
         padding: 0.75rem;
     }
-    
+
     .header-container {
         margin-bottom: 1.5rem;
     }
-    
-    /* Logo: slight reduction for mobile */
+
     .logo {
         max-width: 160px;
         width: 40vmin;
         margin-bottom: 0.75rem;
     }
-    
-    /* App Title: slight text reduction */
+
     .appTitle {
         margin-top: -3rem;
         margin-bottom: 2rem;
         gap: 0.2rem;
     }
-    
+
     .appTitle h1 {
         font-size: 3.5rem;
     }
-    
-    /* Form Container: optimized for mobile */
+
     .formContainer {
         padding: 1.5rem;
         max-width: 100%;
         width: calc(100% - 1.5rem);
         margin: 0 0.75rem;
     }
-    
-    /* Form Title: slight reduction */
+
     .title {
         font-size: 1.5rem;
         margin-bottom: 1.25rem;
     }
-    
-    /* Inputs: touch-friendly */
+
     .input {
         padding: 0.875rem 1rem;
         font-size: 1rem;
         min-height: 48px;
     }
-    
-    /* Button: touch-optimized */
+
     .primaryButton {
         padding: 0.875rem;
         font-size: 1rem;
         min-height: 48px;
     }
-    
-    /* Labels: slightly smaller */
+
     .label {
         font-size: 0.9rem;
     }
-    
-    /* Form spacing */
+
     .form {
         gap: 1.25rem;
     }
-    
+
     .inputGroup {
         gap: 0.375rem;
     }
@@ -368,43 +389,40 @@
     .container {
         padding: 1rem;
     }
-    
+
     .header-container {
         margin-bottom: 1.75rem;
     }
-    
-    /* Logo: slight reduction */
+
     .logo {
         max-width: 180px;
         width: 45vmin;
         margin-bottom: 0.875rem;
     }
-    
-    /* App Title: moderate reduction */
+
     .appTitle {
         margin-top: -3.5rem;
         margin-bottom: 2.5rem;
     }
-    
+
     .appTitle h1 {
         font-size: 4rem;
     }
-    
-    /* Form: better sizing for larger mobile/small tablet */
+
     .formContainer {
         padding: 1.75rem;
         max-width: 420px;
     }
-    
+
     .title {
         font-size: 1.625rem;
         margin-bottom: 1.375rem;
     }
-    
+
     .input {
         padding: 0.8125rem 1rem;
     }
-    
+
     .primaryButton {
         padding: 0.8125rem;
     }
@@ -415,37 +433,68 @@
     .container {
         padding: 1.25rem;
     }
-    
+
     .header-container {
         margin-bottom: 1.875rem;
     }
-    
-    /* Logo: minimal reduction for tablet */
+
     .logo {
         max-width: 190px;
         width: 48vmin;
         margin-bottom: 0.9375rem;
     }
-    
-    /* App Title: minimal reduction */
+
     .appTitle {
         margin-top: -3.75rem;
         margin-bottom: 2.75rem;
     }
-    
+
     .appTitle h1 {
         font-size: 4.5rem;
     }
-    
-    /* Form: tablet-optimized */
+
     .formContainer {
         padding: 1.875rem;
         max-width: 440px;
     }
-    
+
     .title {
         font-size: 1.6875rem;
     }
+}
+
+.resendBox {
+    background: var(--coffee-50);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--coffee-600);
+}
+
+.secondaryButton {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--coffee-100);
+    border: 1px solid var(--coffee-400);
+    border-radius: 0.35rem;
+    cursor: pointer;
+    color: var(--coffee-800);
+}
+
+.resendStatus {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    color: var(--coffee-700);
+}
+
+.verifyMessageText {
+    font-size: 1.125rem;
+    color: var(--coffee-600);
+    margin: 0;
+    line-height: 1.5;
+    max-width: 500px;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 /* Tablet Landscape: specific adjustments */
@@ -453,11 +502,11 @@
     .container {
         justify-content: center;
     }
-    
+
     .header-container {
         margin-bottom: 1.5rem;
     }
-    
+
     .appTitle {
         margin-top: -3rem;
         margin-bottom: 2rem;

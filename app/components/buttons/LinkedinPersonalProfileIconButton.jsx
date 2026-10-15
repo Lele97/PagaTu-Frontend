@@ -1,6 +1,7 @@
 import React from "react";
 import styles from '~/styles/footer.module.css'
 
+/** Bottone che linka il profilo Linkedin del creatore dell'app. */
 const LinkedinPersonalProfileIconButton = () => {
     return (
         <a href="https://www.linkedin.com/in/gabriele-grandinetti/">

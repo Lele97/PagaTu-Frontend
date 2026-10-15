@@ -1,13 +1,29 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '~/styles/home.module.css';
 import Header from '../header/header.jsx';
 import HomeHeader from "~/components/home/homeHeader.jsx";
 import HomeGroups from "~/components/home/homeGroups.jsx";
 import HomePayments from "~/components/home/homePayments.jsx";
-import AddGroupModal from "~/components/home/modals/AddGroupModal.jsx";
+import HomeStatistics from "~/components/home/homeStatistics.jsx";
+import HomeAwards from "~/components/home/homeAwards.jsx";
+import SectionReveal from "~/components/shared/SectionReveal.jsx";
+import CoffeePatternIcons from "~/components/shared/CoffeePatternIcons.jsx";
+import { useSettings } from '~/context/SettingsContext.jsx';
+import { fetchCoffeeProfile } from '~/utils/apiService';
+import { ERROR_PATH, WELCOME_PATH } from '~/utils/routes';
+import { useGroup } from '~/context/GroupContext.jsx';
+import { clearRequestCache, createCachedFetcher } from '~/utils/api';
+import {
+    createGroup,
+    getGroupsByUsername,
+    getRecentPayments,
+    getUserAwards as fetchUserAwardsRequest,
+    getUserStatistics as fetchUserStatisticsRequest,
+} from '~/utils/apiService';
 
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+const AddGroupModal = lazy(() => import('~/components/home/modals/AddGroupModal.jsx'));
+const UserSettingsModal = lazy(() => import('~/components/settings/modals/UserSettingsModal.jsx'));
 
 const normalizeError = (err) => {
     if (!err) return '';
@@ -23,7 +39,7 @@ const normalizeError = (err) => {
 
 const GROUPS_PER_PAGE = 6;
 const PAYMENTS_PER_PAGE = 4;
-const initialPayload = {name: '', description: ''};
+const initialPayload = { name: '', description: '' };
 
 const Home = () => {
 
@@ -42,62 +58,53 @@ const Home = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [avatarKey, setAvatarKey] = useState('default');
+    const [userStatistics, setUserStatistics] = useState(null);
+    const [userAwards, setUserAwards] = useState([]);
+    const [statsLoading, setStatsLoading] = useState(true);
+    const [awardsLoading, setAwardsLoading] = useState(true);
     const navigate = useNavigate();
-    const requestCacheRef = useRef(new Map());
+    const { openGroup } = useGroup();
+    const { userSettingsOpen } = useSettings();
 
-    const clearCache = useCallback((cacheKey) => {
-        if (!cacheKey) {
-            requestCacheRef.current.clear();
-            return;
-        }
-        requestCacheRef.current.delete(cacheKey);
-    }, []);
-
-    const cachedFetchJson = useCallback(async (url, options = {}, cacheKey, ttl = 30000) => {
-        const now = Date.now();
-        const cached = requestCacheRef.current.get(cacheKey);
-
-        if (cached && now - cached.timestamp < ttl) {
-            return cached.data;
-        }
-
-        const response = await fetch(url, options);
-
-        let body;
-        try {
-            body = await response.json();
-        } catch {
-            body = null;
-        }
-
-        const data = {status: response.status, body};
-
-        requestCacheRef.current.set(cacheKey, {data, timestamp: now});
-        return data;
-    }, []);
+    const cachedFetchJson = useMemo(() => createCachedFetcher(), []);
 
     useEffect(() => {
+        let cancelled = false;
         const initializeData = async () => {
             const authToken = localStorage.getItem('authToken');
             const userData = localStorage.getItem('user');
             if (!authToken || !userData) {
-                navigate('/login');
+                navigate(WELCOME_PATH);
                 return;
             }
             try {
                 const parsedUser = JSON.parse(userData);
                 const username = parsedUser?.username || parsedUser?.name || parsedUser?.email;
                 if (!username) {
-                    navigate('/login');
+                    navigate(WELCOME_PATH);
                     return;
                 }
                 setUser(username);
-                await Promise.all([getGroupsByUser(username), getHistoryPayments(username)]);
+                await Promise.all([
+                    getGroupsByUser(username),
+                    getHistoryPayments(username),
+                    getUserStatistics(username),
+                    getUserAwards(username),
+                    fetchCoffeeProfile()
+                        .then((profile) => {
+                            if (!cancelled) setAvatarKey(profile?.avatarKey || 'default');
+                        })
+                        .catch(() => {}),
+                ]);
             } catch {
-                navigate('/login');
+                if (!cancelled) navigate(WELCOME_PATH);
             }
         };
         initializeData();
+        return () => {
+            cancelled = true;
+        };
     }, [navigate]);
 
     useEffect(() => {
@@ -118,24 +125,29 @@ const Home = () => {
         }
     }, [error]);
 
+    const isAnyModalOpen = showAddGroupModal || userSettingsOpen;
+
     useEffect(() => {
-        document.body.style.overflow = showAddGroupModal ? "hidden" : "unset";
-    }, [showAddGroupModal]);
+        document.body.style.overflow = isAnyModalOpen ? 'hidden' : 'unset';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isAnyModalOpen]);
 
     const handleChangeName = useCallback((e) => {
-        setPayload(prev => ({...prev, name: e.target.value}));
+        setPayload(prev => ({ ...prev, name: e.target.value }));
         if (error) setError(null);
     }, [error]);
 
     const handleChangeDescription = useCallback((e) => {
-        setPayload(prev => ({...prev, description: e.target.value}));
+        setPayload(prev => ({ ...prev, description: e.target.value }));
         if (error) setError(null);
     }, [error]);
 
     const logout = useCallback(() => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        navigate('/login');
+        navigate(WELCOME_PATH);
     }, [navigate]);
 
     const confirmCreateGroup = useCallback(async (e) => {
@@ -165,26 +177,17 @@ const Home = () => {
                 return;
             }
 
-            if (!/^[a-zA-Z0-9_]+$/.test(payload.name.trim())) {
+            if (!/^\w+$/.test(payload.name.trim())) {
                 setError("Il nome del gruppo può contenere solo lettere, numeri e underscore");
                 return;
             }
 
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/coffee/group`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    name: payload.name.trim(),
-                    description: payload.description.trim(),
-                })
+            const { status } = await createGroup({
+                name: payload.name.trim(),
+                description: payload.description.trim(),
             });
 
-            switch (response.status) {
+            switch (status) {
                 case 200:
                     setSuccess("Gruppo creato con successo");
                     setPayload(initialPayload);
@@ -196,7 +199,10 @@ const Home = () => {
                     throw new Error("Problema durante la creazione del gruppo")
             }
 
-            clearCache(`gruppi_by_Id_${user || 'unknown'}`);
+
+
+
+            clearRequestCache(`gruppi_by_Id_${user || 'unknown'}`);
 
             setTimeout(() => {
                 setShowAddGroupModal(false);
@@ -205,12 +211,12 @@ const Home = () => {
             await getGroupsByUser(user);
 
         } catch (err) {
-            navigate('/error', {state: {errorMessage: err.message || "Errore di connessione"}});
+            navigate(ERROR_PATH, { state: { errorMessage: err.message || "Errore di connessione" } });
         } finally {
             setIsSubmitting(false);
         }
 
-    }, [payload, user, navigate, clearCache]);
+    }, [payload, user, navigate]);
 
     const addGroup = useCallback(() => {
         setShowAddGroupModal(true);
@@ -223,7 +229,7 @@ const Home = () => {
         setSuccess('');
         setError(null);
         setPayload(initialPayload);
-    }, [initialPayload]);
+    }, []);
 
     const handleGroupSelect = useCallback((groupName) => {
         const gruppo = groups.find(g =>
@@ -232,18 +238,13 @@ const Home = () => {
             g.id?.toString() === groupName?.toString()
         );
 
-        if (gruppo) {
-            const normalizedGroup = {
-                id: gruppo.id,
-                name: gruppo.name || gruppo.groupName,
-                groupName: gruppo.name || gruppo.groupName,
-                ...gruppo
-            };
-            localStorage.setItem('group', JSON.stringify(normalizedGroup));
-            setSelectedGroup(groupName);
-            navigate('/group');
+        const name = gruppo?.name || gruppo?.groupName || groupName;
+        if (!name) {
+            return;
         }
-    }, [groups, navigate]);
+        setSelectedGroup(name);
+        openGroup(name);
+    }, [groups, openGroup]);
 
     const getGroupsByUser = useCallback(async (username = user) => {
         const token = localStorage.getItem('authToken');
@@ -256,16 +257,7 @@ const Home = () => {
             setGroupsLoading(true);
             setGroupsError(null);
 
-            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/group/get/${username}`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({username}),
-                credentials: 'include',
-            }, cacheKey);
+            const data = await cachedFetchJson(cacheKey, () => getGroupsByUsername(username));
 
             const errorMessage = normalizeError(data?.body?.message || data?.body);
 
@@ -292,7 +284,7 @@ const Home = () => {
         } finally {
             setGroupsLoading(false);
         }
-    }, [cachedFetchJson, user]);
+    }, [cachedFetchJson, logout]);
 
     const getHistoryPayments = useCallback(async (username) => {
         const token = localStorage.getItem('authToken');
@@ -304,16 +296,7 @@ const Home = () => {
             setPaymentsLoading(true);
             setPaymentsError(null);
 
-            const data = await cachedFetchJson(`${GETAWAY_SERVER_URL}/api/coffee/ultimi/pagamenti/${username}`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include',
-                body: JSON.stringify({username}),
-            }, cacheKey);
+            const data = await cachedFetchJson(cacheKey, () => getRecentPayments(username));
 
             const errorMessage = normalizeError(data?.body?.message || data?.body);
 
@@ -332,7 +315,53 @@ const Home = () => {
         } finally {
             setPaymentsLoading(false);
         }
-    }, [cachedFetchJson, user]);
+    }, [cachedFetchJson, logout]);
+
+    const getUserStatistics = useCallback(async (username) => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return logout();
+
+        const cacheKey = `user_stats_${username || 'unknown'}`;
+
+        try {
+            setStatsLoading(true);
+
+            const data = await cachedFetchJson(cacheKey, () => fetchUserStatisticsRequest());
+
+            if (data.status === 200) {
+                setUserStatistics(data.body);
+            } else {
+                setUserStatistics(null);
+            }
+        } catch {
+            setUserStatistics(null);
+        } finally {
+            setStatsLoading(false);
+        }
+    }, [cachedFetchJson, logout]);
+
+    const getUserAwards = useCallback(async (username) => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return logout();
+
+        const cacheKey = `user_awards_${username || 'unknown'}`;
+
+        try {
+            setAwardsLoading(true);
+
+            const data = await cachedFetchJson(cacheKey, () => fetchUserAwardsRequest());
+
+            if (data.status === 200 && Array.isArray(data.body)) {
+                setUserAwards(data.body);
+            } else {
+                setUserAwards([]);
+            }
+        } catch {
+            setUserAwards([]);
+        } finally {
+            setAwardsLoading(false);
+        }
+    }, [cachedFetchJson, logout]);
 
     const getPaginatedGroups = useMemo(() => {
         const startIndex = (currentGroupPage - 1) * GROUPS_PER_PAGE;
@@ -344,64 +373,100 @@ const Home = () => {
         return pagamentis.slice(startIndex, startIndex + PAYMENTS_PER_PAGE);
     }, [currentPaymentPage, pagamentis]);
 
-    const getTotalGroupPages = () => Math.ceil(groups.length / GROUPS_PER_PAGE);
+    const totalGroupPages = useMemo(
+        () => Math.ceil(groups.length / GROUPS_PER_PAGE),
+        [groups.length]
+    );
 
-    const getTotalPaymentPages = () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE);
+    const totalPaymentPages = useMemo(
+        () => Math.ceil(pagamentis.length / PAYMENTS_PER_PAGE),
+        [pagamentis.length]
+    );
 
     const onRetry = useCallback(async () => {
-        if (user) await getGroupsByUser(user);
-    }, [getGroupsByUser, user])
+        if (!user) return;
+        clearRequestCache(`gruppi_by_Id_${user}`);
+        clearRequestCache(`payments_by_Id_${user}`);
+        clearRequestCache(`user_stats_${user}`);
+        clearRequestCache(`user_awards_${user}`);
+        await Promise.all([
+            getGroupsByUser(user),
+            getHistoryPayments(user),
+            getUserStatistics(user),
+            getUserAwards(user)
+        ]);
+    }, [getGroupsByUser, getHistoryPayments, getUserStatistics, getUserAwards, user]);
 
     return (
         <div className={styles.homePage}>
-            <div className={`${styles.container} ${showAddGroupModal ? styles.modalActive : ''}`}>
+            <CoffeePatternIcons />
 
-                <Header user={user} logout={logout}/>
+            <div className={styles.container}>
+
+                <Header user={user} logout={logout} avatarKey={avatarKey} />
 
                 <main className={styles.main}>
 
-                    <HomeHeader/>
+                    <HomeHeader user={user} groupsCount={groups.length} />
 
-                    <HomeGroups groups={getPaginatedGroups}
-                                groupsLoading={groupsLoading}
-                                groupsError={groupsError}
-                                onRetry={onRetry}
-                                addGroup={addGroup}
-                                selectedGroup={selectedGroup}
-                                handleGroupSelect={handleGroupSelect}
-                                currentGroupPage={currentGroupPage}
-                                getTotalGroupPages={getTotalGroupPages()}
-                                setCurrentGroupPage={setCurrentGroupPage}
-                    />
+                    <div className={styles.homeGrid}>
+                        <div className={styles.homeMainCol}>
+                            <SectionReveal>
+                                <HomeGroups groups={getPaginatedGroups}
+                                    groupsLoading={groupsLoading}
+                                    groupsError={groupsError}
+                                    onRetry={onRetry}
+                                    addGroup={addGroup}
+                                    selectedGroup={selectedGroup}
+                                    handleGroupSelect={handleGroupSelect}
+                                    currentGroupPage={currentGroupPage}
+                                    getTotalGroupPages={totalGroupPages}
+                                    setCurrentGroupPage={setCurrentGroupPage}
+                                    currentUsername={user}
+                                />
+                            </SectionReveal>
 
-                    <div className={styles.separator}>
-                        <div className={styles.separatorLeft}></div>
-                        <img src="/coffee-medium-svgrepo-com.svg" alt="Coffee icon separator"/>
-                        <div className={styles.separatorRight}></div>
+                            <SectionReveal>
+                                <HomePayments onRetry={onRetry}
+                                    payments={getPaginatedPayments}
+                                    paymentsError={paymentsError}
+                                    currentPaymentPage={currentPaymentPage}
+                                    paymentsLoading={paymentsLoading}
+                                    getTotalPaymentPages={totalPaymentPages}
+                                    setCurrentPaymentPage={setCurrentPaymentPage} />
+                            </SectionReveal>
+                        </div>
+
+                        <aside className={styles.homeSidebar}>
+                            <SectionReveal className={styles.sidebarCard}>
+                                <HomeStatistics statistics={userStatistics} loading={statsLoading} />
+                            </SectionReveal>
+
+                            <SectionReveal className={styles.sidebarCard}>
+                                <HomeAwards awards={userAwards} loading={awardsLoading} />
+                            </SectionReveal>
+                        </aside>
                     </div>
-
-                    <HomePayments onRetry={onRetry}
-                                  payments={getPaginatedPayments}
-                                  paymentsError={paymentsError}
-                                  currentPaymentPage={currentPaymentPage}
-                                  paymentsLoading={paymentsLoading}
-                                  getTotalPaymentPages={getTotalPaymentPages()}
-                                  setCurrentPaymentPage={setCurrentPaymentPage}/>
 
                 </main>
             </div>
 
-            {showAddGroupModal && (
-                <AddGroupModal
-                    payload={payload}
-                    handleChangeName={handleChangeName}
-                    handleChangeDescription={handleChangeDescription}
-                    confirmCreateGroup={confirmCreateGroup}
-                    closeAddGroupModal={closeAddGroupModal}
-                    error={error}
-                    success={success}
-                    isSubmitting={isSubmitting}
-                />
+            {(userSettingsOpen || showAddGroupModal) && (
+                <Suspense fallback={null}>
+                    {userSettingsOpen && <UserSettingsModal />}
+                    {showAddGroupModal && (
+                        <AddGroupModal
+                            payload={payload}
+                            handleChangeName={handleChangeName}
+                            handleChangeDescription={handleChangeDescription}
+                            confirmCreateGroup={confirmCreateGroup}
+                            closeAddGroupModal={closeAddGroupModal}
+                            error={error}
+                            success={success}
+                            isSubmitting={isSubmitting}
+                        />
+                    )}
+                </Suspense>
             )}
         </div>
     );

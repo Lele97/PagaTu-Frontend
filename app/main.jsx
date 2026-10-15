@@ -1,74 +1,112 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import Root from './routes/root';
-import Login from './components/login/login-form.jsx';
-import ErrorPage from './components/error/error-page.jsx';
-import Signup from "~/components/signup/signup-form.jsx";
-import Home from "~/components/home/home.jsx";
-import ForgotPswForm from "~/components/resetPassword/forgotPsw-form.jsx";
-import Group from "~/components/group/group.jsx";
-import Invitation from "~/components/invitation/invitation.jsx";
-import ResetPswForm from "~/components/resetPassword/resetPsw-form.jsx";
+import ErrorPage, { RouterErrorPage } from './components/error/error-page.jsx';
+import SplashScreen from '~/components/splash/splash-screen.jsx';
+import RequireAuth from '~/components/auth/RequireAuth.jsx';
 import './styles/app.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap-icons/font/bootstrap-icons.css'
 
-// Register service worker
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js")
-            .then((registration) => {
-                console.log("SW registered: ", registration);
-            })
-            .catch((registrationError) => {
-                console.log("SW registration failed: ", registrationError);
+// Route-level code splitting: solo la splash screen (rotta "/") viene caricata
+// nel bundle iniziale. Le altre pagine vengono scaricate on-demand, riducendo
+// il JS da parsare/eseguire al primo caricamento.
+const Home = lazy(() => import('~/components/home/home.jsx'));
+const Group = lazy(() => import('~/components/group/group.jsx'));
+const Invitation = lazy(() => import('~/components/invitation/invitation.jsx'));
+const ResetPswForm = lazy(() => import('~/components/resetPassword/resetPsw-form.jsx'));
+const VerifyEmail = lazy(() => import('~/components/verify-email/verify-email.jsx'));
+const AuthLanding = lazy(() => import('~/components/auth/AuthLanding.jsx'));
+
+const withSuspense = (element) => (
+    <Suspense fallback={null}>
+        {element}
+    </Suspense>
+);
+
+const withAuth = (element) => (
+    <RequireAuth>
+        {withSuspense(element)}
+    </RequireAuth>
+);
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        if (import.meta.env.DEV) {
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+                regs.forEach((reg) => reg.unregister());
             });
+            return;
+        }
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
     });
 }
 
 const router = createBrowserRouter([
     {
-        path: "/",
+        path: '/',
         element: <Root />,
-        errorElement: <ErrorPage />,
+        errorElement: <RouterErrorPage />,
         children: [
             {
                 index: true,
-                element: <Home />,
+                element: <SplashScreen />,
             },
             {
-                path: "/login",
-                element: <Login />,
+                path: '/welcome',
+                element: withSuspense(<AuthLanding />),
             },
             {
-                path: "/home",
-                element: <Home />,
+                path: '/login',
+                element: <Navigate to="/welcome" replace />,
             },
             {
-                path: "/signup",
-                element: <Signup />,
+                path: '/signup',
+                element: <Navigate to="/welcome?tab=signup" replace />,
             },
             {
-                path: "/forgotPassword",
-                element: <ForgotPswForm />,
+                path: '/home',
+                element: withAuth(<Home />),
             },
             {
-                path: "/group",
-                element: <Group />,
+                path: '/forgotPassword',
+                element: <Navigate to="/welcome?tab=forgot" replace />,
             },
             {
-                path: "/invitation",
-                element: <Invitation />,
+                path: '/group',
+                element: <Navigate to="/home" replace />,
             },
             {
-                path: "/resetPassword",
-                element: <ResetPswForm />
+                path: '/group/:groupName',
+                element: withAuth(<Group />),
             },
             {
-                path: "/errore-token",
+                path: '/invitation',
+                element: withSuspense(<Invitation />),
+            },
+            {
+                path: '/resetPassword',
+                element: withSuspense(<ResetPswForm />),
+            },
+            {
+                path: '/verify-email',
+                element: withSuspense(<VerifyEmail />),
+            },
+            {
+                path: '/profile/payment-links',
+                element: <Navigate to="/home?settings=payments" replace />,
+            },
+            {
+                path: '/errore-token',
                 element: <ErrorPage />,
-            }
+            },
+            {
+                path: '/error',
+                element: <ErrorPage />,
+            },
+            {
+                path: '*',
+                element: <ErrorPage />,
+            },
         ],
     },
 ]);

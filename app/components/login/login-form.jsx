@@ -1,73 +1,154 @@
-import {useEffect, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
-import styles from '~/styles/auth.module.css';
-import sharedStyles from '~/styles/shared.module.css';
-import logostyle from '~/styles/logo.module.css'
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import authStyles from '~/styles/auth.module.css';
+import signupStyles from '~/styles/signup.module.css';
+import { messageFromBody } from '~/utils/api';
+import { login, loginWithGithub, loginWithDiscord, resendVerification as resendVerificationEmail } from '~/utils/apiService';
+import { HOME_PATH, invitationPath } from '~/utils/routes';
+import { readPendingInvitation } from '~/utils/invitation';
+import { callbackUrl, providerLabel } from '~/config/oauth';
+import Oauth2LoginButton from '~/components/buttons/Oauth2LoginButton';
 
-const GETAWAY_SERVER_URL = import.meta.env.VITE_GETAWAY_SERVER_URL;
+/**
+ * Rende leggibile un fallimento del login OAuth.
+ *
+ * Un 503 puo' arrivare da due layer diversi e la sola parola "503" non basta:
+ * il fallback del gateway ha il body {"error":"Authentication Service Unavailable"},
+ * mentre auth-service risponde con il suo ErrorResponse (che contiene timestamp).
+ */
+const describeOauthFailure = (status, body, label) => {
+    const message = messageFromBody(body, `Login ${label} non riuscito (HTTP ${status}).`);
 
-const LoginForm = () => {
-    const [credentials, setCredentials] = useState({username: '', password: ''});
+    if (body?.error === 'Authentication Service Unavailable') {
+        const cause = body.cause ? ` Causa: ${body.cause}` : '';
+        return `Gateway: il servizio di autenticazione non ha risposto (fallback del circuit breaker).${cause}`;
+    }
+
+    return message;
+};
+
+/**
+ * Scambio del code con il backend. Ogni provider autorizzato via redirect
+ * espone la sua funzione; aggiungerne uno significa una riga in questa mappa.
+ * GitHub e Discord condividono lo stesso flusso (code + redirectUri).
+ */
+const CODE_EXCHANGE = {
+    github: loginWithGithub,
+    discord: loginWithDiscord,
+};
+
+const LoginForm = ({ onSwitchToForgot }) => {
+    const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showResend, setShowResend] = useState(false);
+    const [resendEmail, setResendEmail] = useState('');
+    const [resendStatus, setResendStatus] = useState('');
+    const oauthCallbackHandled = useRef(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const authToken = localStorage.getItem('authToken');
-        const pendingInvitation = localStorage.getItem('pendingInvitation');
-
-        if (authToken) {
-            if (pendingInvitation) {
-                try {
-                    const {username, groupName} = JSON.parse(pendingInvitation);
-                    navigate(`/invitation?username=${encodeURIComponent(username)}&groupName=${encodeURIComponent(groupName)}`);
-                } catch (error) {
-                    localStorage.removeItem('pendingInvitation');
-                    navigate('/home');
-                }
-            } else {
-                navigate('/home');
-            }
-        }
-    }, [navigate]);
-
-    useEffect(() => {
-        if (!error) return;
-
-        const timer = setTimeout(() => setError(''), 1000);
-        return () => clearTimeout(timer);
-    }, [error]);
-
-    const handleChange = (e) => {
-        const {id, value} = e.target;
-        setCredentials(prev => ({...prev, [id]: value}));
-        if (error) setError('');
-    };
 
     const handleLoginSuccess = (userData, authToken) => {
         localStorage.setItem('authToken', authToken);
         localStorage.setItem('user', JSON.stringify(userData));
 
-        const pendingInvitation = localStorage.getItem('pendingInvitation');
-        if (!pendingInvitation) {
-            navigate('/home');
+        const pending = readPendingInvitation();
+        if (!pending) {
+            navigate(HOME_PATH);
             return;
         }
 
-        try {
-            const {username: invitedUser, groupName} = JSON.parse(pendingInvitation);
-            const currentUsername = userData.username;
-
-            if (currentUsername === invitedUser) {
-                navigate(`/invitation?username=${encodeURIComponent(invitedUser)}&groupName=${encodeURIComponent(groupName)}`);
-            } else {
-                localStorage.removeItem('pendingInvitation');
-                navigate('/home');
-            }
-        } catch {
-            localStorage.removeItem('pendingInvitation');
-            navigate('/home');
+        if (userData.username === pending.username) {
+            navigate(invitationPath(pending));
+            return;
         }
+
+        localStorage.removeItem('pendingInvitation');
+        navigate(HOME_PATH);
+    };
+
+    // Callback OAuth: torna su /welcome?code=... (o ?error=... se l'utente
+    // nega l'accesso). Lo scambio del code lo fa il backend.
+    // Il ref serve perche' in sviluppo React StrictMode monta due volte gli
+    // effect: senza guardia il code verrebbe scambiato due volte.
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const oauthError = params.get('error');
+        const oauthErrorDescription = params.get('error_description');
+
+        // Consumato dal click del pulsante prima di lasciare la SPA.
+        const provider = sessionStorage.getItem('oauth_provider');
+
+        if (oauthCallbackHandled.current) return;
+
+        if (!provider || !CODE_EXCHANGE[provider]) {
+            if (code || oauthError) {
+                window.history.replaceState(null, '', window.location.pathname);
+                setError('Provider OAuth mancante o non riconosciuto. Riprova il login.');
+            }
+            return;
+        }
+
+        oauthCallbackHandled.current = true;
+        sessionStorage.removeItem('oauth_provider');
+
+        // Rimuovi code/error dall'URL prima di proseguire.
+        window.history.replaceState(null, '', window.location.pathname);
+
+        const label = providerLabel(provider);
+
+        if (oauthError) {
+            setError(oauthErrorDescription || `Login con ${label} non completato.`);
+            return;
+        }
+
+        if (!code) {
+            setError('Codice OAuth mancante.');
+            return;
+        }
+
+        const redirectUri = callbackUrl();
+
+        setIsLoading(true);
+
+        CODE_EXCHANGE[provider](code, redirectUri)
+            .then(({ ok, status, body }) => {
+                if (!ok) {
+                    console.error(`[${provider} OAuth] risposta non ok`, { status, body });
+                    throw new Error(describeOauthFailure(status, body, label));
+                }
+
+                const { token: authToken, username, email } = body;
+                handleLoginSuccess({ username, email }, authToken);
+            })
+            .catch((err) => {
+                setError(err.message || `Errore durante il login con ${label}.`);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, []);
+
+    useEffect(() => {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            return;
+        }
+
+        const pending = readPendingInvitation();
+        navigate(pending ? invitationPath(pending) : HOME_PATH);
+    }, [navigate]);
+
+    useEffect(() => {
+        if (!error) return;
+        const timer = setTimeout(() => setError(''), 3000);
+        return () => clearTimeout(timer);
+    }, [error]);
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setCredentials((prev) => ({ ...prev, [id]: value }));
+        if (error) setError('');
     };
 
     const handleSubmit = async (e) => {
@@ -76,106 +157,120 @@ const LoginForm = () => {
         setError('');
 
         try {
-            const response = await fetch(`${GETAWAY_SERVER_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(credentials),
-                credentials: 'include',
-            });
+            const { ok, body } = await login(credentials);
 
-            if (!response.ok) {
-                const errorMsg = response.status === 401 || response.status === 404
-                    ? 'Login non riuscito. Controlla le credenziali.'
-                    : 'Errore di connessione al server.';
+            if (!ok) {
+                const errorMsg = messageFromBody(body, 'Login non riuscito. Controlla le credenziali.');
+                if (errorMsg.toLowerCase().includes('verifica')) {
+                    setShowResend(true);
+                }
                 throw new Error(errorMsg);
             }
 
-            const {token, username, email} = await response.json();
-            handleLoginSuccess({username, email}, token);
+            const { token, username, email } = body;
+            setShowResend(false);
+            handleLoginSuccess({ username, email }, token);
         } catch (err) {
-            // Extract the error message instead of the whole error object
             setError(err.message || 'Si è verificato un errore durante il login');
         } finally {
             setIsLoading(false);
         }
     };
 
+    const resendVerification = async () => {
+        if (!resendEmail.trim()) {
+            setResendStatus('Inserisci la tua email');
+            return;
+        }
+        try {
+            const { ok, body } = await resendVerificationEmail(resendEmail.trim());
+            const text = messageFromBody(body, ok ? 'Email inviata!' : 'Invio non riuscito');
+            setResendStatus(ok ? (text || 'Email inviata!') : text);
+        } catch {
+            setResendStatus('Errore di connessione');
+        }
+    };
+
     return (
-        <div className={styles.container}>
-
-            <div className={styles['header-container']}>
-                <img src="/pagaTu.png" alt="Logo" className={logostyle.logo}/>
-                <div className={logostyle.appTitle}>
-                    <h1 className={logostyle.appTitlecolor}>P</h1>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <><h1 className={logostyle.appTitlecolor}>g</h1></>
-                    <h1 className={logostyle.appTitlecolor2}>a</h1>
-                    <br></br>
-                    <h1 className={logostyle.appTitlecolor}>T</h1>
-                    <h1 className={logostyle.appTitlecolor2}>u</h1>
-                </div>
-            </div>
-
-            <div className={styles.formContainer}>
-                <h2 className={styles.title}>Accedi al tuo account</h2>
-
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="username" className={styles.label}>
-                            Username*
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            className={styles.input}
-                            placeholder="Il tuo username"
-                            value={credentials.username}
-                            onChange={handleChange}
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <div className={styles.passwordHeader}>
-                            <label htmlFor="password" className={styles.label}>
-                                Password*
-                            </label>
-                            <Link to="/forgotPassword" className={styles.link}>
-                                Password dimenticata?
-                            </Link>
-                        </div>
-                        <input
-                            type="password"
-                            id="password"
-                            className={styles.input}
-                            placeholder="••••••••"
-                            autoComplete={"current-password"}
-                            value={credentials.password}
-                            onChange={handleChange}
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    {error && <div className={styles.error}>{error}</div>}
-
-                    <button
-                        type="submit"
-                        className={styles.primaryButton}
+        <div>
+            <form onSubmit={handleSubmit}>
+                <div className={signupStyles.inputGroup}>
+                    <label htmlFor="username" className={signupStyles.label}>
+                        Username*
+                    </label>
+                    <input
+                        type="text"
+                        id="username"
+                        className={signupStyles.inputField}
+                        placeholder="Il tuo username"
+                        value={credentials.username}
+                        onChange={handleChange}
+                        required
                         disabled={isLoading}
-                    >
-                        {isLoading ? 'Accesso...' : 'Accedi'}
-                    </button>
+                    />
+                </div>
 
-                    <div className={styles.footer}>
-                        Non hai un account?
-                        <Link to="/signup" className={styles.link}>
-                            Registrati
-                        </Link>
+                <div className={signupStyles.inputGroup}>
+                    <div className={authStyles.passwordHeader}>
+                        <label htmlFor="password" className={signupStyles.label}>
+                            Password*
+                        </label>
+                        {onSwitchToForgot && (
+                            <button
+                                type="button"
+                                className={signupStyles.forgotLink}
+                                onClick={onSwitchToForgot}
+                            >
+                                Password dimenticata?
+                            </button>
+                        )}
                     </div>
-                </form>
-            </div>
+                    <input
+                        type="password"
+                        id="password"
+                        className={signupStyles.inputField}
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        value={credentials.password}
+                        onChange={handleChange}
+                        required
+                        disabled={isLoading}
+                    />
+                </div>
+
+                {error && (
+                    <div className={signupStyles.errorMessage}>
+                        {error}
+                    </div>
+                )}
+
+                {showResend && (
+                    <div className={authStyles.resendBox}>
+                        <p>Non hai ricevuto l&apos;email di verifica?</p>
+                        <input
+                            type="email"
+                            className={signupStyles.inputField}
+                            placeholder="La tua email"
+                            value={resendEmail}
+                            onChange={(e) => setResendEmail(e.target.value)}
+                        />
+                        <button type="button" className={authStyles.secondaryButton} onClick={resendVerification}>
+                            Reinvia verifica
+                        </button>
+                        {resendStatus && <p className={authStyles.resendStatus}>{resendStatus}</p>}
+                    </div>
+                )}
+
+                <button
+                    type="submit"
+                    className={signupStyles.submitButton}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Accesso...' : 'Accedi'}
+                </button>
+            </form>
+
+            <Oauth2LoginButton onLoginSuccess={handleLoginSuccess} />
         </div>
     );
 };

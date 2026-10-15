@@ -1,33 +1,101 @@
 import React from "react";
 import styles from "~/styles/group.module.css";
-import sharedStyles from "~/styles/shared.module.css";
+import { formatPayForRemaining, formatSkipsRemaining } from "~/utils/groupFormat";
+import { fa } from "~/utils/icons";
 
-const PaymentActions = React.memo(function PaPaymentActions({myTurn, onRegisterPayment, onSkipPayment, onPayForFriend}) {
-    const actions = myTurn ? [{
-        label: 'Registra Pagamento',
-        onClick: onRegisterPayment,
-        disabled: false
-    }, {label: 'Salta Pagamento', onClick: onSkipPayment, disabled: false}, {
+const ACTION_ICONS = {
+    'Registra Pagamento': 'cash-register',
+    'Salta Pagamento': 'forward-step',
+    'Paga per un amico': 'user-plus',
+};
+
+const PaymentActions = React.memo(function PaymentActions({
+                                                              myTurn,
+                                                              canPayFor = true,
+                                                              maxSkipPerMonth = 4,
+                                                              maxPayForPerMonth = 4,
+                                                              myMembership,
+                                                              currentTurnUsername,
+                                                              currentTurnDisplayName,
+                                                              onRegisterPayment,
+                                                              onSkipPayment,
+                                                              onPayForFriend,
+                                                              paidCount = 0,
+                                                              pendingCount = 0,
+                                                          }) {
+    const payForRemaining = myMembership?.monthlyPayForRemaining;
+    const payForDisabled = !canPayFor || payForRemaining === 0;
+
+    const payForAction = {
         label: 'Paga per un amico',
         onClick: onPayForFriend,
-        disabled: false
-    }] : [{label: 'Registra Pagamento', onClick: onRegisterPayment, disabled: true}, {
-        label: 'Salta Pagamento',
-        onClick: onSkipPayment,
-        disabled: true
-    }, {label: 'Paga per un amico', onClick: onPayForFriend, disabled: false}];
+        disabled: payForDisabled,
+    };
+
+    const actions = myTurn
+        ? [
+            {label: 'Registra Pagamento', onClick: onRegisterPayment, disabled: false},
+            {label: 'Salta Pagamento', onClick: onSkipPayment, disabled: myMembership?.monthlySkipsRemaining === 0},
+            payForAction,
+        ]
+        : [
+            {label: 'Registra Pagamento', onClick: onRegisterPayment, disabled: true},
+            {label: 'Salta Pagamento', onClick: onSkipPayment, disabled: true},
+            payForAction,
+        ];
+
+    const turnLabel = currentTurnDisplayName || currentTurnUsername;
 
     return (
-        <section className={styles.groupSection}>
-            <h1>{myTurn ? 'È il tuo turno di pagare il caffè' : 'Non è il tuo turno di pagare il caffè'}</h1>
-            <p>{myTurn ? 'Puoi fare queste azioni' : 'Attendi il tuo turno per effettuare un pagamento'}</p>
-            <div className={styles.actionButtons}>
-                {actions.map(({label, onClick, disabled}, i) => (<button key={i} onClick={onClick} disabled={disabled}
-                                                                         className={`${sharedStyles.groupButton} ${styles.actionButton}`}>
-                    {label}
-                </button>))}
+        <div className={styles.actionsCard}>
+            <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>
+                    <i className="fa-solid fa-bolt" /> Azioni
+                </h2>
             </div>
-        </section>)
-})
+            <h3 className={styles.actionsCardHeading}>
+                {myTurn ? 'È il tuo turno di pagare il caffè' : 'Non è il tuo turno di pagare il caffè'}
+            </h3>
+            {myTurn ? (
+                <p className={styles.actionsCardHint}>Puoi registrare il pagamento o saltare il turno.</p>
+            ) : turnLabel ? (
+                <p className={styles.actionsCardHint}>Turno attuale: <strong>{turnLabel}</strong>. Attendi il tuo turno per pagare.</p>
+            ) : (
+                <p className={styles.actionsCardHint}>Attendi il tuo turno per effettuare un pagamento.</p>
+            )}
+            <p className={styles.turnHint}>
+                {formatSkipsRemaining(myMembership, maxSkipPerMonth)}
+            </p>
+            {canPayFor && (
+                <p className={styles.turnHint}>
+                    {formatPayForRemaining(myMembership, maxPayForPerMonth)}
+                </p>
+            )}
+            <div className={styles.actionButtons}>
+                {actions.map(({label, onClick, disabled}, i) => (
+                    <button
+                        key={i}
+                        onClick={onClick}
+                        disabled={disabled}
+                        className={styles.actionButton}
+                    >
+                        <i className={fa(ACTION_ICONS[label])} />
+                        {label}
+                    </button>
+                ))}
+            </div>
 
-export default PaymentActions
+            <div className={styles.roundSummaryCard}>
+                <div className={styles.roundSummaryTitle}>Round attuale</div>
+                <div className={styles.roundSummaryRow}>
+                    <span>Pagati</span><strong>{paidCount}</strong>
+                </div>
+                <div className={styles.roundSummaryRow}>
+                    <span>In attesa</span><strong>{pendingCount}</strong>
+                </div>
+            </div>
+        </div>
+    );
+});
+
+export default PaymentActions;

@@ -4,11 +4,11 @@ import LoadingSpinner from "~/components/shared/loadingSpinner.jsx";
 import ErrorMessage from "~/components/shared/errorMessage.jsx";
 
 const PaymentCards = React.memo(function PaymentCards({
-                                                          loading,
-                                                          error,
-                                                          payments,
-                                                          onRetry,
-                                                      }) {
+    loading,
+    error,
+    payments,
+    onRetry,
+}) {
     if (loading) return <LoadingSpinner message="Caricamento pagamenti..." />;
 
     if (error) {
@@ -22,42 +22,56 @@ const PaymentCards = React.memo(function PaymentCards({
 
     if (!payments?.length) {
         return (
-            <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>
-                    <i className="fa-solid fa-ranking-star" />
+            <section className={styles.groupSection}>
+                <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>
+                        <i className="fa-solid fa-cart-shopping" /> Pagamenti
+                    </h2>
                 </div>
-                <h3>Non sono stati ancora registrati pagamenti per questo gruppo</h3>
-                <p>Registra i pagamenti per i gruppi di cui fai parte</p>
-            </div>
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>
+                        <i className="fa-solid fa-ranking-star" />
+                    </div>
+                    <h3>Non sono stati ancora registrati pagamenti per questo gruppo</h3>
+                    <p>Registra i pagamenti per i gruppi di cui fai parte</p>
+                </div>
+            </section>
         );
     }
 
     return (
-        <div className={styles.paymentCardsContainer}>
-            {payments.map((payment, index) => (
-                <div key={index} className={styles.paymentCard}>
-                    <div className={styles.paymentCardHeader}>
-                        <i className="bi bi-ticket-perforated-fill" />
-                        <span className={styles.paymentLabel}>Utente</span>
-                        <span className={styles.paymentData}>{payment.username}</span>
-                    </div>
+        <section className={styles.groupSection}>
+            <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>
+                    <i className="fa-solid fa-cart-shopping" /> Pagamenti
+                </h2>
+            </div>
+            <div className={styles.paymentCardsContainer}>
+                {payments.map((payment, index) => (
+                    <div key={payment.username || payment.id || index} className={styles.paymentCard}>
+                        <div className={styles.paymentCardHeader}>
+                            <i className="fa-solid fa-ticket" />
+                            <span className={styles.paymentLabel}>Utente</span>
+                            <span className={styles.paymentData}>{payment.username}</span>
+                        </div>
 
-                    <div className={styles.paymentCardBody}>
-                        <div className={styles.paymentInfo}>
-                            <span className={styles.paymentLabel}>Totale pagamenti</span>
-                            <span className={styles.paymentDescription}>
-                {payment.totalPayments}
-              </span>
+                        <div className={styles.paymentCardBody}>
+                            <div className={styles.paymentInfo}>
+                                <span className={styles.paymentLabel}>Totale pagamenti</span>
+                                <span className={styles.paymentDescription}>
+                                    {payment.totalPayments}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className={styles.paymentCardFooter}>
+                            <span className={styles.paymentLabel}>Totale speso</span>
+                            <span className={styles.paymentAmount}>€{payment.totalAmount}</span>
                         </div>
                     </div>
-
-                    <div className={styles.paymentCardFooter}>
-                        <span className={styles.paymentLabel}>Totale speso</span>
-                        <span className={styles.paymentAmount}>€{payment.totalAmount}</span>
-                    </div>
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
+        </section>
     );
 });
 

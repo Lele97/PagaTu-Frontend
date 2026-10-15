@@ -3,6 +3,14 @@
  * Styling for password reset functionality and form
  */
 
+@font-face {
+    font-family: 'CustomFont';
+    src: url('/Oatlander.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* ===============================================================================
    LAYOUT & CONTAINER
    ================================================================================ */

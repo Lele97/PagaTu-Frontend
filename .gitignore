@@ -1,14 +1,40 @@
-.DS_Store
-/node_modules/
+# Build output
+dist/
+build/
 
-# React Router
-/.react-router/
-/build/
-/dist/
-/.idea/
+# Dependencies
+node_modules/
 
-# Project
-.env
+# Local environment overrides.
+# The base .env is tracked on purpose: it only holds public OAuth client ids
+# and the localhost default. Secrets stay out of git.
 .env.local
-script/.env.buildone
-/package-lock.json
+.env.*.local
+
+# Build/CI credentials
+script/.env.*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+
+# Misc
+*.tgz
+.cache/

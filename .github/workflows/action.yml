@@ -6,8 +6,6 @@ on:
       - main
       - develop
   delete:
-    branches:
-      - develop
   pull_request:
     branches:
       - develop
