@@ -10,6 +10,11 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Branch-main-2ea44f?logo=github&logoColor=white" alt="Branch: main">
+  <img src="https://img.shields.io/badge/Status-Production%20Ready-6DB33F?logo=checkmarx&logoColor=white" alt="Status: Production Ready">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black" alt="React">
   <img src="https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white" alt="React Router">
   <img src="https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white" alt="Vite">
