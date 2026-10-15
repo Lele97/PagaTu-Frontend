@@ -1,11 +1,12 @@
 import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import styles from '~/styles/auth.module.css';
+import OAuthButtons from '~/components/OAuthButtons';
 
 const NGROK_SERVER_URL = import.meta.env.VITE_NGROK_SERVER_URL;
 
 const LoginForm = () => {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const [credentials, setCredentials] = useState({username: '', password: ''});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -17,9 +18,20 @@ const LoginForm = () => {
         return () => clearTimeout(timer);
     }, [error]);
 
+    // Check for error from OAuth callback
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const oauthError = urlParams.get('error');
+        if (oauthError === 'oauth_failed') {
+            setError('Login con provider esterno non riuscito. Riprova.');
+        } else if (oauthError === 'invalid_callback') {
+            setError('Callback OAuth non valido. Riprova.');
+        }
+    }, []);
+
     const handleChange = (e) => {
-        const { id, value } = e.target;
-        setCredentials(prev => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setCredentials(prev => ({...prev, [id]: value}));
         if (error) setError('');
     };
 
@@ -34,7 +46,7 @@ const LoginForm = () => {
         }
 
         try {
-            const { username: invitedUser, groupName } = JSON.parse(pendingInvitation);
+            const {username: invitedUser, groupName} = JSON.parse(pendingInvitation);
             const currentUsername = userData.username;
 
             if (currentUsername === invitedUser) {
@@ -57,7 +69,7 @@ const LoginForm = () => {
         try {
             const response = await fetch(`${NGROK_SERVER_URL}/api/auth/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(credentials),
                 credentials: 'include',
             });
@@ -69,8 +81,8 @@ const LoginForm = () => {
                 throw new Error(errorMsg);
             }
 
-            const { token, username, email } = await response.json();
-            handleLoginSuccess({ username, email }, token);
+            const {token, username, email} = await response.json();
+            handleLoginSuccess({username, email}, token);
         } catch (err) {
             // Extract the error message instead of the whole error object
             setError(err.message || 'Si è verificato un errore durante il login');
@@ -145,6 +157,9 @@ const LoginForm = () => {
                     >
                         {isLoading ? 'Accesso...' : 'Accedi'}
                     </button>
+
+                    {/* OAuth Buttons */}
+                    <OAuthButtons/>
 
                     <div className={styles.footer}>
                         Non hai un account?

@@ -235,3 +235,99 @@
         transform: translateY(0);
     }
 }
+
+/* OAuth Buttons */
+.oauthContainer {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--coffee-500);
+    font-size: 0.875rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--coffee-300);
+}
+
+.divider span {
+    padding: 0 1rem;
+    background-color: var(--coffee-0);
+}
+
+.oauthButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.oauthButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--coffee-300);
+    background-color: var(--coffee-0);
+    color: var(--coffee-700);
+    font-weight: 500;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.oauthButton:hover {
+    background-color: var(--coffee-50);
+    border-color: var(--coffee-400);
+    color: var(--coffee-800);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.oauthButton:active {
+    transform: translateY(0);
+}
+
+.oauthIcon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* Provider-specific colors */
+.oauth-github:hover {
+    border-color: #24292e;
+    color: #24292e;
+}
+
+.oauth-github .oauthIcon {
+    color: #24292e;
+}
+
+.oauth-discord:hover {
+    border-color: #5865f2;
+    color: #5865f2;
+}
+
+.oauth-discord .oauthIcon {
+    color: #5865f2;
+}
+
+.oauth-slack:hover {
+    border-color: #4a154b;
+    color: #4a154b;
+}
+
+.oauth-slack .oauthIcon {
+    color: #4a154b;
+}
