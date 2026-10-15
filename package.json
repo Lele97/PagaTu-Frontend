@@ -2,6 +2,9 @@
   "name": "paga_tu_frontend",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "dev:local": "vite --mode test",
@@ -17,6 +20,7 @@
     "react-router-dom": "^7.6.0"
   },
   "devDependencies": {
+    "@types/node": "^20",
     "@vitejs/plugin-react": "^4.4.1",
     "vite": "^7.3.6",
     "vite-plugin-pwa": "^1.3.0"

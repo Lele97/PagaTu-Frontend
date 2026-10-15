@@ -177,7 +177,7 @@ const LoginForm = ({ onSwitchToForgot }) => {
         }
     };
 
-    const resendVerification = async () => {
+    const handleResendVerification = async () => {
         if (!resendEmail.trim()) {
             setResendStatus('Inserisci la tua email');
             return;
@@ -254,7 +254,7 @@ const LoginForm = ({ onSwitchToForgot }) => {
                             value={resendEmail}
                             onChange={(e) => setResendEmail(e.target.value)}
                         />
-                        <button type="button" className={authStyles.secondaryButton} onClick={resendVerification}>
+                        <button type="button" className={authStyles.secondaryButton} onClick={handleResendVerification}>
                             Reinvia verifica
                         </button>
                         {resendStatus && <p className={authStyles.resendStatus}>{resendStatus}</p>}

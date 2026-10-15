@@ -57,7 +57,7 @@ const VerifyEmail = () => {
         };
     }, []);
 
-    const resendVerification = async () => {
+    const handleResendVerification = async () => {
         if (!resendEmail.trim()) {
             setResendStatus('Inserisci la tua email');
             return;
@@ -99,7 +99,7 @@ const VerifyEmail = () => {
                                         value={resendEmail}
                                         onChange={(e) => setResendEmail(e.target.value)}
                                     />
-                                    <button type="button" className={styles.secondaryButton} onClick={resendVerification}>
+                                    <button type="button" className={styles.secondaryButton} onClick={handleResendVerification}>
                                         Reinvia verifica
                                     </button>
                                     {resendStatus && <p className={styles.resendStatus}>{resendStatus}</p>}
