@@ -1,0 +1,2 @@
+# Prevent README.md from being merged during PRs from develop to main
+README.md merge=ours
