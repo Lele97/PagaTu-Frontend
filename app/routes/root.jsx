@@ -4,7 +4,7 @@ import Footer from '../components/footer/footer.jsx';
 import { SettingsProvider, useSettings } from '~/context/SettingsContext.jsx';
 import { GroupProvider } from '~/context/GroupContext.jsx';
 
-import '../styles/app.css';
+// Gli stili globali sono importati una sola volta da main.jsx.
 
 const SettingsUrlHandler = ({ children }) => {
     const [searchParams, setSearchParams] = useSearchParams();

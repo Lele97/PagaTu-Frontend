@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from '~/styles/group.module.css';
-import {formatRoundProgress, getCurrentTurnMember, getDisplayName} from '~/utils/groupHelpers';
+import { formatRoundProgress } from '~/utils/groupFormat';
+import { getCurrentTurnMember, getDisplayName } from '~/utils/groupMembers';
 
 const GroupHeader = React.memo(function GroupHeader({group, currentUser, onGoBack, onOpenSettings, isAdmin}) {
     const memberCount = group?.memberCount ?? group?.userMembershipsdto?.length ?? 0;

@@ -5,10 +5,12 @@ import {
     formatPaymentStatus,
     formatRoundNumber,
     formatSkipsRemaining,
+} from '~/utils/groupFormat';
+import {
     getMembers,
     memberDisplayName,
     memberInitial,
-} from '~/utils/groupHelpers';
+} from '~/utils/groupMembers';
 
 const statusClass = (status, myTurn) => {
     if (myTurn) return styles.memberStatusTurn;

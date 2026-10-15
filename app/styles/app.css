@@ -1,6 +1,6 @@
 /**
  * GLOBAL APPLICATION STYLES
- * Root CSS variables and base application wrapper styles
+ * Root CSS variables, shared fonts, animations, and base application wrapper styles
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
@@ -60,6 +60,76 @@
 
     --transition-fast: 180ms ease;
     --transition-smooth: 320ms ease;
+}
+
+/* ===============================================================================
+   SHARED FONTS
+   ================================================================================ */
+
+@font-face {
+    font-family: 'CustomFont';
+    src: url('/Oatlander.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ===============================================================================
+   SHARED ANIMATIONS
+   ================================================================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===============================================================================
+   SHARED RESPONSIVE BREAKPOINTS (as mixins via CSS custom properties)
+   ================================================================================ */
+
+:root {
+    --bp-mobile: 480px;
+    --bp-tablet: 768px;
+    --bp-desktop: 1024px;
+    --bp-wide: 1280px;
 }
 
 /* ===============================================================================

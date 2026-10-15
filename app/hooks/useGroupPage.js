@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCoffeeProfile, fetchGroupSummary, KARMA_OPS, leaveGroup, updateCoffeeKarma } from '~/utils/apiService';
-import { getCurrentTurnMember, getMemberForUser, memberDisplayName } from '~/utils/groupHelpers';
-import { HOME_PATH, WELCOME_PATH } from '~/utils/groupHelpers';
+import { getCurrentTurnMember, getMemberForUser, memberDisplayName } from '~/utils/groupMembers';
+import { HOME_PATH, WELCOME_PATH } from '~/utils/routes';
 import { clearRequestCache, createCachedFetcher, messageFromBody } from '~/utils/api';
 import {
     deleteGroup as deleteGroupRequest,

@@ -7,9 +7,8 @@ import {
     formatPayForRemaining,
     formatRoundNumber,
     formatSkipsRemaining,
-    getMemberForUser,
-    isMyTurn,
-} from "~/utils/groupHelpers";
+} from "~/utils/groupFormat";
+import { getMemberForUser, isMyTurn } from "~/utils/groupMembers";
 
 const HomeGroups = React.memo(function HomeGroups({
     onRetry,

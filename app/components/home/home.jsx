@@ -11,7 +11,7 @@ import SectionReveal from "~/components/shared/SectionReveal.jsx";
 import CoffeePatternIcons from "~/components/shared/CoffeePatternIcons.jsx";
 import { useSettings } from '~/context/SettingsContext.jsx';
 import { fetchCoffeeProfile } from '~/utils/apiService';
-import { ERROR_PATH, WELCOME_PATH } from '~/utils/groupHelpers';
+import { ERROR_PATH, WELCOME_PATH } from '~/utils/routes';
 import { useGroup } from '~/context/GroupContext.jsx';
 import { clearRequestCache, createCachedFetcher } from '~/utils/api';
 import {

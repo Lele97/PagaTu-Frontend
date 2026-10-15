@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HOME_PATH, groupPath } from '~/utils/groupHelpers';
+import { HOME_PATH, groupPath } from '~/utils/routes';
 
 const GroupContext = createContext(null);
 

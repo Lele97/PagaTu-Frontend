@@ -39,14 +39,6 @@ export const messageFromBody = (body, fallback = 'Errore del server') => {
     return body.message || body.error || fallback;
 };
 
-export const parseErrorMessage = async (response, fallback = 'Errore del server') => {
-    try {
-        return messageFromBody(await parseBody(response), fallback);
-    } catch {
-        return fallback;
-    }
-};
-
 const euroFormatter = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
 
 export const formatCurrency = (amount) => {

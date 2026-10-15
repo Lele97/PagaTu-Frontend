@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import styles from '~/styles/invitation.module.css';
 import Header from '../header/header.jsx';
 import { useGroup } from '~/context/GroupContext.jsx';
-import { HOME_PATH } from '~/utils/groupHelpers';
+import { HOME_PATH } from '~/utils/routes';
 import { acceptInvitation, rejectInvitation } from '~/utils/apiService';
 import { messageFromBody } from '~/utils/api';
 

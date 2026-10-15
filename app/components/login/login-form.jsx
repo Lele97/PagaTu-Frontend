@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import authStyles from '~/styles/auth.module.css';
 import signupStyles from '~/styles/signup.module.css';
 import { messageFromBody } from '~/utils/api';
-import { login, loginWithGithub, loginWithDiscord, resendVerification } from '~/utils/apiService';
-import { HOME_PATH, invitationPath, readPendingInvitation } from '~/utils/groupHelpers';
+import { login, loginWithGithub, loginWithDiscord, resendVerification as resendVerificationEmail } from '~/utils/apiService';
+import { HOME_PATH, invitationPath } from '~/utils/routes';
+import { readPendingInvitation } from '~/utils/invitation';
+import { callbackUrl, providerLabel } from '~/config/oauth';
 import Oauth2LoginButton from '~/components/buttons/Oauth2LoginButton';
 
 /**
@@ -14,8 +16,8 @@ import Oauth2LoginButton from '~/components/buttons/Oauth2LoginButton';
  * il fallback del gateway ha il body {"error":"Authentication Service Unavailable"},
  * mentre auth-service risponde con il suo ErrorResponse (che contiene timestamp).
  */
-const describeOauthFailure = (status, body) => {
-    const message = messageFromBody(body, `Login GitHub non riuscito (HTTP ${status}).`);
+const describeOauthFailure = (status, body, label) => {
+    const message = messageFromBody(body, `Login ${label} non riuscito (HTTP ${status}).`);
 
     if (body?.error === 'Authentication Service Unavailable') {
         const cause = body.cause ? ` Causa: ${body.cause}` : '';
@@ -23,6 +25,16 @@ const describeOauthFailure = (status, body) => {
     }
 
     return message;
+};
+
+/**
+ * Scambio del code con il backend. Ogni provider autorizzato via redirect
+ * espone la sua funzione; aggiungerne uno significa una riga in questa mappa.
+ * GitHub e Discord condividono lo stesso flusso (code + redirectUri).
+ */
+const CODE_EXCHANGE = {
+    github: loginWithGithub,
+    discord: loginWithDiscord,
 };
 
 const LoginForm = ({ onSwitchToForgot }) => {
@@ -54,13 +66,10 @@ const LoginForm = ({ onSwitchToForgot }) => {
         navigate(HOME_PATH);
     };
 
-    // Callback GitHub e Discord, si controlla prima il provider per vedere quale callback lanciare
-    // Il code tornato dai provider e' lo stesso, non cambia nulla
-    // In futuro se si aggiungera' un altro provider, si dovra' solo aggiungere un if
-    //: torna su /welcome?code=... (o ?error=... si l'utente
+    // Callback OAuth: torna su /welcome?code=... (o ?error=... se l'utente
     // nega l'accesso). Lo scambio del code lo fa il backend.
     // Il ref serve perche' in sviluppo React StrictMode monta due volte gli
-    // effect: senza guardia il code verrebbe scambiato due volte
+    // effect: senza guardia il code verrebbe scambiato due volte.
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get('code');
@@ -72,7 +81,7 @@ const LoginForm = ({ onSwitchToForgot }) => {
 
         if (oauthCallbackHandled.current) return;
 
-        if (!provider || !['github', 'discord'].includes(provider)) {
+        if (!provider || !CODE_EXCHANGE[provider]) {
             if (code || oauthError) {
                 window.history.replaceState(null, '', window.location.pathname);
                 setError('Provider OAuth mancante o non riconosciuto. Riprova il login.');
@@ -86,11 +95,10 @@ const LoginForm = ({ onSwitchToForgot }) => {
         // Rimuovi code/error dall'URL prima di proseguire.
         window.history.replaceState(null, '', window.location.pathname);
 
+        const label = providerLabel(provider);
+
         if (oauthError) {
-            setError(
-                oauthErrorDescription ||
-                `Login con ${provider === 'github' ? 'GitHub' : 'Discord'} non completato.`
-            );
+            setError(oauthErrorDescription || `Login con ${label} non completato.`);
             return;
         }
 
@@ -99,28 +107,22 @@ const LoginForm = ({ onSwitchToForgot }) => {
             return;
         }
 
-        const redirectUri = `${window.location.origin}/welcome`;
-        const loginRequest = provider === 'github'
-            ? loginWithGithub(code, redirectUri)
-            : loginWithDiscord(code, redirectUri);
+        const redirectUri = callbackUrl();
 
         setIsLoading(true);
 
-        loginRequest
+        CODE_EXCHANGE[provider](code, redirectUri)
             .then(({ ok, status, body }) => {
                 if (!ok) {
                     console.error(`[${provider} OAuth] risposta non ok`, { status, body });
-                    throw new Error(describeOauthFailure(status, body));
+                    throw new Error(describeOauthFailure(status, body, label));
                 }
 
                 const { token: authToken, username, email } = body;
                 handleLoginSuccess({ username, email }, authToken);
             })
             .catch((err) => {
-                setError(
-                    err.message ||
-                    `Errore durante il login con ${provider === 'github' ? 'GitHub' : 'Discord'}.`
-                );
+                setError(err.message || `Errore durante il login con ${label}.`);
             })
             .finally(() => {
                 setIsLoading(false);
@@ -181,7 +183,7 @@ const LoginForm = ({ onSwitchToForgot }) => {
             return;
         }
         try {
-            const { ok, body } = await resendVerification(resendEmail.trim());
+            const { ok, body } = await resendVerificationEmail(resendEmail.trim());
             const text = messageFromBody(body, ok ? 'Email inviata!' : 'Invio non riuscito');
             setResendStatus(ok ? (text || 'Email inviata!') : text);
         } catch {
@@ -209,9 +211,7 @@ const LoginForm = ({ onSwitchToForgot }) => {
                 </div>
 
                 <div className={signupStyles.inputGroup}>
-                    <div
-                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}
-                    >
+                    <div className={authStyles.passwordHeader}>
                         <label htmlFor="password" className={signupStyles.label}>
                             Password*
                         </label>

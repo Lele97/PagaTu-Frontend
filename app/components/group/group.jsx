@@ -9,7 +9,7 @@ import GroupStatsSection from '~/components/group/GroupStatsSection.jsx';
 import GroupInfoSection from '~/components/group/GroupInfoSection.jsx';
 import SectionReveal from '~/components/shared/SectionReveal.jsx';
 import CoffeePatternIcons from '~/components/shared/CoffeePatternIcons.jsx';
-import { memberDisplayName } from '~/utils/groupHelpers';
+import { memberDisplayName } from '~/utils/groupMembers';
 import useGroupPage from '~/hooks/useGroupPage.js';
 
 const RegisterPaymentModal = lazy(() => import('../group/modals/RegisterPaymentModal.jsx'));

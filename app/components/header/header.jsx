@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from 'react';
 import styles from '~/styles/header.module.css';
 import { useSettings } from '~/context/SettingsContext.jsx';
 import { AVATAR_PRESETS } from '~/utils/apiService';
-import { fa } from '~/utils/groupHelpers';
+import { fa } from '~/utils/icons';
 
 const Header = memo(function Header({ user, logout, showGroupSettings = false, avatarKey = 'default' }) {
     const { openUserSettings, openGroupSettings } = useSettings();

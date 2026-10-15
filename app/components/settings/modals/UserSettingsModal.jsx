@@ -17,7 +17,7 @@ import {
     updatePaymentLinks,
     updatePreferences,
 } from '~/utils/apiService';
-import { fa } from '~/utils/groupHelpers';
+import { fa } from '~/utils/icons';
 
 const TABS = [
     { id: 'profile', label: 'Profilo', icon: 'user' },

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '~/styles/group.module.css';
-import { memberDisplayName, memberInitial } from '~/utils/groupHelpers';
+import { memberDisplayName, memberInitial } from '~/utils/groupMembers';
 
 const TurnIndicator = ({ members = [] }) => {
     if (!members.length) return null;
